@@ -6,3 +6,6 @@ out
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# Scratch output from screenshot tooling with an unset path
+undefined/
