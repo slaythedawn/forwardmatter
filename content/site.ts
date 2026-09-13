@@ -289,7 +289,7 @@ export const people: Person[] = [
     slug: "dion",
     photo: "/people/dion.webp",
     name: "Dion Couch",
-    role: "Science",
+    role: "Insight",
     owns: "Industry insight, with pharmaceuticals as the specialist domain.",
     body: "Two biochemistry degrees and years spent inside the science, where outcomes are measured rather than discussed. Provides the read on what a clinical or regulatory development actually means, which is the judgement no data feed supplies.",
   },
