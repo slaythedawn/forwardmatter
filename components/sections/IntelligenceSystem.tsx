@@ -53,7 +53,7 @@ export function IntelligenceSystem() {
 
       <div className="capabilities">
         {capabilities.map((capability) => (
-          <div className="card" key={capability.title}>
+          <div className="capability" key={capability.title}>
             <span className="bezel capability__bezel">
               <span
                 className="capability__lamp"

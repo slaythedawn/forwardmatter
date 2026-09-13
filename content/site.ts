@@ -28,7 +28,7 @@ export const credibility = {
 } as const;
 
 export const intelligenceSystem = {
-  eyebrow: "01 / The intelligence system",
+  eyebrow: "The intelligence system",
   title: "Thousands of events. Automated decision making.",
   body: "Matter Engine continuously interprets distinct information environments, then identifies the relationships that become material to markets and portfolios.",
   engine: {

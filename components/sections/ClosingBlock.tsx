@@ -15,7 +15,7 @@ export function ClosingBlock() {
           </h2>
           <p className="closing__lead">{closing.body}</p>
 
-          <div className="well team-strip">
+          <div className="team-strip">
             <div className="team-strip__row">
               <div className="team-strip__avatars">
                 {people.map((person) => (

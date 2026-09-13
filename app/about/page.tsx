@@ -27,7 +27,7 @@ export default function AboutPage() {
             <p className="lead">{aboutPage.body}</p>
           </section>
 
-          <section className="panel why">
+          <section className="why">
             <div className="why__col">
               <div className="eyebrow why__eyebrow">{aboutPage.why.eyebrow}</div>
               <h2 className="h2 why__title">{aboutPage.why.title}</h2>

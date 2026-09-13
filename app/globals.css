@@ -704,11 +704,22 @@ textarea {
   text-shadow: 0 1px #f9fbfd;
 }
 
+/* Four ruled columns rather than four raised cards.
+   The lamp bezel stays — it is the tactile detail that carries the material
+   language — but the card around it said "separate object" about something that
+   is really one list of four traits. */
 .capabilities {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 235px), 1fr));
-  gap: 22px;
-  margin: 30px 0 0;
+  gap: 34px 40px;
+  margin: 56px 0 0;
+}
+
+.capability {
+  min-width: 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--hairline);
+  box-shadow: 0 -2px 0 #fff;
 }
 
 .capability__bezel {
@@ -904,6 +915,8 @@ textarea {
    Platform panel
    -------------------------------------------------------------------------- */
 
+/* No panel here. The strip and the column rules already bind this into one
+   object, so the raised surface was decoration on top of structure. */
 .platform__strip {
   display: flex;
   justify-content: space-between;
@@ -1136,9 +1149,10 @@ textarea {
 }
 
 .team-strip {
-  margin: 30px 0 0;
-  padding: 16px 18px;
-  border-radius: 18px;
+  margin: 38px 0 0;
+  padding: 26px 0 0;
+  border-top: 1px solid var(--hairline);
+  box-shadow: 0 -2px 0 #fff;
 }
 
 .team-strip__row {
@@ -1195,14 +1209,10 @@ textarea {
   display: block;
 }
 
+/* The inputs are recessed because they are controls you type into — that reads
+   as meaning. A raised panel around them was a second surface saying nothing. */
 .contact-form {
   min-width: 0;
-  padding: clamp(24px, 3vw, 36px);
-  border-radius: 26px;
-  border: 1px solid var(--border-panel);
-  border-bottom: 3px solid #c1ccd8;
-  background: var(--surface-panel);
-  box-shadow: var(--shadow-panel);
 }
 
 .contact-form__grid {
@@ -1332,12 +1342,21 @@ textarea {
   max-width: 56ch;
 }
 
+/* Two columns of prose needed a rule and some air, not a container. */
 .why {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  grid-template-columns: minmax(min(100%, 320px), 0.85fr) minmax(min(100%, 320px), 1.15fr);
   gap: 70px;
-  padding: 52px 54px;
-  border-radius: 31px;
+  padding: 56px 0 0;
+  border-top: 1px solid var(--hairline);
+  box-shadow: 0 -2px 0 #fff;
+}
+
+@media (max-width: 860px) {
+  .why {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
 }
 
 .why__col {

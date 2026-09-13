@@ -48,8 +48,25 @@
       this.style.display = "block";
       this.style.position = "relative";
       if (!this.style.height) this.style.height = "100%";
+      /* Two modes.
+
+         On a pointer device the canvas is fixed to the viewport, so the field can
+         drift outside its own box and lean with the scroll — the designed look.
+
+         On a touch device that same arrangement is what makes the animation feel
+         like it cannot keep up: a viewport-fixed layer is repainted through every
+         frame of a momentum scroll, and the scroll lean is deliberately eased
+         behind the real scroll position, which on a fast flick reads as lag.
+         So there the canvas is absolutely positioned inside the host and ignores
+         both scroll and pointer. The browser then just moves the layer with the
+         page — nothing to repaint, nothing to fall behind. */
+      this.ambientOnly =
+        window.matchMedia("(hover: none), (pointer: coarse), (max-width: 720px)").matches;
+
       this.canvas = document.createElement("canvas");
-      this.canvas.style.cssText = "display:block;position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:0";
+      this.canvas.style.cssText = this.ambientOnly
+        ? "display:block;position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;will-change:transform;transform:translateZ(0)"
+        : "display:block;position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:0";
       this.appendChild(this.canvas);
       this.ctx = this.canvas.getContext("2d");
       this.mouse = { x: 0, y: 0 };
@@ -59,14 +76,19 @@
       this.scrollEased = 0;
       this.reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+      /* Reading the host's box here would force a layout on every scroll event.
+         The host never moves relative to the document, so its offset is measured
+         once in resize() and scrollY — which costs nothing — does the rest. */
       this._onScroll = () => {
-        const r = this.getBoundingClientRect();
         const vh = window.innerHeight || 1;
+        const top = (this._docTop || 0) - window.scrollY;
         // 0 when the field's top hits the viewport top, 1 once it has scrolled a viewport past.
-        this.scroll = Math.max(-1, Math.min(1, -r.top / vh));
+        this.scroll = Math.max(-1, Math.min(1, -top / vh));
       };
-      this._onScroll();
-      window.addEventListener("scroll", this._onScroll, { passive: true });
+      if (!this.ambientOnly) {
+        this._onScroll();
+        window.addEventListener("scroll", this._onScroll, { passive: true });
+      }
 
       this._onMove = (e) => {
         const r = this.getBoundingClientRect();
@@ -83,12 +105,32 @@
         };
         this._ptrSeen = performance.now();
       };
-      window.addEventListener("pointermove", this._onMove, { passive: true });
+      if (!this.ambientOnly) window.addEventListener("pointermove", this._onMove, { passive: true });
       this._onResizeWin = () => this.resize();
       window.addEventListener("resize", this._onResizeWin);
 
       this._ro = new ResizeObserver(() => this.resize());
       this._ro.observe(this);
+
+      /* Stop drawing once the field has scrolled away. It was animating the whole
+         way down the page before — invisible work competing with the scroll for
+         the main thread, and on a phone, with the battery. */
+      this._io = new IntersectionObserver(
+        ([entry]) => {
+          this.onScreen = entry.isIntersecting;
+          if (this.onScreen) this.start();
+          else this.stop();
+        },
+        { rootMargin: "120px" }
+      );
+      this._io.observe(this);
+      /* The cached document offset goes stale if anything above the field reflows.
+         The host's own size often does not change when that happens, so the
+         observer above would not fire — these are the two moments it matters. */
+      window.addEventListener("load", this._onResizeWin);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => this.resize()).catch(() => {});
+      }
       this.seed();
       this.resize();
       this.start();
@@ -97,9 +139,11 @@
     disconnectedCallback() {
       window.removeEventListener("pointermove", this._onMove);
       window.removeEventListener("resize", this._onResizeWin);
+      window.removeEventListener("load", this._onResizeWin);
       window.removeEventListener("scroll", this._onScroll);
       if (this._ro) this._ro.disconnect();
-      if (this._raf) cancelAnimationFrame(this._raf);
+      if (this._io) this._io.disconnect();
+      this.stop();
     }
 
     get palette() {
@@ -116,7 +160,11 @@
 
     get count() {
       const n = parseInt(this.getAttribute("count") || "", 10);
-      return Number.isFinite(n) ? Math.max(200, Math.min(4000, n)) : 1900;
+      const asked = Number.isFinite(n) ? Math.max(200, Math.min(4000, n)) : 1900;
+      /* Every node costs two passes a frame plus its share of the wiring. A phone
+         renders the same silhouette from far fewer of them, and the budget it has
+         is better spent holding 60fps. */
+      return this.ambientOnly ? Math.round(asked * 0.4) : asked;
     }
 
     seed() {
@@ -211,8 +259,15 @@
     resize() {
       const r = this.getBoundingClientRect();
       if (!r.width || !r.height) return;
-      const vw = window.innerWidth, vh = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // Where the host sits in the document, so draw() never has to read layout.
+      this._docTop = r.top + window.scrollY;
+      this._docLeft = r.left + window.scrollX;
+      // A fixed canvas has to cover the viewport; a host-local one only its box.
+      const vw = this.ambientOnly ? r.width : window.innerWidth;
+      const vh = this.ambientOnly ? r.height : window.innerHeight;
+      /* Past ~1.5x the extra pixels buy nothing on a phone and cost fill rate on
+         every frame, which is exactly what a mid-range device runs out of. */
+      const dpr = Math.min(window.devicePixelRatio || 1, this.ambientOnly ? 1.5 : 2);
       this.canvas.width = Math.round(vw * dpr);
       this.canvas.height = Math.round(vh * dpr);
       this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -221,7 +276,11 @@
       this.hostW = r.width;
       this.hostH = r.height;
       const fill = parseFloat(this.getAttribute("fill") || "");
-      const f = Number.isFinite(fill) ? fill : 1;
+      /* fill > 1 deliberately draws wider than the box, which the viewport-fixed
+         canvas is happy to do. A host-sized one would just crop it, so there the
+         field is scaled to fit instead. */
+      const asked = Number.isFinite(fill) ? fill : 1;
+      const f = this.ambientOnly ? Math.min(asked, 1) : asked;
       // 2.28 x-extent and 1.72 y-extent cover the widest silhouette plus the ambient ring.
       this.scale = Math.min(r.width / (2.28 / f), r.height / (1.72 / f));
       if (this.reduced) this.draw(0);
@@ -229,12 +288,20 @@
 
     start() {
       if (this.reduced) { this.draw(0); return; }
-      const t0 = performance.now();
+      if (this._raf) return;
+      // Keep the clock across pauses so the brain does not jump on re-entry.
+      const t0 = performance.now() - (this._elapsed || 0) * 1000;
       const loop = (now) => {
-        this.draw((now - t0) / 1000);
+        this._elapsed = (now - t0) / 1000;
+        this.draw(this._elapsed);
         this._raf = requestAnimationFrame(loop);
       };
       this._raf = requestAnimationFrame(loop);
+    }
+
+    stop() {
+      if (this._raf) cancelAnimationFrame(this._raf);
+      this._raf = null;
     }
 
     tri(path, cx, cy, r, spin) {
@@ -251,10 +318,20 @@
       if (!ctx || !this.w) return;
       ctx.clearRect(0, 0, this.w, this.h);
       this.scrollEased += (this.scroll - this.scrollEased) * 0.08;
-      const sc = this.scrollEased;
-      // Canvas is viewport-fixed, so the brain's origin tracks the host box on screen.
-      const host = this.getBoundingClientRect();
-      if (Math.abs(host.width - (this.hostW || 0)) > 1 || Math.abs(host.height - (this.hostH || 0)) > 1) this.resize();
+      const sc = this.ambientOnly ? 0 : this.scrollEased;
+
+      /* Never read layout here — this runs every frame, and getBoundingClientRect
+         forces the browser to flush pending layout each time, which is what made
+         scrolling stutter. The host's document offset is cached by resize(), and
+         a ResizeObserver keeps it current. */
+      const host = this.ambientOnly
+        ? { left: 0, top: 0, width: this.hostW, height: this.hostH }
+        : {
+            left: (this._docLeft || 0) - window.scrollX,
+            top: (this._docTop || 0) - window.scrollY,
+            width: this.hostW,
+            height: this.hostH
+          };
       const cx = host.left + host.width / 2;
       const cy = host.top + host.height / 2 + sc * host.height * 0.16;
       const s = this.scale * (1 + sc * 0.06);
@@ -322,7 +399,8 @@
       // Pointer impulse + momentum: nodes near the cursor are kicked away with the
       // cursor's own velocity, fly free across the viewport, then spring home.
       const ptr = this.ptr;
-      const live = ptr.live && performance.now() - (this._ptrSeen || 0) < 2200;
+      const live =
+        !this.ambientOnly && ptr.live && performance.now() - (this._ptrSeen || 0) < 2200;
       const dt = Math.min(0.05, Math.max(0.001, t - (this._lastT || t)));
       this._lastT = t;
       const radius = Math.min(host.width, host.height) * 0.34;

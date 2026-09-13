@@ -14,7 +14,7 @@ export function PlatformSection() {
         </div>
       </div>
 
-      <div className="panel">
+      <div className="platform">
         <div className="platform__strip">
           <div className="platform__strip-brand">
             <BrandMark style={{ display: "block", width: 36, height: 30, flexShrink: 0 }} />
