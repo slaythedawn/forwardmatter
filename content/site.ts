@@ -360,4 +360,8 @@ export const contactCopy = {
   thanksTitle: "Thank you.",
   thanksBody:
     "Your enquiry has been received. We will come back to you with next steps and the technical overview.",
+  // Shown only by a static preview that has no endpoint to post to, so nobody
+  // believes an enquiry reached us when it went nowhere.
+  thanksPreview:
+    "This is a design preview, so the enquiry was not sent anywhere. On the live site it reaches the Forward Matter inbox.",
 } as const;

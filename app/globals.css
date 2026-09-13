@@ -1274,6 +1274,15 @@ textarea {
   min-width: 0;
 }
 
+/* Honeypot: off-screen rather than display:none, which some bots skip. */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .contact-form__error {
   grid-column: 1 / -1;
   margin: 0;

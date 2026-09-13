@@ -24,9 +24,20 @@ npm run build:static   # flat, host-anywhere export in out/
 
 `out/` can be dropped on any static host, including ones that serve from a
 subdirectory. It exists so the site can be shared before a real deployment, and it
-is not the thing to deploy: it has no `/api/contact` (the form shows its success
-state without sending anything), no image optimiser, and it pins a Google Fonts
-fallback for hosts that block Fontshare. Deploy `npm run build` instead.
+is not the thing to deploy: it has no `/api/contact` of its own, no image optimiser,
+and it pins a Google Fonts fallback for hosts that block Fontshare. Deploy
+`npm run build` instead.
+
+To make the preview's form actually send, point it at a deployed API:
+
+```bash
+NEXT_PUBLIC_CONTACT_ENDPOINT=https://<deployment>/api/contact npm run build:static
+```
+
+and add the preview's origin to `CONTACT_ALLOWED_ORIGINS` on the API side so the
+browser's preflight passes. Without an endpoint the preview still shows the success
+state — it is there to show the design — but says the enquiry was not sent, rather
+than letting a real prospect believe it reached you.
 
 ## Layout
 
@@ -59,11 +70,33 @@ inside `minmax` — a bare floor overflows the container instead of collapsing.
 ## Contact form
 
 The form posts to `/api/contact`, which trims and validates the fields server-side
-(name, firm and a well-formed email are required) and then forwards the enquiry.
+(name, firm and a well-formed email are required), drops anything that fills the
+hidden honeypot field, and then delivers the enquiry — by email through Resend, or
+to a webhook.
 
-Set `CONTACT_WEBHOOK_URL` to the CRM, inbox relay or Slack hook that should receive
-enquiries. With no URL configured the route validates, logs and accepts, so the form
-works in preview environments without wiring anything up.
+Set these in the hosting project, never in the repo:
+
+| Variable | What it does |
+|---|---|
+| `RESEND_API_KEY` | Resend key, starts `re_`. With `CONTACT_TO`, enquiries arrive as email. |
+| `CONTACT_TO` | Who the enquiry is addressed to. No default — a default would mean a real address sitting in a public repository. |
+| `CONTACT_FROM` | The from address, e.g. `Forward Matter <enquiries@forwardmatter.com>`. Needs a Resend-verified domain. Unset, this falls back to Resend's shared `onboarding@resend.dev`. |
+| `CONTACT_WEBHOOK_URL` | Deliver as JSON to a CRM, Slack or Zapier hook instead of email. |
+| `CONTACT_ALLOWED_ORIGINS` | Comma-separated origins allowed to post cross-origin, for a static export hosted elsewhere. Same-origin posts never need this. |
+| `NEXT_PUBLIC_CONTACT_ENDPOINT` | Build-time only, and only for the static export: the full URL of a deployed `/api/contact`. |
+
+`onboarding@resend.dev` only delivers to the address that owns the Resend account,
+so until `forwardmatter.com` is verified at resend.com → Domains, `CONTACT_TO` has
+to be that address. Once it is verified, set `CONTACT_FROM` and `CONTACT_TO` can be
+anything.
+
+With none of the delivery variables set the route returns 503 and the form shows
+its error. It deliberately does not accept-and-log: an enquiry that vanishes while
+the visitor reads "Thank you" is worse than one that visibly failed.
+
+No acknowledgement email is sent to the enquirer. Anything this endpoint mailed to a
+submitted address would make it a way to deliver attacker-chosen text over the
+Forward Matter domain, and the form already confirms receipt on the page.
 
 ## Accessibility and motion
 
