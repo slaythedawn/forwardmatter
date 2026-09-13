@@ -1431,7 +1431,6 @@ textarea {
   text-wrap: pretty;
 }
 
-/* min-height reserves two lines so the dividers line up across all three cards */
 .person__role {
   font-size: 13px;
   line-height: 1.45;
@@ -1439,7 +1438,6 @@ textarea {
   color: var(--accent);
   font-weight: 600;
   margin-top: 5px;
-  min-height: 2.9em;
 }
 
 .person__divider {
