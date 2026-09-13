@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SiteLink } from "../SiteLink";
 import { ArrowIcon } from "../ArrowIcon";
 import { BrainField } from "../BrainField";
 import { credibility, hero } from "@/content/site";
@@ -15,13 +15,13 @@ export function Hero() {
           </h1>
           <p className="lead">{hero.body}</p>
           <div className="hero__actions">
-            <Link href="#contact" className="btn btn--primary">
+            <SiteLink href="#contact" className="btn btn--primary">
               {hero.ctaLabel}
               <ArrowIcon className="btn__icon" />
-            </Link>
-            <Link href="#technology" className="text-link">
+            </SiteLink>
+            <SiteLink href="#technology" className="text-link">
               {hero.secondaryLabel}
-            </Link>
+            </SiteLink>
           </div>
         </div>
 

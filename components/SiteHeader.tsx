@@ -1,6 +1,7 @@
-import Link from "next/link";
+import { SiteLink } from "./SiteLink";
 import { ArrowIcon } from "./ArrowIcon";
 import { BrandMark } from "./BrandMark";
+import { href as route } from "@/lib/href";
 import { siteMeta } from "@/content/site";
 
 /**
@@ -9,33 +10,33 @@ import { siteMeta } from "@/content/site";
  */
 export function SiteHeader({ page }: { page: "home" | "about" }) {
   const onHome = page === "home";
-  const href = (hash: string) => (onHome ? hash : `/${hash}`);
+  const href = (hash: string) => route(onHome ? hash : `/${hash}`);
 
   return (
     <header className="site-header">
-      <Link href="/" className="logo-lockup" aria-label={`${siteMeta.name} home`}>
+      <SiteLink href={route("/")} className="logo-lockup" aria-label={`${siteMeta.name} home`}>
         <span className="logo-tile">
           <BrandMark style={{ display: "block", width: "100%", height: "100%" }} />
         </span>
         <span className="wordmark">{siteMeta.name}</span>
-      </Link>
+      </SiteLink>
       <nav className="site-nav" aria-label="Primary">
-        <Link href={href("#technology")} className="site-nav__link">
+        <SiteLink href={href("#technology")} className="site-nav__link">
           Technology
-        </Link>
-        <Link href={href("#platform")} className="site-nav__link">
+        </SiteLink>
+        <SiteLink href={href("#platform")} className="site-nav__link">
           Platform
-        </Link>
-        <Link
-          href="/about"
+        </SiteLink>
+        <SiteLink
+          href={route("/about")}
           className={`site-nav__link${page === "about" ? " site-nav__link--current" : ""}`}
           aria-current={page === "about" ? "page" : undefined}
         >
           About us
-        </Link>
-        <Link href={href("#contact")} className="btn btn--primary btn--compact">
+        </SiteLink>
+        <SiteLink href={href("#contact")} className="btn btn--primary btn--compact">
           Contact
-        </Link>
+        </SiteLink>
       </nav>
     </header>
   );

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { SiteLink } from "@/components/SiteLink";
 import { ArrowIcon } from "@/components/ArrowIcon";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { href as route } from "@/lib/href";
 import { aboutPage, people } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -78,10 +79,10 @@ export default function AboutPage() {
               <h2 className="h2 about-cta__title">{aboutPage.cta.title}</h2>
               <p className="about-cta__body">{aboutPage.cta.body}</p>
             </div>
-            <Link href="/#contact" className="btn btn--primary">
+            <SiteLink href={route("/#contact")} className="btn btn--primary">
               {aboutPage.cta.label}
               <ArrowIcon className="btn__icon" />
-            </Link>
+            </SiteLink>
           </section>
         </main>
 

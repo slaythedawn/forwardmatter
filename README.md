@@ -16,6 +16,18 @@ npm start          # serve the production build
 npm run typecheck  # tsc --noEmit
 ```
 
+### Static preview build
+
+```bash
+npm run build:static   # flat, host-anywhere export in out/
+```
+
+`out/` can be dropped on any static host, including ones that serve from a
+subdirectory. It exists so the site can be shared before a real deployment, and it
+is not the thing to deploy: it has no `/api/contact` (the form shows its success
+state without sending anything), no image optimiser, and it pins a Google Fonts
+fallback for hosts that block Fontshare. Deploy `npm run build` instead.
+
 ## Layout
 
 | Path | What it holds |

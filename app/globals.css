@@ -44,6 +44,8 @@
   --emboss-heading: 0 2px 1px #fff;
 
   --section-rhythm: 96px;
+
+  --font-sans: "Switzer", ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -60,7 +62,7 @@ body {
   background: var(--ground);
   color: var(--ink);
   overflow-x: hidden;
-  font-family: "Switzer", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 

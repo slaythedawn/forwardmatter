@@ -4,6 +4,12 @@ import { useState } from "react";
 import { ArrowIcon } from "./ArrowIcon";
 import { contactCopy, contactFields, orgTypes } from "@/content/site";
 
+/**
+ * The static preview build has no server to post to, so it shows the success
+ * state without sending anything. The real build always posts to /api/contact.
+ */
+const STATIC = process.env.NEXT_PUBLIC_STATIC_EXPORT === "1";
+
 export function ContactForm() {
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -17,6 +23,12 @@ export function ContactForm() {
     setError(null);
 
     const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+
+    if (STATIC) {
+      setSent(true);
+      setSubmitting(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/contact", {

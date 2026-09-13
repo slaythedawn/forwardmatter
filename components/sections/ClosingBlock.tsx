@@ -1,6 +1,7 @@
-import Link from "next/link";
+import { SiteLink } from "../SiteLink";
 import { ArrowIcon } from "../ArrowIcon";
 import { ContactForm } from "../ContactForm";
+import { href as route } from "@/lib/href";
 import { closing, people } from "@/content/site";
 
 export function ClosingBlock() {
@@ -28,10 +29,10 @@ export function ClosingBlock() {
                   </span>
                 ))}
               </div>
-              <Link href="/about#people" className="team-strip__link">
+              <SiteLink href={route("/about#people")} className="team-strip__link">
                 {closing.teamLink}
                 <ArrowIcon />
-              </Link>
+              </SiteLink>
             </div>
           </div>
         </div>
