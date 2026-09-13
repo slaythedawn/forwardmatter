@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forward Matter | Technology that predicts outcomes</title>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@300,400,500,600,700&display=swap" rel="stylesheet">
+<style>
+  html { scrollbar-gutter:stable }
+  body { margin:0; background:#eef0f3; color:#242d38; overflow-x:hidden;
+    font-family:'Switzer',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased; }
+  * { box-sizing:border-box; }
+  a { color:#242d38; text-decoration:none; }
+  a:hover { color:#345984; }
+  input, select, textarea { font-family:inherit; }
+</style>
+</helmet>
+
+<div style="background:#eef0f3;padding:0 0 1px">
+  <div style="width:min(1240px,calc(100% - 72px));margin:0 auto">
+
+    <header style="position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;min-height:110px;padding:26px 0;background:rgba(238,240,243,0.88);backdrop-filter:blur(10px);box-shadow:0 1px 0 rgba(198,206,215,0.9)">
+      <a href="Forward Matter Home.dc.html" style="display:flex;align-items:center;gap:16px;color:#242d38">
+        <span style="width:58px;height:58px;flex:0 0 58px;padding:12px 9px;border-radius:17px;border:1px solid #d2d8e0;background:linear-gradient(145deg,#fff 0%,#e9edf1 56%,#d7dee6 100%);box-shadow:1px 2px 1px #bdc6d0,6px 7px 13px #ccd3db,-5px -5px 12px #fff,inset 1px 1px 1px #fff">
+          <svg viewBox="0 0 48 40" aria-hidden="true" style="display:block;width:100%;height:100%">
+            <path d="M24 7C21 3 13 3 11 9 5 11 4 18 8 22 6 28 11 34 18 33 21 37 27 37 30 33 37 34 42 28 40 22 44 18 43 11 37 9 35 3 27 3 24 7Z" fill="none" stroke="#242d38" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+            <text x="24" y="24" text-anchor="middle" font-family="Switzer, sans-serif" font-size="13.5" font-weight="700" letter-spacing="-0.4" fill="#242d38">FM</text>
+          </svg>
+        </span>
+        <span style="font-size:17px;font-weight:700;letter-spacing:-0.015em;white-space:nowrap;text-shadow:0 1px #fff">Forward Matter</span>
+      </a>
+      <nav style="display:flex;align-items:center;gap:26px;flex-wrap:wrap">
+        <a href="#technology" style="font-size:14px;color:#546171">Technology</a>
+        <a href="#platform" style="font-size:14px;color:#546171">Platform</a>
+        <a href="Forward Matter About.dc.html" style="font-size:14px;color:#546171">About us</a>
+        <a href="#contact" style="display:inline-flex;align-items:center;min-height:50px;padding:13px 22px;border-radius:13px;font-size:15px;font-weight:600;color:#fff;border:1px solid #283441;border-bottom-color:#182331;background:linear-gradient(180deg,#465363,#293543);box-shadow:0 3px 0 #172432,5px 9px 15px #c8d1dc,-5px -5px 12px #fff,inset 0 1px 1px #8390a0;text-shadow:0 -1px #1a2533" style-hover="background:linear-gradient(#536174,#344356);color:#fff" style-active="transform:translateY(2px);box-shadow:inset 3px 3px 7px #17222e,0 1px 0 #fff">Contact</a>
+      </nav>
+    </header>
+
+    <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:52px;align-items:center;padding:64px 0 78px">
+      <div style="min-width:0">
+        <div style="font-size:13px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;text-shadow:0 1px #fff">Automated market intelligence</div>
+        <h1 style="font-weight:600;font-size:clamp(44px,5.4vw,82px);line-height:1.035;letter-spacing:-0.055em;margin:24px 0 0;max-width:17ch;text-shadow:0 2px 1px #fff,0 -1px 0 rgba(36,45,56,0.12);text-wrap:pretty">Intelligence for what <span style="color:#345984">moves markets next.</span></h1>
+        <p style="font-size:18px;line-height:1.65;color:#546171;margin:26px 0 0;max-width:47ch;text-wrap:pretty">{{ heroBody }}</p>
+        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin:32px 0 0">
+          <a href="#contact" style="display:inline-flex;align-items:center;gap:16px;min-height:54px;padding:14px 24px;border-radius:13px;font-size:15px;font-weight:600;color:#fff;border:1px solid #283441;border-bottom-color:#182331;background:linear-gradient(180deg,#465363,#293543);box-shadow:0 3px 0 #172432,5px 9px 15px #c8d1dc,-5px -5px 12px #fff,inset 0 1px 1px #8390a0;text-shadow:0 -1px #1a2533" style-hover="background:linear-gradient(#536174,#344356);color:#fff" style-active="transform:translateY(2px);box-shadow:inset 3px 3px 7px #17222e,0 1px 0 #fff">
+            {{ ctaLabel }}
+            <svg viewBox="0 0 20 20" aria-hidden="true" style="width:17px;height:17px;display:block"><path d="M3 10h13m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+          </a>
+          <a href="#technology" style="font-size:15px;color:#242d38;text-decoration:underline;text-underline-offset:6px;text-decoration-color:#919dab" style-hover="color:#345984">See what it does</a>
+        </div>
+      </div>
+
+      <div style="min-width:0;display:flex;flex-direction:column;align-items:center;gap:18px">
+        <div style="position:relative;width:100%;height:clamp(360px,42vw,520px)">
+          <div style="position:absolute;left:50%;top:48%;width:62%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 42% 36%,#ffffff 0%,rgba(255,255,255,0.6) 40%,rgba(198,206,215,0.28) 70%,rgba(238,240,243,0) 84%)"></div>
+          <div style="position:absolute;inset:-12% -4%">
+            <x-import component-from-global-scope="brain-field" from="./brain-field.js" count="{{ particleCount }}" palette="steel" fill="1.28" style="width:100%;height:100%" hint-size="100%,100%"></x-import>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;padding:11px 17px;border-radius:11px;border:1px solid #c7d0db;background:#e1e7ee;box-shadow:inset 1px 2px 4px #bfccd9,0 1px #fff;font-size:13px;color:#546171;text-shadow:0 1px #f9fbfd">
+          <span>Signals</span>
+          <svg viewBox="0 0 20 20" aria-hidden="true" style="width:14px;height:14px;display:block"><path d="M3 10h13m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+          <span>Matter Engine</span>
+          <svg viewBox="0 0 20 20" aria-hidden="true" style="width:14px;height:14px;display:block"><path d="M3 10h13m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+          <span style="color:#345984;font-weight:600">Probability</span>
+        </div>
+      </div>
+    </section>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap;padding:29px 0;border-top:1px solid #c6ced7;border-bottom:1px solid #c6ced7">
+      <div style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#242d38;font-weight:600;text-shadow:0 1px #fff">Built for professional investors</div>
+      <div style="display:flex;gap:38px;flex-wrap:wrap;font-size:16px;color:#546171">
+        <span>Connected intelligence</span>
+        <span>Portfolio level control</span>
+        <span>Governed automation</span>
+      </div>
+    </div>
+
+    <section id="technology" style="padding:96px 0">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:56px;align-items:start;margin-bottom:46px">
+        <div style="font-size:13px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;padding-top:7px;text-shadow:0 1px #fff">01 / The intelligence system</div>
+        <div style="grid-column:span 2;min-width:0">
+          <h2 style="font-weight:600;font-size:clamp(34px,4.15vw,62px);line-height:1.1;letter-spacing:-0.045em;margin:0;max-width:18ch;text-shadow:0 2px 1px #fff">Thousands of events. Automated decision making.</h2>
+          <p style="font-size:17px;line-height:1.65;color:#546171;margin:20px 0 0;max-width:60ch;text-wrap:pretty">{{ whatBody }}</p>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,205px),1fr));gap:26px;padding:clamp(22px,3vw,36px);border-radius:30px;border:1px solid #cbd2dc;border-bottom-color:#fff;border-right-color:#fff;background:linear-gradient(135deg,#e3e7ed,#edf0f4);box-shadow:inset 5px 5px 14px #c4cdd9,inset -5px -5px 12px #fff">
+        <div style="min-width:0;padding:13px 0">
+          <div style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;margin-bottom:18px;text-shadow:0 1px #fff">Intelligence inputs</div>
+          <sc-for list="{{ inputs }}" as="i" hint-placeholder-count="3">
+            <div style="padding:18px 0;border-top:1px solid #c6ced7">
+              <div style="font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:#345984;font-weight:600;margin-bottom:7px">{{ i.label }}</div>
+              <h3 style="font-weight:600;font-size:16px;margin:0 0 5px;text-shadow:0 1px #fff">{{ i.title }}</h3>
+              <p style="font-size:15px;line-height:1.55;color:#546171;margin:0;text-wrap:pretty">{{ i.body }}</p>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:32px 24px;margin:6px 0;border-radius:21px;border:1px solid #c2ccd7;border-bottom:4px solid #b5c1ce;background:repeating-linear-gradient(0deg,rgba(255,255,255,0.13) 0px,rgba(255,255,255,0.13) 1px,transparent 1px,transparent 3px),linear-gradient(145deg,#fafbfd,#e1e6ec);box-shadow:inset 1px 2px #fff,8px 12px 17px #bdc8d5,-7px -7px 17px #fff">
+          <div style="width:92px;height:92px;padding:22px 16px;margin-bottom:26px;border-radius:24px;border:1px solid #b8c6d5;border-bottom-color:#fff;border-right-color:#fff;background:linear-gradient(145deg,#d1dae4,#eaf0f5);box-shadow:inset 3px 4px 8px #b3c0d0,0 1px #fff">
+            <svg viewBox="0 0 48 40" aria-hidden="true" style="display:block;width:100%;height:100%">
+              <path d="M24 7C21 3 13 3 11 9 5 11 4 18 8 22 6 28 11 34 18 33 21 37 27 37 30 33 37 34 42 28 40 22 44 18 43 11 37 9 35 3 27 3 24 7Z" fill="none" stroke="#242d38" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+              <text x="24" y="24" text-anchor="middle" font-family="Switzer, sans-serif" font-size="13.5" font-weight="700" letter-spacing="-0.4" fill="#242d38">FM</text>
+            </svg>
+          </div>
+          <div style="font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:#345984;font-weight:600;margin-bottom:12px">Proprietary intelligence layer</div>
+          <h3 style="font-weight:600;font-size:22px;letter-spacing:-0.025em;margin:0;text-shadow:0 1px #fff">Matter Engine</h3>
+          <p style="font-size:15px;line-height:1.6;color:#546171;margin:12px 0 24px;max-width:34ch;text-wrap:pretty">Relationship mapping, probability modelling and systematic decision infrastructure.</p>
+          <span style="font-size:12px;color:#546171;padding:8px 13px;border-radius:9px;border:1px solid #c7d0db;background:#e1e7ee;box-shadow:inset 1px 2px 4px #bfccd9,0 1px #fff;text-shadow:0 1px #f9fbfd">Architecture and signal logic remain proprietary</span>
+        </div>
+
+        <div style="min-width:0;padding:13px 0">
+          <div style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;margin-bottom:18px;text-shadow:0 1px #fff">Decision outputs</div>
+          <sc-for list="{{ outputs }}" as="o" hint-placeholder-count="3">
+            <div style="padding:18px 0;border-top:1px solid #c6ced7">
+              <div style="font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:#345984;font-weight:600;margin-bottom:7px">{{ o.label }}</div>
+              <h3 style="font-weight:600;font-size:16px;margin:0 0 5px;text-shadow:0 1px #fff">{{ o.title }}</h3>
+              <p style="font-size:15px;line-height:1.55;color:#546171;margin:0;text-wrap:pretty">{{ o.body }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr));gap:22px;margin:30px 0 0">
+        <sc-for list="{{ capabilities }}" as="c" hint-placeholder-count="4">
+          <div style="padding:26px 24px 28px;border-radius:20px;border:1px solid #c9d2dc;border-bottom:3px solid #bbc7d4;background:linear-gradient(145deg,#fafcfd,#e4e9ef);box-shadow:inset 1px 1px #fff,12px 14px 28px #c7ced7,-12px -12px 25px #fff">
+            <span style="display:grid;place-items:center;width:46px;height:46px;border-radius:14px;border:1px solid #c9d2dc;background:linear-gradient(145deg,#fff,#dce3eb);box-shadow:0 2px 1px #c1cbd7,5px 7px 12px #cbd3dc,-5px -5px 12px #fff,inset 1px 1px #fff">
+              <span style="width:13px;height:13px;border-radius:4px;background:linear-gradient(180deg,{{ c.lampTop }},{{ c.lampBottom }});box-shadow:0 0 7px {{ c.glow }},inset 0 1px 0 rgba(255,255,255,0.55),inset 0 -1px 2px rgba(0,0,0,0.3)"></span>
+            </span>
+            <h3 style="font-weight:600;font-size:18px;line-height:1.25;letter-spacing:-0.015em;margin:18px 0 8px;text-shadow:0 1px #fff">{{ c.title }}</h3>
+            <p style="font-size:15px;line-height:1.55;color:#546171;margin:0;text-wrap:pretty">{{ c.body }}</p>
+          </div>
+        </sc-for>
+      </div>
+
+    </section>
+
+    <section style="padding:0 0 96px">
+      <div style="position:relative;overflow:hidden;padding:clamp(30px,4vw,54px) clamp(24px,3.4vw,48px);border-radius:30px;border:1px solid #1b232e;background:linear-gradient(165deg,#33404f 0%,#242e3a 52%,#1b232d 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.16),inset 0 -3px 8px rgba(0,0,0,0.5),0 22px 44px rgba(36,45,56,0.28)">
+        <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,0.03) 0 1px,transparent 1px 48px);pointer-events:none"></div>
+        <div style="position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:28px;flex-wrap:wrap">
+          <div style="min-width:0">
+            <div style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#93a6bb">Illustrative</div>
+            <h2 style="font-weight:600;font-size:clamp(26px,3.2vw,42px);line-height:1.1;letter-spacing:-0.04em;margin:14px 0 0;max-width:20ch;color:#f2f5f8">Catalysts arrive on schedule. We model every state they can resolve into.</h2>
+          </div>
+          <p style="font-size:15px;line-height:1.6;color:#aebbca;margin:0;max-width:34ch;min-width:0;text-wrap:pretty">A dated catalyst is one input among thousands. The engine weighs each possible outcome against the sentiment, flow and conditions around it, and revises as evidence lands.</p>
+        </div>
+
+        <div style="position:relative;margin:clamp(30px,3.6vw,46px) 0 0">
+          <div style="position:absolute;left:10px;right:10px;top:10px;height:2px;background:linear-gradient(90deg,rgba(147,166,187,0.12),rgba(147,166,187,0.45),rgba(147,166,187,0.12))"></div>
+          <div style="position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(50%,118px),1fr));gap:26px 16px">
+            <sc-for list="{{ timeline }}" as="e" hint-placeholder-count="6">
+              <div style="min-width:0;display:flex;flex-direction:column;gap:12px">
+                <span style="display:block;width:22px;height:22px;border-radius:50%;border:2px solid {{ e.ring }};background:{{ e.dot }};box-shadow:0 0 0 6px #222b36, 0 0 14px {{ e.glow }}"></span>
+                <span style="font-size:11px;letter-spacing:0.09em;text-transform:uppercase;color:#93a6bb">{{ e.when }}</span>
+                <span style="font-size:14px;font-weight:600;line-height:1.3;color:#eaeff5;text-wrap:pretty">{{ e.label }}</span>
+                <span style="display:block;height:6px;border-radius:3px;background:rgba(255,255,255,0.07);box-shadow:inset 0 1px 2px rgba(0,0,0,0.55)">
+                  <span style="display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#5b82b4,#8fb4dd);width:{{ e.weight }}"></span>
+                </span>
+                <span style="font-size:12px;color:#93a6bb">{{ e.note }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="position:relative;display:flex;gap:26px;flex-wrap:wrap;margin:clamp(26px,3vw,38px) 0 0;padding-top:22px;border-top:1px solid rgba(147,166,187,0.22);font-size:12px;color:#93a6bb">
+          <span style="display:flex;align-items:center;gap:9px"><span style="width:11px;height:11px;border-radius:50%;border:2px solid #8fb4dd;background:#5b82b4"></span>Resolved</span>
+          <span style="display:flex;align-items:center;gap:9px"><span style="width:11px;height:11px;border-radius:50%;border:2px solid #8fb4dd;background:transparent"></span>Scheduled</span>
+          <span style="display:flex;align-items:center;gap:9px"><span style="width:11px;height:11px;border-radius:50%;border:2px dashed #6b7c90;background:transparent"></span>Expected</span>
+          <span style="margin-left:auto;min-width:0">Bar length indicates modelled weight in the sequence.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="platform" style="padding:0 0 96px;border-top:1px solid #c6ced7">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:56px;align-items:start;margin:96px 0 46px">
+        <div style="font-size:13px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;padding-top:7px;text-shadow:0 1px #fff">The Matter family</div>
+        <div style="grid-column:span 2;min-width:0">
+          <h2 style="font-weight:600;font-size:clamp(34px,4.15vw,62px);line-height:1.1;letter-spacing:-0.045em;margin:0;max-width:30ch;text-shadow:0 2px 1px #fff">One platform. Specialist capabilities.</h2>
+          <p style="font-size:17px;line-height:1.65;color:#546171;margin:20px 0 0;max-width:56ch;text-wrap:pretty">Research, modelling and portfolio tools designed to work across the investment process.</p>
+        </div>
+      </div>
+
+      <div style="padding:clamp(24px,3vw,38px);border-radius:30px;border:1px solid #d0d7e0;border-bottom:3px solid #c1ccd8;background:linear-gradient(145deg,#f8fafc,#e4e9ef);box-shadow:inset 1px 1px #fff,12px 16px 28px #ccd4dd,-12px -12px 25px #fff">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid #c6ced7">
+          <div style="display:flex;align-items:center;gap:14px">
+            <svg viewBox="0 0 48 40" aria-hidden="true" style="display:block;width:36px;height:30px;flex-shrink:0">
+              <path d="M24 7C21 3 13 3 11 9 5 11 4 18 8 22 6 28 11 34 18 33 21 37 27 37 30 33 37 34 42 28 40 22 44 18 43 11 37 9 35 3 27 3 24 7Z" fill="none" stroke="#242d38" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+              <text x="24" y="24" text-anchor="middle" font-family="Switzer, sans-serif" font-size="13.5" font-weight="700" letter-spacing="-0.4" fill="#242d38">FM</text>
+            </svg>
+            <span style="font-size:16px;font-weight:700;letter-spacing:-0.015em;text-shadow:0 1px #fff">Forward Matter</span>
+          </div>
+          <span style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;text-shadow:0 1px #fff">Automated market intelligence</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:30px;padding-top:26px">
+          <sc-for list="{{ platform }}" as="g" hint-placeholder-count="3">
+            <div style="min-width:0">
+              <div style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;margin-bottom:6px;text-shadow:0 1px #fff">{{ g.group }}</div>
+              <sc-for list="{{ g.items }}" as="m" hint-placeholder-count="3">
+                <div style="padding:18px 0;border-top:1px solid #c6ced7">
+                  <h3 style="font-weight:600;font-size:16px;margin:0 0 5px;text-shadow:0 1px #fff">{{ m.name }}</h3>
+                  <p style="font-size:15px;line-height:1.55;color:#546171;margin:0;text-wrap:pretty">{{ m.body }}</p>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:0 0 96px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:0;border-radius:30px;overflow:hidden;border:1px solid #d0d7e0;border-bottom:3px solid #c1ccd8;background:linear-gradient(145deg,#f8fafc,#e4e9ef);box-shadow:inset 1px 1px #fff,12px 16px 28px #ccd4dd,-12px -12px 25px #fff">
+        <div style="position:relative;min-height:clamp(280px,30vw,420px);background:#dde3ea">
+          <img src="media/case-vial.png" alt="An unbranded medicine vial and injector pen" style="display:block;width:100%;height:100%;object-fit:cover;object-position:60% center" />
+          <div style="position:absolute;left:22px;bottom:22px;padding:9px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.7);background:rgba(244,246,249,0.9);backdrop-filter:blur(6px);font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:#3c4856">Case study</div>
+        </div>
+
+        <div style="min-width:0;padding:clamp(28px,3.2vw,44px)">
+          <div style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;text-shadow:0 1px #fff">Eli Lilly and tirzepatide</div>
+          <h2 style="font-weight:600;font-size:clamp(24px,2.8vw,38px);line-height:1.12;letter-spacing:-0.04em;margin:16px 0 0;max-width:22ch;text-shadow:0 2px 1px #fff">One molecule, every catalyst dated in advance.</h2>
+          <p style="font-size:16px;line-height:1.6;color:#546171;margin:18px 0 0;max-width:48ch;text-wrap:pretty">Tirzepatide's approvals, indications and earnings dates were all published before they happened. Lilly's shares went from an average of $152.16 across November and December 2020 to $1,149.36 on 4 September 2026, and the company passed a trillion dollars of market value on 21 November 2025.</p>
+
+          <div style="margin:26px 0 0;padding:18px 18px 14px;border-radius:16px;border:1px solid #c7d0db;background:#e6ebf0;box-shadow:inset 2px 3px 6px #c3cfdb,0 1px #fff">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:14px">
+              <span style="font-size:12px;font-weight:600;letter-spacing:0.04em;color:#242d38">LLY closing price, US dollars</span>
+              <span style="font-size:11px;color:#546171">Public market data</span>
+            </div>
+            <svg viewBox="0 0 300 100" preserveAspectRatio="none" role="img" aria-label="Eli Lilly closing price rising from 152 dollars in 2020 to 1149 dollars in 2026" style="display:block;width:100%;height:92px">
+              <defs>
+                <linearGradient id="fmCaseFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#5b82b4" stop-opacity="0.42"></stop>
+                  <stop offset="100%" stop-color="#5b82b4" stop-opacity="0.04"></stop>
+                </linearGradient>
+              </defs>
+              <path d="M6 100 L6 90 L108 63 L210 40 L294 14 L294 100 Z" fill="url(#fmCaseFill)"></path>
+              <path d="M6 90 L108 63 L210 40 L294 14" fill="none" stroke="#345984" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+              <circle cx="6" cy="90" r="3" fill="#8fb4dd" stroke="#e6ebf0" stroke-width="2" vector-effect="non-scaling-stroke"></circle>
+              <circle cx="108" cy="63" r="3" fill="#8fb4dd" stroke="#e6ebf0" stroke-width="2" vector-effect="non-scaling-stroke"></circle>
+              <circle cx="210" cy="40" r="3" fill="#8fb4dd" stroke="#e6ebf0" stroke-width="2" vector-effect="non-scaling-stroke"></circle>
+              <circle cx="294" cy="14" r="3.5" fill="#345984" stroke="#e6ebf0" stroke-width="2" vector-effect="non-scaling-stroke"></circle>
+            </svg>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;font-size:11px;line-height:1.35;color:#546171">
+              <span style="min-width:0">Dec 2020<br /><strong style="color:#242d38;font-weight:600">$152</strong></span>
+              <span style="min-width:0">May 2022<br /><strong style="color:#242d38;font-weight:600">Mounjaro</strong></span>
+              <span style="min-width:0">Nov 2023<br /><strong style="color:#242d38;font-weight:600">$587</strong></span>
+              <span style="min-width:0;text-align:right">Sep 2026<br /><strong style="color:#242d38;font-weight:600">$1,149</strong></span>
+            </div>
+          </div>
+
+          <div style="margin:26px 0 0">
+            <div style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;text-shadow:0 1px #fff;margin-bottom:12px">Why this is where we deploy</div>
+            <sc-for list="{{ caseCriteria }}" as="c" hint-placeholder-count="3">
+              <div style="display:flex;align-items:baseline;gap:12px;padding:8px 0;font-size:14px;line-height:1.5;color:#546171">
+                <span style="flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:#345984;box-shadow:0 0 5px rgba(52,89,132,0.55)"></span>
+                <span style="min-width:0;text-wrap:pretty"><strong style="color:#242d38;font-weight:600">{{ c.lead }}</strong> {{ c.body }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" style="padding:0 0 96px;border-top:1px solid #c6ced7">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:52px;align-items:start;margin:96px 0 0">
+        <div style="min-width:0">
+          <div style="font-size:13px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;text-shadow:0 1px #fff">Why we exist</div>
+          <h2 style="font-weight:600;font-size:clamp(32px,3.9vw,56px);line-height:1.1;letter-spacing:-0.045em;margin:20px 0 0;max-width:18ch;text-shadow:0 2px 1px #fff">More of the future is knowable than the market assumes.</h2>
+          <p style="font-size:17px;line-height:1.65;color:#546171;margin:20px 0 0;max-width:46ch;text-wrap:pretty">A great deal of what will move a market is already documented, dated and discussed in public. We exist to make that readable, so a decision rests on evidence rather than instinct. Talk to us about how that could extend your firm, platform or fund.</p>
+
+          <div style="margin:30px 0 0;padding:16px 18px;border-radius:18px;border:1px solid #c7d0db;background:#e6ebf0;box-shadow:inset 2px 3px 6px #c3cfdb,0 1px #fff">
+            <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center">
+                <sc-for list="{{ team }}" as="t" hint-placeholder-count="3">
+                  <span style="display:block;width:46px;height:46px;margin-right:-12px;border-radius:50%;padding:2px;border:1px solid #c9d2dc;background:linear-gradient(145deg,#fff,#dce3eb);box-shadow:0 2px 1px #c1cbd7,3px 4px 8px #cbd3dc,inset 1px 1px #fff">
+                    <span role="img" aria-label="{{ t.name }}" style="display:block;width:100%;height:100%;border-radius:50%;background-color:#cfd7e0;background-image:{{ t.photoCss }};background-size:cover;background-position:center 22%"></span>
+                  </span>
+                </sc-for>
+              </div>
+              <a href="Forward Matter About.dc.html" style="display:inline-flex;align-items:center;gap:10px;min-width:0;font-size:15px;font-weight:600;color:#345984" style-hover="color:#242d38">
+                Josh, Dion and Adam
+                <svg viewBox="0 0 20 20" aria-hidden="true" style="width:16px;height:16px;display:block"><path d="M3 10h13m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit="{{ onSubmit }}" style="min-width:0;padding:clamp(24px,3vw,36px);border-radius:26px;border:1px solid #d0d7e0;border-bottom:3px solid #c1ccd8;background:linear-gradient(145deg,#f8fafc,#e4e9ef);box-shadow:inset 1px 1px #fff,12px 16px 28px #ccd4dd,-12px -12px 25px #fff">
+          <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px;padding:18px 4px">
+              <h3 style="font-weight:600;font-size:22px;letter-spacing:-0.025em;margin:0;text-shadow:0 1px #fff">Thank you.</h3>
+              <p style="font-size:16px;line-height:1.6;color:#546171;margin:0;max-width:40ch;text-wrap:pretty">Your enquiry has been received. We will come back to you with next steps and the technical overview.</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:18px">
+              <sc-for list="{{ fields }}" as="f" hint-placeholder-count="4">
+                <label style="display:flex;flex-direction:column;gap:8px;min-width:0">
+                  <span style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;text-shadow:0 1px #fff">{{ f.label }}</span>
+                  <input type="{{ f.type }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}" required="{{ f.required }}" style="width:100%;min-height:48px;padding:12px 14px;border-radius:12px;border:1px solid #c7d0db;background:#e6ebf0;color:#242d38;font-size:15px;box-shadow:inset 2px 3px 6px #c3cfdb,0 1px #fff;outline:none" style-focus="border-color:#345984;box-shadow:inset 2px 3px 6px #bcc9d7,0 0 0 3px rgba(52,89,132,0.16)" />
+                </label>
+              </sc-for>
+              <label style="display:flex;flex-direction:column;gap:8px;min-width:0;grid-column:1 / -1">
+                <span style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;text-shadow:0 1px #fff">Organisation type</span>
+                <select name="orgType" style="width:100%;min-height:48px;padding:12px 14px;border-radius:12px;border:1px solid #c7d0db;background:#e6ebf0;color:#242d38;font-size:15px;box-shadow:inset 2px 3px 6px #c3cfdb,0 1px #fff;outline:none" style-focus="border-color:#345984;box-shadow:inset 2px 3px 6px #bcc9d7,0 0 0 3px rgba(52,89,132,0.16)">
+                  <sc-for list="{{ orgTypes }}" as="o" hint-placeholder-count="5">
+                    <option value="{{ o }}">{{ o }}</option>
+                  </sc-for>
+                </select>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:8px;min-width:0;grid-column:1 / -1">
+                <span style="font-size:12px;letter-spacing:0.11em;text-transform:uppercase;color:#546171;text-shadow:0 1px #fff">Message</span>
+                <textarea name="message" rows="4" placeholder="What you are looking to license, and the timeframe you are working to." style="width:100%;padding:13px 14px;border-radius:12px;border:1px solid #c7d0db;background:#e6ebf0;color:#242d38;font-size:15px;line-height:1.55;resize:vertical;box-shadow:inset 2px 3px 6px #c3cfdb,0 1px #fff;outline:none" style-focus="border-color:#345984;box-shadow:inset 2px 3px 6px #bcc9d7,0 0 0 3px rgba(52,89,132,0.16)"></textarea>
+              </label>
+              <div style="grid-column:1 / -1;display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:4px">
+                <button type="submit" style="display:inline-flex;align-items:center;gap:16px;min-height:54px;padding:14px 24px;border-radius:13px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;border:1px solid #283441;border-bottom-color:#182331;background:linear-gradient(180deg,#465363,#293543);box-shadow:0 3px 0 #172432,5px 9px 15px #c8d1dc,-5px -5px 12px #fff,inset 0 1px 1px #8390a0;text-shadow:0 -1px #1a2533" style-hover="background:linear-gradient(#536174,#344356)" style-active="transform:translateY(2px);box-shadow:inset 3px 3px 7px #17222e,0 1px 0 #fff">
+                  Speak to us
+                  <svg viewBox="0 0 20 20" aria-hidden="true" style="width:17px;height:17px;display:block"><path d="M3 10h13m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+                </button>
+                <span style="font-size:13px;line-height:1.5;color:#546171;min-width:0">All enquiries handled confidentially.</span>
+              </div>
+            </div>
+          </sc-if>
+        </form>
+      </div>
+    </section>
+
+    <footer style="display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;padding:32px 0 38px;border-top:1px solid #c6ced7">
+      <a href="Forward Matter Home.dc.html" style="display:flex;align-items:center;gap:14px;font-size:15px;font-weight:700;letter-spacing:-0.015em;color:#242d38">
+        <svg viewBox="0 0 48 40" aria-hidden="true" style="display:block;width:38px;height:32px;flex-shrink:0">
+          <path d="M24 7C21 3 13 3 11 9 5 11 4 18 8 22 6 28 11 34 18 33 21 37 27 37 30 33 37 34 42 28 40 22 44 18 43 11 37 9 35 3 27 3 24 7Z" fill="none" stroke="#242d38" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+          <text x="24" y="24" text-anchor="middle" font-family="Switzer, sans-serif" font-size="13.5" font-weight="700" letter-spacing="-0.4" fill="#242d38">FM</text>
+        </svg>
+        <span>Forward Matter</span>
+      </a>
+      <div style="display:flex;align-items:center;gap:26px;flex-wrap:wrap;font-size:14px;color:#546171">
+        <a href="#technology" style="color:#546171">Technology</a>
+        <a href="#platform" style="color:#546171">Platform</a>
+        <a href="Forward Matter About.dc.html" style="color:#546171">About us</a>
+        <a href="#contact" style="color:#546171">Contact</a>
+      </div>
+      <div style="text-align:right;font-size:12px;line-height:1.8;color:#546171">Software product. Not a financial service. Not financial product advice.<br>© 2026 Forward Matter Pty Ltd. Trading involves risk.</div>
+    </footer>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;particleCount&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:2300,&quot;min&quot;:600,&quot;max&quot;:3200,&quot;step&quot;:100,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Hero&quot;},&quot;ctaLabel&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Get in touch&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Copy&quot;}}">
+class Component extends DCLogic {
+  state = { sent: false };
+
+  renderVals() {
+    return {
+      particleCount: this.props.particleCount ?? 2300,
+      ctaLabel: this.props.ctaLabel ?? "Get in touch",
+      sent: this.state.sent,
+      notSent: !this.state.sent,
+      onSubmit: (e) => { e.preventDefault(); this.setState({ sent: true }); },
+      heroBody: "Forward Matter transforms complex market signals into systematic investment decisions. Trading and portfolio intelligence software for wealth advisers, asset managers and funds.",
+      whatBody: "Matter Engine continuously interprets distinct information environments, then identifies the relationships that become material to markets and portfolios.",
+
+      inputs: [
+        { label: "Scientific intelligence", title: "Healthcare events", body: "Clinical milestones, regulatory decisions, patents and commercial developments." },
+        { label: "Company intelligence", title: "Fundamental change", body: "Earnings, guidance, ownership, competitive moves and capital allocation." },
+        { label: "Market intelligence", title: "Price and flow", body: "Liquidity, volatility, positioning and institutional market behaviour." }
+      ],
+      outputs: [
+        { label: "Signal output", title: "Ranked opportunities", body: "Expected impact, timing, confidence and risk presented for investment review." },
+        { label: "Portfolio output", title: "Risk aware allocation", body: "Position sizing and exposure shaped by institutional mandates and constraints." },
+        { label: "Execution output", title: "Governed action", body: "Automated or adviser approved execution with monitoring and oversight." }
+      ],
+      capabilities: [
+        { title: "Predictive models", body: "Outcome probabilities for events that already have a date on them.", lampTop: "#6b93c4", lampBottom: "#345984", glow: "rgba(52,89,132,0.6)" },
+        { title: "Real time response", body: "The read updates as evidence arrives, not on a weekly reporting cycle.", lampTop: "#9fb4c9", lampBottom: "#546171", glow: "rgba(84,97,113,0.55)" },
+        { title: "Quantum optimisation", body: "Sizing and selection solved on quantum inspired solvers where they beat the classical benchmark.", lampTop: "#7fa8cf", lampBottom: "#44668b", glow: "rgba(68,102,139,0.6)" },
+        { title: "Autonomous agents", body: "Agents watch every source around the clock and flag what changed.", lampTop: "#8fa2b8", lampBottom: "#242d38", glow: "rgba(36,45,56,0.5)" }
+      ],
+      caseCriteria: [
+        { lead: "The catalysts are dated.", body: "Trial readouts, regulatory decisions and earnings sit on a published calendar, so the model knows what is coming and when." },
+        { lead: "The evidence is documented.", body: "Protocols, filings, labels and transcripts are public text, which is what our models read at scale." },
+        { lead: "The sequence repeats.", body: "Orforglipron and retatrutide follow the same path tirzepatide did, so the structure learned on one asset transfers to the next." }
+      ],
+      timeline: [
+        { when: "Resolved", label: "Phase 3 readout", note: "Evidence in the record", weight: "82%", ring: "#8fb4dd", dot: "#5b82b4", glow: "rgba(143,180,221,0.55)" },
+        { when: "Resolved", label: "Submission", note: "Filing accepted", weight: "46%", ring: "#8fb4dd", dot: "#5b82b4", glow: "rgba(143,180,221,0.5)" },
+        { when: "Scheduled", label: "Decision date", note: "Published in advance", weight: "94%", ring: "#8fb4dd", dot: "transparent", glow: "rgba(143,180,221,0.4)" },
+        { when: "Scheduled", label: "Launch", note: "Commercial ramp", weight: "68%", ring: "#8fb4dd", dot: "transparent", glow: "rgba(143,180,221,0.32)" },
+        { when: "Expected", label: "Second market", note: "Same sequence repeats", weight: "38%", ring: "#6b7c90", dot: "transparent", glow: "rgba(107,124,144,0.28)" },
+        { when: "Expected", label: "Label expansion", note: "Addressable market widens", weight: "24%", ring: "#6b7c90", dot: "transparent", glow: "rgba(107,124,144,0.22)" }
+      ],
+      team: [
+        { photo: "people/josh.png", name: "Josh Peacock", role: "Product, technology and user experience" },
+        { photo: "people/dion.png", name: "Dion Couch", role: "Industry insight, pharmaceuticals" },
+        { photo: "people/adam.png", name: "Adam Mazzaferro", role: "Finance, structure and regulation" }
+      ].map((t) => ({ ...t, photoCss: "url(" + t.photo + ")" })),
+      platform: [
+        {
+          group: "Research and strategy",
+          items: [
+            { name: "Matter Intelligence", body: "Research, signal detection and forecasting." },
+            { name: "Matter Engine", body: "Modelling and automated strategy infrastructure." },
+            { name: "Matter Portfolio", body: "Portfolio construction and risk management." }
+          ]
+        },
+        {
+          group: "Specialist intelligence",
+          items: [
+            { name: "Matter Health", body: "Healthcare and life sciences intelligence." },
+            { name: "Matter Markets", body: "Emerging market and macro intelligence." }
+          ]
+        },
+        {
+          group: "Access and integration",
+          items: [
+            { name: "Matter API", body: "Institutional data and software integration." },
+            { name: "Matter Terminal", body: "A professional interface for analysts and portfolio managers." }
+          ]
+        }
+      ],
+
+
+      fields: [
+        { label: "Name", name: "name", type: "text", placeholder: "Full name", required: true },
+        { label: "Firm", name: "firm", type: "text", placeholder: "Entity name", required: true },
+        { label: "Email", name: "email", type: "email", placeholder: "name@firm.com", required: true },
+        { label: "Role", name: "role", type: "text", placeholder: "Your title", required: false }
+      ],
+      orgTypes: ["Select one", "Financial services firm", "Pharmaceutical or healthcare", "Proprietary trading desk", "Technology partner", "Other"]
+    };
+  }
+}
+</script>
+</body>
+</html>

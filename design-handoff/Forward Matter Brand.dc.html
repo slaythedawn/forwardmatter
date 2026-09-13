@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forward Matter — Brand basics</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#F3F1EC; color:#111417; font-family:'Archivo',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  * { box-sizing:border-box; }
+  a { color:#111417; text-decoration:none; }
+  a:hover { color:#A8432A; }
+</style>
+</helmet>
+
+<div style="max-width:1080px;margin:0 auto;padding:64px 32px 96px">
+
+  <div style="display:flex;gap:14px;align-items:baseline;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#5A6068"><span style="color:#A8432A">00</span><span>Brand basics</span></div>
+  <h1 style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(32px,4.4vw,56px);line-height:1.06;letter-spacing:-0.02em;margin:20px 0 0;max-width:22ch">Substance, <em style="font-style:italic;font-weight:300">ahead of time.</em></h1>
+  <p style="max-width:58ch;margin:22px 0 0;font-size:16px;line-height:1.62;color:#3C4248">Forward Matter is the parent company and a software licensor. The named engines sit beneath it and keep their own identities. Everything below is the minimum kit: mark, wordmark, palette, type, and the two lines that do the positioning work.</p>
+
+  <section style="margin:72px 0 0;border-top:1px solid #111417;padding-top:24px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#5A6068">01 — Mark and wordmark</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:1px;background:#F3F1EC;margin-top:24px;border:1px solid #DCD7CD">
+      <div style="background:#F3F1EC;padding:44px 30px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px #DCD7CD">
+        <div style="display:grid;grid-template-columns:18px 18px;grid-template-rows:18px 18px;gap:10px;width:46px">
+          <div style="background:#111417"></div><div style="background:#111417"></div>
+          <div style="background:#111417"></div><div style="background:#A8432A;transform:translateX(28px)"></div>
+        </div>
+      </div>
+      <div style="background:#F3F1EC;padding:44px 30px;display:flex;align-items:center;justify-content:center">
+        <div style="display:flex;align-items:center;gap:16px">
+          <div style="display:grid;grid-template-columns:8px 8px;grid-template-rows:8px 8px;gap:5px;width:21px">
+            <div style="background:#111417"></div><div style="background:#111417"></div>
+            <div style="background:#111417"></div><div style="background:#A8432A;transform:translateX(13px)"></div>
+          </div>
+          <span style="font-weight:600;font-size:22px;letter-spacing:0.01em">Forward Matter</span>
+        </div>
+      </div>
+      <div style="background:#111417;padding:44px 30px;display:flex;align-items:center;justify-content:center">
+        <div style="display:flex;align-items:center;gap:16px">
+          <div style="display:grid;grid-template-columns:8px 8px;grid-template-rows:8px 8px;gap:5px;width:21px">
+            <div style="background:#F3F1EC"></div><div style="background:#F3F1EC"></div>
+            <div style="background:#F3F1EC"></div><div style="background:#C9603F;transform:translateX(13px)"></div>
+          </div>
+          <span style="font-weight:600;font-size:22px;letter-spacing:0.01em;color:#F3F1EC">Forward Matter</span>
+        </div>
+      </div>
+    </div>
+    <p style="max-width:62ch;margin:20px 0 0;font-size:14px;line-height:1.6;color:#5A6068">Four units of matter; one has already moved forward. Two words, capitalised, always — never FM, never Forwardmatter. Minimum clear space equals one grid unit on all sides.</p>
+  </section>
+
+  <section style="margin:72px 0 0;border-top:1px solid #111417;padding-top:24px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#5A6068">02 — Palette</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:14px;margin-top:24px">
+      <sc-for list="{{ palette }}" as="c" hint-placeholder-count="5">
+        <div>
+          <div style="height:92px;border:1px solid #DCD7CD;background:{{ c.hex }}"></div>
+          <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#111417">{{ c.name }}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5A6068;margin-top:3px">{{ c.hex }}</div>
+          <div style="font-size:12px;line-height:1.5;color:#5A6068;margin-top:6px">{{ c.use }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <p style="max-width:62ch;margin:20px 0 0;font-size:14px;line-height:1.6;color:#5A6068">Lighter than the product sites, which read as confidential deal documents. Oxide is a marker colour only: counters, rules, one word in a nav. No gradients, no second accent.</p>
+  </section>
+
+  <section style="margin:72px 0 0;border-top:1px solid #111417;padding-top:24px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#5A6068">03 — Type</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:40px;margin-top:28px">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A8432A">Newsreader — headers</div>
+        <div style="font-family:'Newsreader',serif;font-size:40px;line-height:1.05;letter-spacing:-0.02em;margin-top:14px">The same <em style="font-style:italic;font-weight:300">sequence</em>, every time.</div>
+        <div style="font-size:13px;line-height:1.6;color:#5A6068;margin-top:14px">Regular 400 for headers, italic 300 for the single emphasised phrase. One italic per header, never two.</div>
+      </div>
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A8432A">Archivo — interface and body</div>
+        <div style="font-size:17px;line-height:1.6;margin-top:14px">Trial registries list estimated completion. Regulators publish decision dates on acceptance.</div>
+        <div style="font-weight:600;font-size:17px;margin-top:10px">Semibold 600 for labels and card titles.</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;margin-top:18px;color:#111417">IBM Plex Mono — eyebrows, counters, data</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin:72px 0 0;border-top:1px solid #111417;padding-top:24px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#5A6068">04 — The two lines</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:1px;background:#F3F1EC;margin-top:24px;border:1px solid #111417">
+      <div style="background:#EAE6DD;padding:34px 30px;box-shadow:0 0 0 1px #DCD7CD">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#5A6068">Category</div>
+        <div style="font-family:'Newsreader',serif;font-size:34px;letter-spacing:-0.01em;margin-top:14px">Pharma trading software.</div>
+      </div>
+      <div style="background:#EAE6DD;padding:34px 30px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#5A6068">Regulatory posture</div>
+        <div style="font-family:'Newsreader',serif;font-size:34px;letter-spacing:-0.01em;margin-top:14px">We licence software. <em style="font-style:italic;font-weight:300">We don't manage money.</em></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin:72px 0 0;border-top:1px solid #111417;padding-top:24px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#5A6068">05 — Vocabulary</div>
+    <div style="margin-top:24px;border-top:1px solid #DCD7CD">
+      <sc-for list="{{ vocab }}" as="v" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:12px;padding:14px 0;border-bottom:1px solid #DCD7CD;font-size:15px">
+          <div style="color:#8A8F95;text-decoration:line-through">{{ v.never }}</div>
+          <div style="color:#111417">{{ v.use }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <p style="max-width:62ch;margin:20px 0 0;font-size:14px;line-height:1.6;color:#5A6068">No outcome claims anywhere. No equity curves, backtests or price widgets on the public site. No CONFIDENTIAL stamp — the posture is that this is not an offer. And never the term black swan: the whole thesis is that these dates are published.</p>
+  </section>
+
+  <a href="Forward Matter.dc.html" style="display:inline-block;margin-top:56px;background:#111417;color:#F3F1EC;padding:14px 22px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase" style-hover="background:#A8432A;color:#F3F1EC">View homepage →</a>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      palette: [
+        { name: "Paper", hex: "#F3F1EC", use: "Base surface, sitewide" },
+        { name: "Panel", hex: "#EAE6DD", use: "Plain reading and callout panels" },
+        { name: "Ink", hex: "#111417", use: "Type, rules, disclaimer block" },
+        { name: "Slate", hex: "#5A6068", use: "Secondary copy, eyebrows" },
+        { name: "Oxide", hex: "#A8432A", use: "Counters, markers, one emphasis" }
+      ],
+      vocab: [
+        { never: "Fund, vehicle, trust", use: "Software, platform, engine" },
+        { never: "Investor, unitholder", use: "Client, licensee" },
+        { never: "Returns, performance, AUM", use: "Model output, signal, deployment" },
+        { never: "Bot", use: "Engine" },
+        { never: "We invest, we manage, we trade", use: "We build, we license, we deploy" },
+        { never: "Advice, recommendation", use: "Output, signal, indication" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
