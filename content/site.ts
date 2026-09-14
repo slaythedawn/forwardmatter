@@ -283,7 +283,7 @@ export const people: Person[] = [
     name: "Josh Peacock",
     role: "Technology",
     owns: "The product, the technology and the user experience.",
-    body: "Fifteen years building automation, bots and growth technology for large brands, including McDonald's, Netflix, Red Bull, Airbnb and Accor. Owns the architecture and the interface, and builds them in house rather than buying either.",
+    body: "Fifteen years building automation and software systems for listed, regulated and government organisations, including Charter Hall, Pfizer and Service NSW. Owns the architecture and the interface, and builds them in house rather than buying either.",
   },
   {
     slug: "dion",
