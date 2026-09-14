@@ -48,23 +48,22 @@
       this.style.display = "block";
       this.style.position = "relative";
       if (!this.style.height) this.style.height = "100%";
-      /* Two modes.
+      /* Two profiles.
 
          On a pointer device the canvas is fixed to the viewport, so the field can
-         drift outside its own box and lean with the scroll — the designed look.
+         drift outside its own box — the designed look.
 
-         On a touch device that same arrangement is what makes the animation feel
-         like it cannot keep up: a viewport-fixed layer is repainted through every
-         frame of a momentum scroll, and the scroll lean is deliberately eased
-         behind the real scroll position, which on a fast flick reads as lag.
-         So there the canvas is absolutely positioned inside the host and ignores
-         both scroll and pointer. The browser then just moves the layer with the
-         page — nothing to repaint, nothing to fall behind. */
-      this.ambientOnly =
+         On a touch device a viewport-fixed layer is repainted through every frame
+         of a momentum scroll, which is what made this feel like it could not keep
+         up. There the canvas is absolutely positioned inside the host, on its own
+         compositor layer, with a smaller particle budget. Scroll, tap and drag all
+         still drive it: the loop already redraws every frame while the field is on
+         screen, so reacting to input costs nothing beyond the input handler. */
+      this.touchMode =
         window.matchMedia("(hover: none), (pointer: coarse), (max-width: 720px)").matches;
 
       this.canvas = document.createElement("canvas");
-      this.canvas.style.cssText = this.ambientOnly
+      this.canvas.style.cssText = this.touchMode
         ? "display:block;position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;will-change:transform;transform:translateZ(0)"
         : "display:block;position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:0";
       this.appendChild(this.canvas);
@@ -85,27 +84,35 @@
         // 0 when the field's top hits the viewport top, 1 once it has scrolled a viewport past.
         this.scroll = Math.max(-1, Math.min(1, -top / vh));
       };
-      if (!this.ambientOnly) {
-        this._onScroll();
-        window.addEventListener("scroll", this._onScroll, { passive: true });
-      }
+      this._onScroll();
+      window.addEventListener("scroll", this._onScroll, { passive: true });
 
-      this._onMove = (e) => {
-        const r = this.getBoundingClientRect();
-        if (!r.width || !r.height) return;
-        this.mouse.x = ((e.clientX - r.left) / r.width - 0.5) * 2;
-        this.mouse.y = ((e.clientY - r.top) / r.height - 0.5) * 2;
-        const px = e.clientX, py = e.clientY;
-        const prev = this.ptr;
-        this.ptr = {
-          x: px, y: py,
-          vx: prev ? px - prev.x : 0,
-          vy: prev ? py - prev.y : 0,
-          live: true
+      this._onMove = (e) => this.track(e.clientX, e.clientY);
+      if (!this.touchMode) window.addEventListener("pointermove", this._onMove, { passive: true });
+
+      /* Touch: a tap scatters the nodes under the finger, and a horizontal drag
+         spins the mass. Both listeners are passive, so a vertical swipe still
+         scrolls the page normally rather than being hijacked. */
+      if (this.touchMode) {
+        this.spin = 0;
+        this.spinVel = 0;
+        this._touchX = 0;
+        this._onTouchStart = (e) => {
+          const t = e.touches[0];
+          if (!t) return;
+          this._touchX = t.clientX;
+          this.track(t.clientX, t.clientY, true);
         };
-        this._ptrSeen = performance.now();
-      };
-      if (!this.ambientOnly) window.addEventListener("pointermove", this._onMove, { passive: true });
+        this._onTouchMove = (e) => {
+          const t = e.touches[0];
+          if (!t) return;
+          this.spinVel += (t.clientX - this._touchX) * 0.00042;
+          this._touchX = t.clientX;
+          this.track(t.clientX, t.clientY);
+        };
+        this.addEventListener("touchstart", this._onTouchStart, { passive: true });
+        this.addEventListener("touchmove", this._onTouchMove, { passive: true });
+      }
       this._onResizeWin = () => this.resize();
       window.addEventListener("resize", this._onResizeWin);
 
@@ -136,11 +143,41 @@
       this.start();
     }
 
+    /* Converts a viewport coordinate into the space the canvas draws in, using the
+       offsets cached by resize() rather than reading layout on every move. */
+    track(clientX, clientY, fresh) {
+      const w = this.hostW, h = this.hostH;
+      if (!w || !h) return;
+      const hostLeft = (this._docLeft || 0) - window.scrollX;
+      const hostTop = (this._docTop || 0) - window.scrollY;
+      const x = this.touchMode ? clientX - hostLeft : clientX;
+      const y = this.touchMode ? clientY - hostTop : clientY;
+      this.mouse.x = ((clientX - hostLeft) / w - 0.5) * 2;
+      this.mouse.y = ((clientY - hostTop) / h - 0.5) * 2;
+
+      /* Velocity only means something between two real samples. The first one
+         after a fresh touch, or against the off-screen starting sentinel, would
+         otherwise read as a flick of tens of thousands of pixels and fling the
+         whole mass off the canvas. Clamped either way. */
+      const prev = this.ptr;
+      const usable = !fresh && prev && prev.live;
+      const cap = (v) => Math.max(-90, Math.min(90, v));
+      this.ptr = {
+        x, y,
+        vx: usable ? cap(x - prev.x) : 0,
+        vy: usable ? cap(y - prev.y) : 0,
+        live: true
+      };
+      this._ptrSeen = performance.now();
+    }
+
     disconnectedCallback() {
       window.removeEventListener("pointermove", this._onMove);
       window.removeEventListener("resize", this._onResizeWin);
       window.removeEventListener("load", this._onResizeWin);
       window.removeEventListener("scroll", this._onScroll);
+      if (this._onTouchStart) this.removeEventListener("touchstart", this._onTouchStart);
+      if (this._onTouchMove) this.removeEventListener("touchmove", this._onTouchMove);
       if (this._ro) this._ro.disconnect();
       if (this._io) this._io.disconnect();
       this.stop();
@@ -182,8 +219,8 @@
       const asked = Number.isFinite(n) ? Math.max(200, Math.min(4000, n)) : 1900;
       /* Every node costs two passes a frame plus its share of the wiring. A phone
          renders the same silhouette from far fewer of them, and the budget it has
-         is better spent holding 60fps. */
-      return this.ambientOnly ? Math.round(asked * 0.4) : asked;
+         is better spent on holding 60fps while responding to scroll and touch. */
+      return this.touchMode ? Math.round(asked * 0.3) : asked;
     }
 
     set count(value) {
@@ -286,11 +323,11 @@
       this._docTop = r.top + window.scrollY;
       this._docLeft = r.left + window.scrollX;
       // A fixed canvas has to cover the viewport; a host-local one only its box.
-      const vw = this.ambientOnly ? r.width : window.innerWidth;
-      const vh = this.ambientOnly ? r.height : window.innerHeight;
+      const vw = this.touchMode ? r.width : window.innerWidth;
+      const vh = this.touchMode ? r.height : window.innerHeight;
       /* Past ~1.5x the extra pixels buy nothing on a phone and cost fill rate on
          every frame, which is exactly what a mid-range device runs out of. */
-      const dpr = Math.min(window.devicePixelRatio || 1, this.ambientOnly ? 1.5 : 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, this.touchMode ? 1.5 : 2);
       this.canvas.width = Math.round(vw * dpr);
       this.canvas.height = Math.round(vh * dpr);
       this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -303,7 +340,7 @@
          canvas is happy to do. A host-sized one would just crop it, so there the
          field is scaled to fit instead. */
       const asked = Number.isFinite(fill) ? fill : 1;
-      const f = this.ambientOnly ? Math.min(asked, 1) : asked;
+      const f = this.touchMode ? Math.min(asked, 1) : asked;
       // 2.28 x-extent and 1.72 y-extent cover the widest silhouette plus the ambient ring.
       this.scale = Math.min(r.width / (2.28 / f), r.height / (1.72 / f));
       if (this.reduced) this.draw(0);
@@ -340,14 +377,14 @@
       const ctx = this.ctx;
       if (!ctx || !this.w) return;
       ctx.clearRect(0, 0, this.w, this.h);
-      this.scrollEased += (this.scroll - this.scrollEased) * 0.08;
-      const sc = this.ambientOnly ? 0 : this.scrollEased;
+      this.scrollEased += (this.scroll - this.scrollEased) * (this.touchMode ? 0.22 : 0.08);
+      const sc = this.scrollEased;
 
       /* Never read layout here — this runs every frame, and getBoundingClientRect
          forces the browser to flush pending layout each time, which is what made
          scrolling stutter. The host's document offset is cached by resize(), and
          a ResizeObserver keeps it current. */
-      const host = this.ambientOnly
+      const host = this.touchMode
         ? { left: 0, top: 0, width: this.hostW, height: this.hostH }
         : {
             left: (this._docLeft || 0) - window.scrollX,
@@ -360,7 +397,13 @@
       const s = this.scale * (1 + sc * 0.06);
 
       const mx = this.mouse.x * 0.05, my = this.mouse.y * 0.035;
-      const ang = Math.sin(t * 0.085) * 0.34 + mx + sc * 0.62;
+      if (this.touchMode) {
+        this.spin += this.spinVel;
+        this.spinVel *= 0.94;
+        // Unwind toward the ambient rotation so a drag reads as a nudge, not a new resting place.
+        this.spin *= 0.982;
+      }
+      const ang = Math.sin(t * 0.085) * 0.34 + mx + sc * 0.62 + (this.spin || 0);
       const tilt = Math.sin(t * 0.061) * 0.07 + my + sc * 0.12;
       const ca = Math.cos(ang), sa = Math.sin(ang);
       const camera = 3.3;
@@ -422,8 +465,7 @@
       // Pointer impulse + momentum: nodes near the cursor are kicked away with the
       // cursor's own velocity, fly free across the viewport, then spring home.
       const ptr = this.ptr;
-      const live =
-        !this.ambientOnly && ptr.live && performance.now() - (this._ptrSeen || 0) < 2200;
+      const live = ptr.live && performance.now() - (this._ptrSeen || 0) < 2200;
       const dt = Math.min(0.05, Math.max(0.001, t - (this._lastT || t)));
       this._lastT = t;
       const radius = Math.min(host.width, host.height) * 0.34;
@@ -437,7 +479,10 @@
           const d = Math.hypot(dx, dy);
           if (d < radius && d > 0.001) {
             const fall = Math.pow(1 - d / radius, 2);
-            const kick = fall * (140 + speed * 26);
+            /* A cursor arrives with velocity, which carries most of the impulse.
+               A tap has none, so touch needs a larger standing kick to read as a
+               response at all. */
+            const kick = fall * ((this.touchMode ? 620 : 140) + speed * 26);
             p.vx += (dx / d) * kick * dt;
             p.vy += (dy / d) * kick * dt;
             // The cursor drags them along its own path as well.
