@@ -600,9 +600,13 @@ textarea {
    Engine well
    -------------------------------------------------------------------------- */
 
+/* Three tracks or one, never two.
+   These columns are a sequence — inputs, then the engine, then outputs — so an
+   auto-fit wrap into two columns puts the engine beside the inputs and drops the
+   outputs underneath, which reads as nonsense. */
 .engine {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 205px), 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 26px;
   padding: clamp(22px, 3vw, 36px);
   border-radius: 30px;
@@ -743,6 +747,17 @@ textarea {
   letter-spacing: -0.015em;
   margin: 18px 0 8px;
   text-shadow: var(--emboss);
+}
+
+@media (max-width: 880px) {
+  .engine {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .engine__card {
+    margin: 18px 0;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -1566,6 +1581,72 @@ textarea {
 
   .site-footer__legal {
     text-align: left;
+  }
+
+  /* ---- Centred on phones ----
+     Narrative blocks centre: eyebrow, heading, lead, the action row. Lists and
+     long copy stay left-aligned — centring a scannable list or a paragraph of
+     body text costs more in readability than it gains in symmetry. */
+
+  .hero__col,
+  .section-head,
+  .closing__col,
+  .about-hero,
+  .about-cta__col,
+  .capability {
+    text-align: center;
+  }
+
+  .h1,
+  .h2,
+  .lead,
+  .body-17,
+  .closing__lead,
+  .about-cta__body {
+    margin-inline: auto;
+  }
+
+  .hero__actions,
+  .credibility,
+  .credibility__items,
+  .platform__strip,
+  .team-strip__row,
+  .about-cta {
+    justify-content: center;
+  }
+
+  .capability__bezel {
+    margin-inline: auto;
+  }
+
+  /* A centred label over a left-aligned list reads as a section heading, which
+     is what it is. */
+  .engine__col-head,
+  .platform__group-label {
+    text-align: center;
+  }
+
+  .about-cta .btn,
+  .contact-form__actions {
+    justify-content: center;
+  }
+
+  .why {
+    text-align: center;
+  }
+
+  .why__title {
+    margin-inline: auto;
+  }
+
+  .why__copy {
+    text-align: left;
+  }
+
+  .person__head {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
   }
 }
 
