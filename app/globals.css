@@ -490,6 +490,17 @@ textarea {
   color: var(--muted);
 }
 
+@media (max-width: 1079px) {
+  .site-footer {
+    align-items: flex-start;
+  }
+
+  .site-footer__legal {
+    width: 100%;
+    text-align: left;
+  }
+}
+
 /* --------------------------------------------------------------------------
    Hero
    -------------------------------------------------------------------------- */
@@ -955,11 +966,20 @@ textarea {
   text-shadow: var(--emboss);
 }
 
+/* Three tracks or one. Two columns orphans the third group under the first and
+   leaves a dead half-row beside it. */
 .platform__groups {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 30px;
   padding-top: 26px;
+}
+
+@media (max-width: 880px) {
+  .platform__groups {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
 }
 
 .platform__group {
