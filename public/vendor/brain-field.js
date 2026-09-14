@@ -146,8 +146,27 @@
       this.stop();
     }
 
+    /* These read from attributes, so they need setters that write back to them.
+       Without one, any framework that assigns the property rather than the
+       attribute — React 19 does, whenever the name exists on the element —
+       throws on a getter-only accessor, and the attribute is never set. */
     get palette() {
       return PALETTES[this.getAttribute("palette")] || PALETTES.neon;
+    }
+
+    set palette(value) {
+      this.reflect("palette", value);
+    }
+
+    // Reflect a property onto its attribute, re-seeding if the field is already built.
+    reflect(name, value) {
+      const next = value == null ? "" : String(value);
+      if (this.getAttribute(name) === next) return;
+      this.setAttribute(name, next);
+      if (this._built) {
+        this.seed();
+        this.resize();
+      }
     }
 
     get wireColor() {
@@ -165,6 +184,10 @@
          renders the same silhouette from far fewer of them, and the budget it has
          is better spent holding 60fps. */
       return this.ambientOnly ? Math.round(asked * 0.4) : asked;
+    }
+
+    set count(value) {
+      this.reflect("count", value);
     }
 
     seed() {
