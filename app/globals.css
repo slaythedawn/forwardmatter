@@ -1154,6 +1154,10 @@ textarea {
   min-width: 0;
 }
 
+.closing__title {
+  margin: 20px 0 0;
+}
+
 .closing__lead {
   font-size: 17px;
   line-height: 1.65;
@@ -1597,12 +1601,16 @@ textarea {
     text-align: center;
   }
 
-  .h1,
-  .h2,
-  .lead,
-  .body-17,
-  .closing__lead,
-  .about-cta__body {
+  .hero__col .h1,
+  .hero__col .lead,
+  .section-head .h2,
+  .section-head .body-17,
+  .closing__col .closing__title,
+  .closing__col .closing__lead,
+  .about-hero .h1,
+  .about-hero .lead,
+  .about-cta__col .h2,
+  .about-cta__col .about-cta__body {
     margin-inline: auto;
   }
 

@@ -264,7 +264,7 @@ export const closing = {
   eyebrow: "Why we exist",
   title: "More of the future is knowable than the market assumes.",
   body: "A great deal of what will move a market is already documented, dated and discussed in public. We exist to make that readable, so a decision rests on evidence rather than instinct. Talk to us about how that could extend your firm, platform or fund.",
-  teamLink: "Josh, Dion and Adam",
+  teamLink: "Meet the team",
 } as const;
 
 export type Person = {

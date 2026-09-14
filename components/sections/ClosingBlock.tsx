@@ -10,7 +10,7 @@ export function ClosingBlock() {
       <div className="closing">
         <div className="closing__col">
           <div className="eyebrow">{closing.eyebrow}</div>
-          <h2 className="h2 h2--mid" style={{ margin: "20px 0 0" }}>
+          <h2 className="h2 h2--mid closing__title">
             {closing.title}
           </h2>
           <p className="closing__lead">{closing.body}</p>
