@@ -20,6 +20,11 @@ export const metadata: Metadata = {
       "Automated market intelligence. Trading and portfolio intelligence software for wealth advisers, asset managers and funds.",
   },
   robots: { index: true, follow: true },
+  /* Without this, "Add to Home Screen" labels the icon with the whole <title>,
+     which iOS truncates to "ForwardMatter|T...". */
+  appleWebApp: {
+    title: "Forward Matter",
+  },
 };
 
 export const viewport: Viewport = {
