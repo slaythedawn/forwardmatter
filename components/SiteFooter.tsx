@@ -1,5 +1,6 @@
 import { SiteLink } from "./SiteLink";
 import { BrandMark } from "./BrandMark";
+import { Wordmark } from "./Wordmark";
 import { href as route } from "@/lib/href";
 import { siteMeta } from "@/content/site";
 
@@ -10,8 +11,8 @@ export function SiteFooter({ page }: { page: "home" | "about" }) {
   return (
     <footer className="site-footer">
       <SiteLink href={route("/")} className="site-footer__brand">
-        <BrandMark style={{ display: "block", width: 38, height: 32, flexShrink: 0 }} />
-        <span>{siteMeta.name}</span>
+        <BrandMark cut="small" className="footer-mark" />
+        <Wordmark />
       </SiteLink>
       <div className="site-footer__nav">
         <SiteLink href={href("#technology")}>Technology</SiteLink>

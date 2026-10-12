@@ -1,34 +1,44 @@
+import { full, mid, small, type BrandCut } from "./brandMarkData";
+
+const CUTS: Record<"full" | "mid" | "small", BrandCut> = { full, mid, small };
+
 /**
- * The Forward Matter brain mark: the lobed cranium outline with "FM" set inside.
+ * The Forward Matter mark: the hero animation's brain, halftoned onto a grid,
+ * with the frontal lobe resolved and the rest sitting back as ambient field.
  *
- * The letterforms are drawn as outlines rather than an SVG <text> element, so the
- * mark never depends on Switzer having loaded — it is identical on first paint.
+ * Three cuts rather than one, because a halftone stops resolving once the dots
+ * fall under a pixel or so. Pick by rendered height: `full` above 64px, `mid`
+ * for a header, `small` below 40px, where it reads as a dense cluster beside a
+ * sparse one rather than as a brain.
+ *
+ * Geometry is generated — see scripts/build-brand.mjs.
  */
 export function BrandMark({
+  cut = "mid",
   className,
   style,
+  title,
 }: {
+  cut?: "full" | "mid" | "small";
   className?: string;
   style?: React.CSSProperties;
+  title?: string;
 }) {
+  const { viewBox, dots } = CUTS[cut];
   return (
-    <svg viewBox="0 0 48 40" aria-hidden="true" className={className} style={style}>
-      <path
-        d="M24 7C21 3 13 3 11 9 5 11 4 18 8 22 6 28 11 34 18 33 21 37 27 37 30 33 37 34 42 28 40 22 44 18 43 11 37 9 35 3 27 3 24 7Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M15.35 24V14.55h5.4v2h-3.4v2.15h2.75v1.9h-2.75V24Z"
-        fill="currentColor"
-      />
-      <path
-        d="M22.65 24V14.55h2.35l2.7 6.05 2.7-6.05h2.35V24h-1.95v-5.8l-2.4 5.2h-1.4l-2.4-5.2V24Z"
-        fill="currentColor"
-      />
+    <svg
+      viewBox={viewBox}
+      className={className}
+      style={style}
+      role={title ? "img" : undefined}
+      aria-label={title}
+      aria-hidden={title ? undefined : true}
+    >
+      <g fill="currentColor">
+        {dots.map(([cx, cy, r, opacity], index) => (
+          <circle key={index} cx={cx} cy={cy} r={r} fillOpacity={opacity} />
+        ))}
+      </g>
     </svg>
   );
 }

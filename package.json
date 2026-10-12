@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "build:static": "node scripts/build-static.mjs"
+    "build:static": "node scripts/build-static.mjs",
+    "build:brand": "node scripts/build-brand.mjs"
   },
   "dependencies": {
     "next": "15.5.25",

@@ -39,9 +39,7 @@ export function IntelligenceSystem() {
         <EngineColumn heading="Intelligence inputs" items={inputs} />
 
         <div className="engine__card">
-          <div className="engine__mark">
-            <BrandMark style={{ display: "block", width: "100%", height: "100%" }} />
-          </div>
+          <BrandMark cut="full" className="engine__mark" />
           <div className="eyebrow--accent">{engine.eyebrow}</div>
           <h3 className="engine__title">{engine.title}</h3>
           <p className="engine__body">{engine.body}</p>

@@ -1,6 +1,7 @@
 import { SiteLink } from "./SiteLink";
 import { ArrowIcon } from "./ArrowIcon";
 import { BrandMark } from "./BrandMark";
+import { Wordmark } from "./Wordmark";
 import { href as route } from "@/lib/href";
 import { siteMeta } from "@/content/site";
 
@@ -15,10 +16,8 @@ export function SiteHeader({ page }: { page: "home" | "about" }) {
   return (
     <header className="site-header">
       <SiteLink href={route("/")} className="logo-lockup" aria-label={`${siteMeta.name} home`}>
-        <span className="logo-tile">
-          <BrandMark style={{ display: "block", width: "100%", height: "100%" }} />
-        </span>
-        <span className="wordmark">{siteMeta.name}</span>
+        <BrandMark cut="mid" className="logo-mark" />
+        <Wordmark stacked />
       </SiteLink>
       <nav className="site-nav" aria-label="Primary">
         <SiteLink href={href("#technology")} className="site-nav__link">

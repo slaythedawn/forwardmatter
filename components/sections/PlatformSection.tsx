@@ -1,4 +1,5 @@
 import { BrandMark } from "../BrandMark";
+import { Wordmark } from "../Wordmark";
 import { platform, platformSection, siteMeta } from "@/content/site";
 
 export function PlatformSection() {
@@ -17,8 +18,8 @@ export function PlatformSection() {
       <div className="platform">
         <div className="platform__strip">
           <div className="platform__strip-brand">
-            <BrandMark style={{ display: "block", width: 36, height: 30, flexShrink: 0 }} />
-            <span className="platform__strip-wordmark">{siteMeta.name}</span>
+            <BrandMark cut="small" className="footer-mark" />
+            <Wordmark />
           </div>
           <span className="eyebrow eyebrow--sm">{siteMeta.tagline}</span>
         </div>

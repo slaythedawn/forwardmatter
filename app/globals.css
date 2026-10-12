@@ -410,27 +410,51 @@ textarea {
 .logo-lockup {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 15px;
   color: var(--ink);
 }
 
-.logo-tile {
-  width: 58px;
-  height: 58px;
-  flex: 0 0 58px;
-  padding: 12px 9px;
-  border-radius: 17px;
-  border: 1px solid #d2d8e0;
-  background: linear-gradient(145deg, #fff 0%, #e9edf1 56%, #d7dee6 100%);
-  box-shadow: 1px 2px 1px #bdc6d0, 6px 7px 13px #ccd3db, -5px -5px 12px #fff, inset 1px 1px 1px #fff;
+.logo-mark {
+  display: block;
+  width: 60px;
+  height: 45px;
+  flex: 0 0 60px;
 }
 
+.footer-mark {
+  display: block;
+  width: 46px;
+  height: 36px;
+  flex: none;
+}
+
+/* Tracked caps with the weight carrying the two words. The trailing letter
+   space is pulled back so the lockup aligns optically rather than on the box. */
 .wordmark {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
+  display: inline-block;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-right: -0.2em;
+  line-height: 1.12;
   white-space: nowrap;
   text-shadow: var(--emboss);
+}
+
+.wordmark__a {
+  font-weight: 300;
+}
+
+.wordmark__b {
+  font-weight: 700;
+}
+
+.wordmark--stacked {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  margin-right: -0.22em;
 }
 
 .site-nav {
@@ -463,10 +487,7 @@ textarea {
 .site-footer__brand {
   display: flex;
   align-items: center;
-  gap: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
+  gap: 13px;
   color: var(--ink);
 }
 
@@ -675,16 +696,11 @@ textarea {
 }
 
 .engine__mark {
-  width: 92px;
-  height: 92px;
-  padding: 22px 16px;
-  margin-bottom: 26px;
-  border-radius: 24px;
-  border: 1px solid #b8c6d5;
-  border-bottom-color: #fff;
-  border-right-color: #fff;
-  background: linear-gradient(145deg, #d1dae4, #eaf0f5);
-  box-shadow: inset 3px 4px 8px #b3c0d0, 0 1px #fff;
+  display: block;
+  width: 136px;
+  height: 94px;
+  margin-bottom: 24px;
+  color: var(--accent);
 }
 
 .engine__card .eyebrow--accent {
@@ -959,11 +975,8 @@ textarea {
   gap: 14px;
 }
 
-.platform__strip-wordmark {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  text-shadow: var(--emboss);
+.platform__strip-brand .wordmark {
+  font-size: 12px;
 }
 
 /* Three tracks or one. Two columns orphans the third group under the first and
@@ -1556,20 +1569,18 @@ textarea {
     gap: 12px;
   }
 
-  .logo-tile {
-    width: 46px;
-    height: 46px;
-    flex: 0 0 46px;
-    padding: 9px 7px;
-    border-radius: 14px;
+  .logo-mark {
+    width: 48px;
+    height: 36px;
+    flex: 0 0 48px;
   }
 
   .logo-lockup {
     gap: 12px;
   }
 
-  .wordmark {
-    font-size: 16px;
+  .wordmark--stacked {
+    font-size: 11px;
   }
 
   .site-nav {
