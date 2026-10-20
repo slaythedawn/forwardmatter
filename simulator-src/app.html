@@ -362,7 +362,7 @@ dl.gloss dd { margin: 0; color: var(--muted); }
     <div class="card ccard">
       <div class="ctl sw head"><label for="brd"><span class="swatch" style="background:var(--s2)"></span><b>Strategy 2, the reader</b></label><input type="checkbox" id="brd" checked></div>
       <p class="small"><span class="pill">Measured</span> Trades advisory committee votes from the FDA's briefing documents.</p>
-      <div class="ctl" id="bth_ctl"><label for="bth">Trade when the model is at least this sure</label><output id="o_bth" class="num">70%</output><input type="range" id="bth" min="55" max="95" step="5" value="70"><div class="refs"><span class="ref static">Plan rule <b>70%</b></span></div></div>
+      <div class="ctl" id="bth_ctl"><label for="bth">Trade when the model is at least this sure</label><output id="o_bth" class="num">70%</output><input type="range" id="bth" min="55" max="95" step="5" value="70"><div class="refs"><span class="ref static">Plan rule <b>70%</b></span><span class="ref static" id="bth_n"></span></div></div>
       <div class="ctl" id="bsz_ctl"><label for="bsz">Companies it may trade</label><select id="bsz"><option value="sm" selected>Small and mid caps (the plan)</option><option value="all">All sizes</option></select></div>
     </div>
     <div class="card ccard">
@@ -698,6 +698,7 @@ function backtest() {
   const U = BT.retro.underlying, C = s1 ? BT.retro.core_only : U;
   // Strategy two: the reader's trades, posting-day close to the close after the vote.
   const tr = !s2 ? [] : BT.all.filter(t => Math.abs(t.p - .5) >= th && (sizes === "all" || t.c === "small" || t.c === "mid")).map(t => ({ ...t, call: t.p > .5 ? 1 : -1 })).map(t => ({ ...t, r: t.call * t.m - .004 })).sort((a, b) => a.d < b.d ? -1 : 1);
+  $("bth_n").innerHTML = `<b>${tr.length}</b> ${tr.length == 1 ? "trade" : "trades"} pass in five years`;
   // Strategy three, modelled: actual results-day moves, a call right with probability nh, the swing applied to the core's share.
   const sw = (P.now / 100) * (P.core / 100);
   const ND = !s3 ? [] : BT.now.filter(e => e.d > U[0][0] && e.d <= U[U.length - 1][0]).map(e => ({ ...e, x: sw * ((2 * nh - 1) * Math.abs(e.m) - .004) }));
