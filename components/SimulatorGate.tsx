@@ -52,6 +52,14 @@ export function SimulatorGate() {
       if (event.source !== frame.current?.contentWindow) return;
       const next = Number(event.data?.fmSimHeight);
       if (Number.isFinite(next) && next > 200) setHeight(Math.ceil(next));
+      // The simulator asks for a scroll when it changes tab or jumps to a strategy, since
+      // the frame is sized to its content and the page, not the frame, does the scrolling.
+      const to = Number(event.data?.fmSimScrollTo);
+      if (Number.isFinite(to) && frame.current) {
+        const top = frame.current.getBoundingClientRect().top + window.scrollY + to - 130;
+        const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (Math.abs(window.scrollY - top) > 4) window.scrollTo({ top, behavior: smooth ? "smooth" : "auto" });
+      }
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
@@ -86,7 +94,8 @@ export function SimulatorGate() {
           ref={frame}
           className="simulator__frame"
           title={simulatorPage.frameTitle}
-          sandbox="allow-scripts"
+          sandbox="allow-scripts allow-downloads"
+          allow="clipboard-write"
           srcDoc={html}
           style={{ height }}
         />

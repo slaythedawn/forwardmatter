@@ -381,7 +381,7 @@ export const simulatorPage = {
   titleLead: "Run the book ",
   titleAccent: "yourself.",
   lead:
-    "Matter Engine's two strategies, the platform core and the reader, run forward on recorded market moves, with the five-year backtest beneath. Every slider is an assumption the record has a view on; the defaults are the measured or planned values, and two thousand simulated paths rerun on every change.",
+    "Matter Engine's three strategies, run forward on recorded market moves and back over the last five years. Every input shows what the plan assumes and what the record measured.",
   frameTitle: "Forward Matter live simulator",
   legal:
     "Hypothetical results from a simulation on recorded market moves. Unaudited, before tax, no capital at risk. Not financial product advice.",

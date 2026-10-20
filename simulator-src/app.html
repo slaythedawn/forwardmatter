@@ -1,270 +1,726 @@
 <!doctype html>
-<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Forward Matter simulator</title>
+<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forward Matter simulator</title>
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=switzer@300,400,500,600,700&display=swap" rel="stylesheet">
 <style>
-/* Forward Matter design tokens, mirrored from app/globals.css so the simulator reads as one page with the site. */
-:root { --ground:#eef0f3; --ink:#242d38; --muted:#546171; --accent:#345984; --accent-mid:#5b82b4; --accent-light:#8fb4dd; --hairline:#c6ced7; --border-card:#c9d2dc; --border-well:#c7d0db; --surface-raised:linear-gradient(145deg,#fafcfd,#e4e9ef); --surface-well:#e6ebf0; --dark-panel:linear-gradient(165deg,#33404f 0%,#242e3a 52%,#1b232d 100%); --shadow-card:inset 1px 1px #fff, 12px 14px 28px #c7ced7, -12px -12px 25px #fff; --shadow-well:inset 2px 3px 6px #c3cfdb, 0 1px #fff; --shadow-btn:0 3px 0 #172432, 5px 9px 15px #c8d1dc, -5px -5px 12px #fff, inset 0 1px 1px #8390a0; --emboss:0 1px #fff; --band:rgba(91,130,180,0.16); --font:"Switzer",ui-sans-serif,system-ui,-apple-system,sans-serif; }
-* { box-sizing:border-box; }
-html, body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--font); -webkit-font-smoothing:antialiased; }
-body { padding:4px 2px 12px; overflow-x:hidden; }
-.sim { font:400 15px/1.55 var(--font); color:var(--ink); }
-.eyebrow { font-size:12px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); text-shadow:var(--emboss); }
-/* top bar: profiles on the left, the recap link on the right. Nothing else above the fold. */
-.topbar { display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin:0 0 18px; }
-.profiles { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-.profiles .eyebrow { margin-right:4px; }
-.pbtn { font:600 13px var(--font); padding:9px 14px; border-radius:11px; cursor:pointer; color:var(--ink); border:1px solid #c2ccd7; border-bottom:3px solid #b5c1ce; background:linear-gradient(145deg,#fafbfd,#e1e6ec); box-shadow:inset 1px 2px #fff, 5px 7px 13px #c7d0db, -5px -5px 12px #fff; }
-.pbtn:hover { color:var(--accent); } .pbtn.on { color:#fff; border-color:#283441; border-bottom-color:#182331; background:linear-gradient(180deg,#465363,#293543); box-shadow:var(--shadow-btn); text-shadow:0 -1px #1a2533; }
-.pbtn:active, .pbtn.on:active { transform:translateY(2px); }
-.linkbtn { font:500 14px var(--font); color:var(--ink); background:none; border:0; padding:6px 0; cursor:pointer; text-decoration:underline; text-underline-offset:6px; text-decoration-color:#919dab; } .linkbtn:hover { color:var(--accent); }
-.layout { display:grid; grid-template-columns:330px minmax(0,1fr); gap:28px; align-items:start; }
-.controls { position:sticky; top:12px; display:flex; flex-direction:column; gap:14px; }
-.ccard { padding:18px 20px 12px; border-radius:18px; border:1px solid var(--border-card); border-bottom:3px solid #bbc7d4; background:var(--surface-raised); box-shadow:var(--shadow-card); }
-.ccard h3 { font-size:12px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); text-shadow:var(--emboss); margin:0 0 4px; display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
-.ccard h3 .num { color:var(--accent); } .ccard h3 button { font:500 11px var(--font); letter-spacing:0; text-transform:none; color:var(--accent); background:none; border:0; padding:0; cursor:pointer; text-decoration:underline; text-underline-offset:4px; }
-.ccard .what { font-size:13px; line-height:1.45; color:var(--muted); margin:0 0 10px; }
-.ctl { display:grid; grid-template-columns:1fr 64px; gap:2px 10px; align-items:center; margin:4px 0 8px; }
-.ctl label { font-size:13.5px; color:var(--ink); }
-.ctl output { font-size:13px; font-weight:600; text-align:right; color:var(--ink); font-variant-numeric:tabular-nums; }
-.ctl input[type=range] { grid-column:1 / span 2; width:100%; accent-color:var(--accent); height:22px; margin:0; }
-.ctl.sw { grid-template-columns:1fr auto; } .ctl.sw input { accent-color:var(--accent); width:18px; height:18px; margin:0; }
-.ctl .hint { grid-column:1 / span 2; font-size:12px; color:var(--muted); margin-top:-2px; }
-details.more { border-radius:18px; border:1px solid var(--border-well); background:var(--surface-well); box-shadow:var(--shadow-well); padding:4px 20px 6px; }
-details.more summary { cursor:pointer; font-size:12px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); padding:10px 0; list-style:none; display:flex; justify-content:space-between; } details.more summary::-webkit-details-marker { display:none; } details.more summary::after { content:"+"; font-weight:500; } details.more[open] summary::after { content:"−"; }
-details.more .ctl label { color:var(--muted); }
-.tiles { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin:0 0 18px; }
-.tile { padding:16px 16px 14px; min-width:0; border-radius:16px; border:1px solid var(--border-card); border-bottom:3px solid #bbc7d4; background:var(--surface-raised); box-shadow:var(--shadow-card); }
-.tile .lab { font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); text-shadow:var(--emboss); }
-.tile .big { font-size:28px; font-weight:600; letter-spacing:-.03em; line-height:1.1; margin:8px 0 4px; font-variant-numeric:tabular-nums; text-shadow:var(--emboss); }
-.tile .sub { font-size:12.5px; color:var(--muted); line-height:1.45; }
-figure { margin:0 0 14px; position:relative; padding:16px 14px 10px; border-radius:16px; border:1px solid var(--border-well); background:var(--surface-well); box-shadow:var(--shadow-well); }
-.legend { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin:0 0 10px; }
-.legend span { display:inline-flex; align-items:center; gap:7px; } .legend i { width:18px; height:0; border-top:2px solid; display:inline-block; } .legend i.band { height:10px; border:0; background:var(--band); border-radius:2px; }
-svg { width:100%; height:auto; display:block; overflow:visible; } svg text { font-family:var(--font); fill:var(--muted); font-size:10.5px; } svg .grid { stroke:#d6dde5; } svg .base { stroke:var(--ink); stroke-width:1.6; fill:none; } svg .line { stroke-width:2; fill:none; } svg .l1 { stroke:var(--accent); } svg .endlab { font-weight:600; fill:var(--ink); }
-.tip { position:absolute; pointer-events:none; background:var(--ink); color:#f2f5f8; font-size:12px; line-height:1.45; padding:7px 9px; border-radius:8px; white-space:nowrap; display:none; }
-table { border-collapse:collapse; width:100%; font-size:14px; margin:6px 0 18px; } th { text-align:left; font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); text-shadow:var(--emboss); border-bottom:1px solid var(--hairline); padding:6px 10px 8px 0; } th.n, td.n { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; } td { padding:8px 10px 8px 0; border-bottom:1px solid #dde3ea; color:var(--ink); } tr.tot td { font-weight:600; border-top:1px solid var(--hairline); border-bottom:0; }
-.sim h2 { font-size:19px; font-weight:600; letter-spacing:-.025em; margin:22px 0 6px; text-shadow:var(--emboss); } .note { font-size:13px; color:var(--muted); max-width:80ch; margin:10px 0 0; line-height:1.55; }
-.tablewrap { overflow-x:auto; }
-.sect { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; margin:30px 0 4px; padding-top:22px; border-top:1px solid var(--hairline); box-shadow:0 -1px 0 #fff; } .sect h2 { margin:0; } .sect .eyebrow { font-weight:500; }
-.btctl { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:12px 0 18px; } .btctl .ccard { padding:14px 16px 8px; } .btctl .ctl { margin:2px 0 4px; }
-.btctl select { width:100%; min-height:40px; padding:8px 10px; border-radius:10px; border:1px solid var(--border-well); background:var(--surface-well); color:var(--ink); font:400 14px var(--font); box-shadow:var(--shadow-well); margin:4px 0 6px; }
-/* the recap: a dark overlay panel, shown once after unlocking and on request */
-.recap { position:fixed; inset:0; z-index:50; display:none; align-items:flex-start; justify-content:center; padding:24px 12px; background:rgba(36,45,56,.45); overflow:auto; }
-.recap.open { display:flex; }
-.recap .panel { width:min(860px,100%); border-radius:28px; background:var(--dark-panel); color:#f2f5f8; padding:clamp(24px,4vw,40px); box-shadow:inset 0 1px 0 rgba(255,255,255,.16), inset 0 -3px 8px rgba(0,0,0,.5), 0 22px 44px rgba(36,45,56,.28); }
-.recap .eyebrow { color:#93a6bb; text-shadow:none; }
-.recap h2 { font-size:clamp(24px,3vw,34px); font-weight:600; letter-spacing:-.035em; line-height:1.12; margin:12px 0 10px; text-shadow:none; }
-.recap .lead { font-size:16px; line-height:1.6; color:#aebbca; max-width:62ch; margin:0 0 22px; }
-.strats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:0 0 22px; }
-.strat { border-radius:16px; padding:16px 16px 14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); }
-.strat .num { font-size:12px; font-weight:600; letter-spacing:.11em; color:#8fb4dd; } .strat h3 { font-size:17px; font-weight:600; letter-spacing:-.02em; margin:6px 0 6px; } .strat p { font-size:13.5px; line-height:1.5; color:#aebbca; margin:0; } .strat .grade { display:inline-block; margin-top:10px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#93a6bb; }
-.steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:0 0 24px; } .steps div { font-size:13.5px; line-height:1.5; color:#aebbca; } .steps b { display:block; color:#f2f5f8; margin-bottom:3px; }
-.recap .actions { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
-.btn { display:inline-flex; align-items:center; gap:12px; min-height:50px; padding:13px 22px; border-radius:13px; font:600 15px var(--font); cursor:pointer; color:var(--ink); border:1px solid #c2ccd7; border-bottom:3px solid #b5c1ce; background:linear-gradient(145deg,#fafbfd,#e1e6ec); box-shadow:inset 1px 2px #fff, 5px 7px 13px rgba(0,0,0,.25); }
-.btn:hover { color:var(--accent); } .btn:active { transform:translateY(2px); }
-.recap .fine { font-size:12.5px; color:#93a6bb; margin:18px 0 0; }
-@media (max-width:860px) { .layout { grid-template-columns:1fr; } .controls { position:static; } .tiles, .btctl, .strats, .steps { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-@media (max-width:520px) { .tiles, .btctl, .strats, .steps { grid-template-columns:1fr; } }
+/* Layout: five tabs over one book. Strategies explains, Simulate runs the plan forward, Backtest runs it on the record,
+   Assumptions lists every input against plan and record, Method carries the working and the disclosures.
+   Design system: the Forward Matter site's neumorphic tokens (app/globals.css). One light theme, set deliberately to match the site. */
+:root {
+  color-scheme: light;
+  --ground: #eef0f3; --ink: #242d38; --muted: #546171; --faint: #7a8696; --accent: #345984; --accent-mid: #5b82b4; --accent-soft: rgba(52,89,132,.10);
+  --hairline: #c6ced7; --rule: #d9dfe6; --border-card: #c9d2dc; --border-well: #c7d0db;
+  --raised: linear-gradient(145deg,#fafcfd,#e4e9ef); --well: #e6ebf0; --well-deep: linear-gradient(135deg,#e3e7ed,#edf0f4);
+  --dark: linear-gradient(165deg,#33404f 0%,#242e3a 52%,#1b232d 100%); --dark-ink: #f2f5f8; --dark-body: #aebbca; --dark-muted: #93a6bb;
+  --sh-card: inset 1px 1px #fff, 12px 14px 28px #c7ced7, -12px -12px 25px #fff; --sh-well: inset 2px 3px 6px #c3cfdb, 0 1px #fff; --sh-deep: inset 5px 5px 14px #c4cdd9, inset -5px -5px 12px #fff;
+  --sh-btn: 0 3px 0 #172432, 5px 9px 15px #c8d1dc, -5px -5px 12px #fff, inset 0 1px 1px #8390a0; --sh-chip: inset 1px 2px #fff, 3px 4px 8px #c7d0db, -3px -3px 8px #fff;
+  --emboss: 0 1px #fff;
+  /* strategy identity, validated for colour-vision separation on this ground */
+  --s1: #2d6cb5; --s2: #d2683a; --s3: #1b998b; --s3b: #8b5cb8; --fee: #8a94a3;
+  --book: #345984; --holding: #242d38; --base: #8a94a3; --band: rgba(91,130,180,.18);
+  --good: #2e7d4f; --bad: #b3261e;
+  --font: "Switzer", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+body { padding-block: 4px 16px; padding-left: max(2px, env(safe-area-inset-left, 0px)); padding-right: max(2px, env(safe-area-inset-right, 0px)); overflow-x: hidden; font-size: 15px; line-height: 1.55; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.num { font-variant-numeric: tabular-nums; }
+h2, h3 { text-wrap: balance; margin: 0; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .11em; text-transform: uppercase; color: var(--muted); text-shadow: var(--emboss); }
+.lede { color: var(--muted); font-size: 16px; line-height: 1.6; max-width: 66ch; margin: 0; }
+.small { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.card { border-radius: 20px; border: 1px solid var(--border-card); border-bottom: 3px solid #bbc7d4; background: var(--raised); box-shadow: var(--sh-card); }
+.well { border-radius: 16px; border: 1px solid var(--border-well); background: var(--well); box-shadow: var(--sh-well); }
+.linkbtn { background: none; border: 0; padding: 0; cursor: pointer; color: var(--accent); font-size: 13px; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: #9fb3cc; }
+.linkbtn:hover { color: var(--ink); }
+.btn { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; padding: 12px 20px; border-radius: 13px; font-size: 15px; font-weight: 600; cursor: pointer; color: #fff; border: 1px solid #283441; border-bottom-color: #182331; background: linear-gradient(180deg,#465363,#293543); box-shadow: var(--sh-btn); text-shadow: 0 -1px #1a2533; }
+.btn:hover { background: linear-gradient(#536174,#344356); }
+.btn:active { transform: translateY(2px); box-shadow: inset 3px 3px 7px #17222e, 0 1px 0 #fff; }
+.btn.ghost { color: var(--ink); text-shadow: none; border: 1px solid #c2ccd7; border-bottom: 3px solid #b5c1ce; background: linear-gradient(145deg,#fafbfd,#e1e6ec); box-shadow: inset 1px 2px #fff, 5px 7px 13px #c7d0db, -5px -5px 12px #fff; }
+.btn.ghost:hover { color: var(--accent); }
+.btn.sm { min-height: 38px; padding: 8px 14px; font-size: 13.5px; border-radius: 11px; }
+
+/* tabs */
+.tabs { display: flex; gap: 4px; padding: 5px; border-radius: 16px; border: 1px solid var(--border-well); background: var(--well); box-shadow: var(--sh-well); overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { flex: 1 0 auto; min-height: 42px; padding: 8px 16px; border-radius: 11px; border: 1px solid transparent; background: none; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); border-color: var(--border-card); background: var(--raised); box-shadow: var(--sh-chip); }
+.scenline { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin: 14px 2px 22px; font-size: 13.5px; color: var(--muted); }
+.scenline b { color: var(--ink); font-weight: 600; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: .02em; border: 1px solid var(--border-card); background: #f4f6f8; color: var(--muted); white-space: nowrap; }
+.pill.changed { color: #8a4a12; border-color: #e3c39e; background: #fbf1e6; }
+.pill.plan { color: var(--accent); border-color: #b9cbe0; background: #edf3fa; }
+.swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+.panel { display: flex; flex-direction: column; gap: 22px; }
+.panel[hidden] { display: none !important; }
+.sect-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.sect-head h2 { font-size: 22px; font-weight: 600; letter-spacing: -.025em; text-shadow: var(--emboss); }
+h3.t { font-size: 17px; font-weight: 600; letter-spacing: -.015em; text-shadow: var(--emboss); }
+
+/* strategies tab */
+.intro { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); gap: 28px; align-items: center; padding: 26px 28px; }
+.intro h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 600; letter-spacing: -.035em; line-height: 1.12; margin-bottom: 12px; text-shadow: var(--emboss); }
+.alloc { display: flex; flex-direction: column; gap: 10px; }
+.allocbar { display: flex; height: 18px; gap: 2px; border-radius: 10px; overflow: hidden; }
+.allocbar div { min-width: 6px; }
+.alloclegend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink); font-weight: 500; }
+.alloclegend span { display: inline-flex; align-items: center; gap: 7px; }
+.overlaybar { position: relative; min-height: 30px; padding-block: 5px; border-radius: 8px; border: 1.5px dashed var(--s3); color: #12675d; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; padding: 0 10px; background: rgba(27,153,139,.06); }
+.strats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
+.strat { padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 20px; }
+.strat-head { display: flex; align-items: center; gap: 10px; }
+.strat-head .eyebrow { display: flex; align-items: center; gap: 8px; }
+.strat h3 { font-size: 21px; font-weight: 600; letter-spacing: -.025em; }
+.strat .what { margin: 0; color: var(--ink); font-size: 15px; line-height: 1.55; }
+.facts { display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 9px 12px; margin: 0; font-size: 13.5px; line-height: 1.5; }
+.facts dt { color: var(--faint); font-weight: 600; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; padding-top: 2px; }
+.facts dd { margin: 0; color: var(--muted); }
+.adds { margin-top: auto; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.adds .big { font-size: 26px; font-weight: 600; letter-spacing: -.03em; }
+.howto { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)) auto; gap: 18px 24px; align-items: center; padding: 18px 22px; }
+.howto div { font-size: 13.5px; color: var(--muted); line-height: 1.5; min-width: 0; }
+.howto b { display: block; color: var(--ink); font-size: 14px; margin-bottom: 2px; }
+
+/* simulate tab */
+.presets { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 14px; border: 1px solid var(--border-well); background: var(--well); box-shadow: var(--sh-well); }
+.seg button { min-height: 38px; padding: 7px 14px; border-radius: 10px; border: 1px solid transparent; background: none; cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--muted); }
+.seg button:hover { color: var(--ink); }
+.seg button.on { color: #fff; border-color: #283441; background: linear-gradient(180deg,#465363,#293543); text-shadow: 0 -1px #1a2533; }
+.headline { border-radius: 26px; background: var(--dark); color: var(--dark-ink); padding: 26px 28px 22px; box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -3px 8px rgba(0,0,0,.5), 0 22px 44px rgba(36,45,56,.28); display: flex; flex-direction: column; gap: 18px; }
+.headline .eyebrow { color: var(--dark-muted); text-shadow: none; }
+.headline p.say { margin: 0; font-size: clamp(19px, 2.2vw, 25px); line-height: 1.38; letter-spacing: -.02em; font-weight: 500; max-width: 46ch; color: var(--dark-ink); }
+.headline p.say em { font-style: normal; color: #9fc4ee; font-weight: 600; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; border-top: 1px solid rgba(255,255,255,.12); padding-top: 16px; }
+.stat { padding: 0 16px; border-left: 1px solid rgba(255,255,255,.10); min-width: 0; }
+.stat:first-child { padding-left: 0; border-left: 0; }
+.stat .lab { font-size: 11.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--dark-muted); }
+.stat .v { font-size: 26px; font-weight: 600; letter-spacing: -.03em; margin: 4px 0 2px; font-variant-numeric: tabular-nums; }
+.stat .d { font-size: 12.5px; color: var(--dark-body); line-height: 1.45; }
+.stat .delta { font-weight: 600; }
+.stat .delta.up { color: #8fd4ae; } .stat .delta.down { color: #f2a59f; }
+.layout { display: grid; grid-template-columns: 340px minmax(0,1fr); gap: 26px; align-items: start; }
+.controls { display: flex; flex-direction: column; gap: 14px; }
+.ccard { padding: 18px 18px 10px; }
+.ccard-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.ccard-head .eyebrow { display: flex; align-items: center; gap: 8px; color: var(--ink); }
+.ccard .what { font-size: 13px; color: var(--muted); margin: 0 0 8px; line-height: 1.45; }
+.ctl { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 2px 10px; align-items: center; padding: 8px 0 10px; border-top: 1px solid var(--rule); }
+.ctl:first-of-type { border-top: 0; }
+.ctl label { font-size: 13.5px; color: var(--ink); font-weight: 500; }
+.ctl output { font-size: 15px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; min-width: 52px; }
+.ctl input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); height: 24px; margin: 2px 0 0; cursor: pointer; }
+.ctl .refs { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ref { display: inline-flex; gap: 5px; align-items: baseline; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--border-card); background: #f5f7f9; font-size: 11.5px; color: var(--muted); cursor: pointer; }
+.ref b { font-weight: 600; color: var(--ink); }
+.ref:hover { border-color: var(--accent-mid); color: var(--accent); }
+.ref.static { cursor: default; } .ref.static:hover { border-color: var(--border-card); color: var(--muted); }
+.ref.active { border-color: var(--accent); background: #edf3fa; }
+.ctl.sw { grid-template-columns: minmax(0,1fr) auto; }
+.ctl.sw input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
+details.more { padding: 4px 18px; }
+details.more > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; min-height: 44px; font-size: 12px; font-weight: 600; letter-spacing: .11em; text-transform: uppercase; color: var(--muted); }
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::after { content: "Show"; font-size: 12.5px; letter-spacing: 0; text-transform: none; color: var(--accent); font-weight: 500; }
+details.more[open] > summary::after { content: "Hide"; }
+.outs { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.chartcard { padding: 20px 20px 14px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.chartcard .sub { font-size: 13px; color: var(--muted); margin: -4px 0 0; max-width: 70ch; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 22px; }
+.tablesrow { display: grid; grid-template-columns: minmax(0,1.7fr) minmax(0,1fr); gap: 22px; }
+@media (max-width: 1180px) { .tablesrow { grid-template-columns: 1fr; } }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 18px; height: 0; border-top: 2px solid; display: inline-block; }
+.legend i.band { height: 10px; border: 0; background: var(--band); border-radius: 2px; }
+.legend i.dash { border-top-style: dashed; }
+figure { margin: 0; position: relative; }
+svg { width: 100%; height: auto; display: block; overflow: visible; }
+svg text { font-family: var(--font); fill: var(--muted); font-size: 11px; }
+#contrib svg text, #hist svg text { font-size: 12.5px; }
+svg .grid { stroke: #d6dde5; stroke-width: 1; }
+svg .zero { stroke: #9aa6b4; stroke-width: 1; }
+svg .lab { fill: var(--ink); font-weight: 600; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: #f2f5f8; font-size: 12.5px; line-height: 1.5; padding: 8px 10px; border-radius: 9px; white-space: nowrap; display: none; z-index: 5; box-shadow: 0 8px 20px rgba(36,45,56,.25); }
+.tip b { font-weight: 600; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--hairline); padding: 6px 12px 8px 0; vertical-align: bottom; }
+td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th.n, td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.tot td { font-weight: 600; border-top: 1px solid var(--hairline); border-bottom: 0; }
+.tablewrap { overflow-x: auto; }
+
+/* backtest */
+.filters { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+.filters .ccard { padding: 16px 18px 12px; }
+.filters select { width: 100%; min-height: 42px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border-well); background: var(--well); box-shadow: var(--sh-well); margin: 6px 0; }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+.tile { padding: 16px 16px 14px; min-width: 0; }
+.tile .lab { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.tile .v { font-size: 26px; font-weight: 600; letter-spacing: -.03em; margin: 6px 0 2px; font-variant-numeric: tabular-nums; text-shadow: var(--emboss); }
+.tile .d { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+.res { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 12.5px; }
+.res::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.res.win { color: var(--good); } .res.loss { color: var(--bad); }
+
+/* assumptions and method */
+.reg td:first-child { font-weight: 600; color: var(--ink); min-width: 170px; }
+.reg td { font-size: 13.5px; color: var(--muted); }
+.reg td.cur { color: var(--ink); font-weight: 600; white-space: nowrap; }
+.summary { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 14px 18px; align-items: start; padding: 20px; }
+.summary textarea { width: 100%; min-height: 220px; resize: vertical; padding: 14px; border-radius: 12px; border: 1px solid var(--border-well); background: #f7f9fb; font-size: 13px; line-height: 1.55; font-variant-numeric: tabular-nums; color: var(--ink); }
+.summary .acts { display: flex; flex-direction: column; gap: 10px; }
+.status { font-size: 12.5px; color: var(--good); min-height: 1.4em; }
+.method { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 22px; }
+.method .card { padding: 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.method ol, .method ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--muted); }
+.method li b { color: var(--ink); font-weight: 600; }
+dl.gloss { margin: 0; display: grid; grid-template-columns: 150px minmax(0,1fr); gap: 10px 16px; font-size: 14px; }
+dl.gloss dt { font-weight: 600; color: var(--ink); }
+dl.gloss dd { margin: 0; color: var(--muted); }
+.disclose { padding: 20px 22px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+.disclose p { margin: 0 0 8px; max-width: 95ch; } .disclose p:last-child { margin: 0; }
+.next { display: flex; justify-content: flex-end; }
+
+@media (max-width: 980px) { .layout { grid-template-columns: 1fr; } .strats { grid-template-columns: 1fr; } .intro { grid-template-columns: 1fr; } .howto { grid-template-columns: 1fr 1fr; } .method { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .two, .filters { grid-template-columns: 1fr; } .stats, .tiles { grid-template-columns: repeat(2, minmax(0,1fr)); row-gap: 16px; } .stat:nth-child(3) { padding-left: 0; border-left: 0; } .summary { grid-template-columns: 1fr; } .summary .acts { flex-direction: row; flex-wrap: wrap; } }
+@media (max-width: 560px) { .tabs { flex-wrap: wrap; overflow: visible; } .tab { flex: 1 1 auto; padding: 8px 10px; font-size: 13.5px; } }
+@media (max-width: 460px) { .howto { grid-template-columns: 1fr; } .intro, .headline { padding: 20px; } dl.gloss { grid-template-columns: 1fr; gap: 2px 0; } dl.gloss dd { margin-bottom: 8px; } .facts { grid-template-columns: 1fr; gap: 2px; } .facts dd { margin-bottom: 6px; } }
 </style></head><body>
 <div class="sim">
 
-<div class="recap" id="recap" role="dialog" aria-modal="true" aria-labelledby="recap_h">
-  <div class="panel">
-    <div class="eyebrow">Two minute recap</div>
-    <h2 id="recap_h">One book, three strategies, every number a slider.</h2>
-    <p class="lead">Matter Engine runs a single book. Most of it is a held position in a company whose catalysts are dated in advance; a small sleeve trades what the FDA publishes two days before it votes; a third reads prescription data into Lilly's and Novo's results days. The simulator lets you set each one and see what the book does.</p>
-    <div class="strats">
-      <div class="strat"><div class="num">STRATEGY 01</div><h3>Platform core</h3><p>Hold the company with the dated pipeline (Lilly today), lift exposure into its own event windows, cap volatility. 80% to 90% of the book. Grade A: measured on five years of daily prices.</p><span class="grade">Measured · earns the underlying plus a small overlay</span></div>
-      <div class="strat"><div class="num">STRATEGY 02</div><h3>The reader</h3><p>Reads the FDA's own briefing document the day it posts and calls the advisory committee vote, trading only when confident, in small and mid caps that still move after the documents are public. 10% to 20% of the book, a few trades a year, two to three days each.</p><span class="grade">Plan · 75% on eight calls a year · 204 documents scored since 2008</span></div>
-      <div class="strat"><div class="num">STRATEGY 03</div><h3>Demand nowcaster</h3><p>Reads weekly prescriptions and the self-pay channel the consensus models worst, forms a view on each of Lilly's and Novo's eight results days a year, and swings exposure into the print: 25% of the core for Balanced, 50% for Growth, with Novo expressed through options. Runs on purchased prescription data; no capital of its own.</p><span class="grade">Funded · prescription data in the P&amp;L · plan 70% on eight prints</span></div>
+<div class="tabs" role="tablist" aria-label="Simulator sections">
+  <button class="tab" role="tab" id="t-strategies" aria-controls="p-strategies" aria-selected="true">Strategies</button>
+  <button class="tab" role="tab" id="t-simulate" aria-controls="p-simulate" aria-selected="false">Simulate</button>
+  <button class="tab" role="tab" id="t-backtest" aria-controls="p-backtest" aria-selected="false">Backtest</button>
+  <button class="tab" role="tab" id="t-assumptions" aria-controls="p-assumptions" aria-selected="false">Assumptions</button>
+  <button class="tab" role="tab" id="t-method" aria-controls="p-method" aria-selected="false">Method and disclosures</button>
+</div>
+<div class="scenline" id="scenline"></div>
+
+<!-- STRATEGIES -->
+<section class="panel" id="p-strategies" role="tabpanel" aria-labelledby="t-strategies">
+  <div class="card intro">
+    <div>
+      <div class="eyebrow">Matter Engine</div>
+      <h2>One book, three ways to earn more than the holding.</h2>
+      <p class="lede">Most of the book holds a company whose catalysts are dated years ahead. A small sleeve trades what the FDA publishes two days before an advisory vote. A third strategy reads prescription data into each results day. Every number in the simulator is a setting you can change, and each one shows what the plan assumes and what the record shows.</p>
     </div>
-    <div class="steps">
-      <div><b>1. Pick a profile</b>Balanced or Growth sets every control to the plan, all three strategies on. Underlying only shows the holding on its own, so you can see what the strategies add.</div>
-      <div><b>2. Change what you doubt</b>Each strategy card carries the two or three inputs that matter. The rest sit under More, and you can leave them alone.</div>
-      <div><b>3. Read the result, then the backtest</b>The tiles and chart are the plan forward, two thousand paths. Below them the same strategies run on the last five years as they happened, with their own filters.</div>
+    <div class="alloc">
+      <div class="eyebrow">Capital at rest, <span id="allocname">Growth</span></div>
+      <div class="allocbar" id="allocbar"></div>
+      <div class="alloclegend" id="alloclegend"></div>
+      <div class="overlaybar" id="overlaybar"></div>
+      <div class="small">The nowcaster holds no capital. It raises or lowers the core's exposure for a few days around each results day.</div>
     </div>
-    <div class="actions"><button type="button" class="btn" id="recap_close">Start the simulator <span aria-hidden="true">→</span></button><span class="fine">You can reopen this from the Strategy recap link at any time.</span></div>
   </div>
+
+  <div class="strats">
+    <article class="card strat" id="s1">
+      <div class="strat-head"><span class="eyebrow"><span class="swatch" style="background:var(--s1)"></span>Strategy 1</span><span class="pill">Lower risk</span></div>
+      <h3>Platform core</h3>
+      <p class="what">Holds the company whose catalysts are dated years ahead, Eli Lilly today, and lifts exposure into its own event windows under a volatility cap.</p>
+      <dl class="facts">
+        <dt>Trades</dt><dd>Long only, 100% to 130% of its allocation, on rules fixed in advance.</dd>
+        <dt>Capital</dt><dd><span data-live="corePct">80%</span> of the book.</dd>
+        <dt>Plan</dt><dd>About 2 points a year above the holding.</dd>
+        <dt>Record</dt><dd>About 2 points a year over five years of Lilly prices: $10m became $57.6m against $52.6m.</dd>
+        <dt>Stops</dt><dd>Never switched off; it is the benchmark position. Its governor steps aside in a drawdown.</dd>
+      </dl>
+      <div class="adds"><span class="small">Adds in this scenario, a year</span><span class="big num" data-live="addS1">+1.5</span></div>
+    </article>
+    <article class="card strat" id="s2">
+      <div class="strat-head"><span class="eyebrow"><span class="swatch" style="background:var(--s2)"></span>Strategy 2</span><span class="pill">Higher risk</span></div>
+      <h3>The reader</h3>
+      <p class="what">Reads the FDA's own briefing document the morning it is published, calls the advisory committee's vote, and trades only when confident.</p>
+      <dl class="facts">
+        <dt>Trades</dt><dd>Long or short from the posting-day close to the close after the vote. Small and mid caps, two to three days each.</dd>
+        <dt>Capital</dt><dd>A <span data-live="sleevePct">20%</span> sleeve in cash between trades; each call is <span data-live="sizePct">20%</span> of the book.</dd>
+        <dt>Plan</dt><dd>75% right on eight confident calls a year, across committee meetings, Phase 3 readouts and FDA decisions.</dd>
+        <dt>Record</dt><dd>64% to 67% right on confident calls across 204 FDA documents since 2008. Eight backdated trades since 2022.</dd>
+        <dt>Stops</dt><dd>After twenty scored calls that are no better calibrated than the posting-day move.</dd>
+      </dl>
+      <div class="adds"><span class="small">Adds in this scenario, a year</span><span class="big num" data-live="addS2">+23.7</span></div>
+    </article>
+    <article class="card strat" id="s3">
+      <div class="strat-head"><span class="eyebrow"><span class="swatch" style="background:var(--s3)"></span>Strategy 3</span><span class="pill">Lower risk</span></div>
+      <h3>Demand nowcaster</h3>
+      <p class="what">Reads weekly prescriptions, the self-pay channel and realised price, forms a view on each Lilly and Novo results day, and leans the book into it.</p>
+      <dl class="facts">
+        <dt>Trades</dt><dd>Raises or lowers exposure by <span data-live="nowPct">50%</span> of the core from two sessions before each print to the close after. Novo through options.</dd>
+        <dt>Capital</dt><dd>None of its own; an overlay on the core.</dd>
+        <dt>Plan</dt><dd>70% right on eight results days a year.</dd>
+        <dt>Record</dt><dd>Scored live from the 29 October 2026 print, on purchased prescription data carried in the P&amp;L.</dd>
+        <dt>Stops</dt><dd>After eight scored prints that are no better than the run-up fade rule.</dd>
+      </dl>
+      <div class="adds"><span class="small">Adds in this scenario, a year</span><span class="big num" data-live="addS3">+6.9</span></div>
+    </article>
+  </div>
+
+  <div class="well howto">
+    <div><b>Choose a scenario</b>Growth and Balanced are the plan. Record so far uses the measured reader. Holding only shows Lilly on its own.</div>
+    <div><b>Change what you doubt</b>Each input shows the plan and the record beside it. Tap either to use it.</div>
+    <div><b>Compare and check</b>Pin a scenario as a baseline, then test the five-year backtest and the assumptions behind every figure.</div>
+    <button class="btn" type="button" data-goto="simulate">Open the simulator <span aria-hidden="true">→</span></button>
+  </div>
+</section>
+
+<!-- SIMULATE -->
+<section class="panel" id="p-simulate" role="tabpanel" aria-labelledby="t-simulate" hidden>
+  <div class="presets">
+    <div class="seg" role="group" aria-label="Scenario">
+      <button type="button" data-preset="growth">Growth plan</button>
+      <button type="button" data-preset="balanced">Balanced plan</button>
+      <button type="button" data-preset="record">Record so far</button>
+      <button type="button" data-preset="holding">Holding only</button>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <span class="small" id="baseinfo"></span>
+      <button class="btn ghost sm" type="button" id="pin">Pin as baseline</button>
+    </div>
+  </div>
+
+  <div class="headline">
+    <div class="eyebrow" id="hl-eyebrow">Median outcome</div>
+    <p class="say" id="say"></p>
+    <div class="stats">
+      <div class="stat"><div class="lab">Book at the end</div><div class="v" id="st-end"></div><div class="d" id="st-end-d"></div></div>
+      <div class="stat"><div class="lab">A year, all in</div><div class="v" id="st-cagr"></div><div class="d" id="st-cagr-d"></div></div>
+      <div class="stat"><div class="lab">Above the holding</div><div class="v" id="st-ex"></div><div class="d" id="st-ex-d"></div></div>
+      <div class="stat"><div class="lab">1 in 10 worse than</div><div class="v" id="st-bad"></div><div class="d" id="st-bad-d"></div></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="controls" aria-label="Inputs">
+      <div class="card ccard" id="c-book"></div>
+      <div class="card ccard" id="c-s1"></div>
+      <div class="card ccard" id="c-s2"></div>
+      <div class="card ccard" id="c-s3"></div>
+      <details class="well more" id="c-more"><summary>More inputs</summary><div id="c-more-body"></div></details>
+    </aside>
+    <div class="outs">
+      <div class="card chartcard">
+        <div class="sect-head"><h3 class="t">Value of the book</h3><span class="small">2,000 simulated paths</span></div>
+        <div class="legend" id="fanlegend"></div>
+        <figure id="fan"><div class="tip"></div></figure>
+      </div>
+      <div class="two">
+        <div class="card chartcard">
+          <h3 class="t">Where the return comes from</h3>
+          <p class="sub">Points a year above the holding, average across paths.</p>
+          <figure id="contrib"><div class="tip"></div></figure>
+        </div>
+        <div class="card chartcard">
+          <h3 class="t">Range of outcomes</h3>
+          <p class="sub" id="histsub">The book after the horizon, share of paths.</p>
+          <figure id="hist"><div class="tip"></div></figure>
+        </div>
+      </div>
+      <div class="card chartcard">
+        <div class="sect-head"><h3 class="t">What moves the result most</h3><span class="small">Points a year above the holding, median</span></div>
+        <p class="sub">Each bar moves one input down and up from its current setting and holds the rest. Longer bars matter more.</p>
+        <figure id="tornado"><div class="tip"></div></figure>
+      </div>
+      <div class="tablesrow">
+        <div class="card chartcard"><h3 class="t">Year by year, median path</h3><div class="tablewrap"><table id="yt"></table></div></div>
+        <div class="card chartcard"><h3 class="t">Odds</h3><div class="tablewrap"><table id="ot"></table></div></div>
+      </div>
+      <div class="next"><button class="btn ghost" type="button" data-goto="backtest">See it on the last five years <span aria-hidden="true">→</span></button></div>
+    </div>
+  </div>
+</section>
+
+<!-- BACKTEST -->
+<section class="panel" id="p-backtest" role="tabpanel" aria-labelledby="t-backtest" hidden>
+  <div class="sect-head"><h2>Backtest, October 2021 to October 2026</h2><span class="small">The same strategies on the record as it happened</span></div>
+  <p class="lede">Strategy one is the calendar overlay run on Lilly's daily prices, with no hindsight in its rules. Strategy two is the reader's historical model, trained only on meetings before each one, scoring every advisory committee meeting since 2022 with a measured move. The nowcaster has no backtest; it starts scoring live on 29 October 2026. Position size comes from the reader input on the Simulate tab, capital from the capital input.</p>
+  <div class="filters">
+    <div class="card ccard"><div class="ctl" style="border:0;padding:0"><label for="bth">Trade when the model is at least this sure</label><output id="o_bth" class="num">70%</output><input type="range" id="bth" min="55" max="95" step="5" value="70"><div class="refs"><span class="ref static">Plan rule <b>70%</b></span></div></div></div>
+    <div class="card ccard"><label for="bsz" style="font-size:13.5px;font-weight:500">Companies it may trade</label><select id="bsz"><option value="sm" selected>Small and mid caps</option><option value="all">All sizes</option></select><div class="small">The plan is small and mid caps. Large caps barely move after the documents post.</div></div>
+    <div class="card ccard"><div class="ctl sw" style="border:0;padding:0"><label for="bov">Apply strategy one's overlay</label><input type="checkbox" id="bov" checked></div><div class="small">Off shows the reader on top of Lilly held outright.</div></div>
+  </div>
+  <div class="tiles">
+    <div class="card tile"><div class="lab">Lilly held, five years</div><div class="v" id="b_u"></div><div class="d" id="b_u_d"></div></div>
+    <div class="card tile"><div class="lab">Strategy 1 alone</div><div class="v" id="b_c"></div><div class="d" id="b_c_d"></div></div>
+    <div class="card tile"><div class="lab">Both strategies</div><div class="v" id="b_b"></div><div class="d" id="b_b_d"></div></div>
+    <div class="card tile"><div class="lab">Above Lilly, a year</div><div class="v" id="b_x"></div><div class="d" id="b_x_d"></div></div>
+  </div>
+  <div class="card chartcard">
+    <div class="legend"><span><i style="border-color:var(--holding)"></i>Lilly held</span><span><i style="border-color:var(--s1)"></i>Strategy 1</span><span><i style="border-color:var(--book)"></i>The book</span><span><span class="res win">Trade made money</span></span><span><span class="res loss">Trade lost money</span></span></div>
+    <figure id="bfig"><div class="tip"></div></figure>
+  </div>
+  <div class="card chartcard">
+    <h3 class="t">The reader's trades under these filters</h3>
+    <div class="tablewrap"><table id="bt"></table></div>
+    <p class="small" id="bt_note"></p>
+  </div>
+</section>
+
+<!-- ASSUMPTIONS -->
+<section class="panel" id="p-assumptions" role="tabpanel" aria-labelledby="t-assumptions" hidden>
+  <div class="sect-head"><h2>Every input, against the plan and the record</h2><span class="small" id="changedcount"></span></div>
+  <p class="lede">The register lists each input in the current scenario beside what the plan assumes, what the record measured, and where that figure comes from. Inputs that differ from the plan are marked.</p>
+  <div class="card chartcard"><div class="tablewrap"><table class="reg" id="reg"></table></div></div>
+  <div class="card summary">
+    <div>
+      <h3 class="t" style="margin-bottom:8px">Scenario summary</h3>
+      <label for="sumtext" class="small" style="display:block;margin-bottom:8px">A plain-text record of this scenario's inputs and results, for review notes and minutes.</label>
+      <textarea id="sumtext" readonly></textarea>
+    </div>
+    <div class="acts">
+      <button class="btn sm" type="button" id="copysum">Copy summary</button>
+      <button class="btn ghost sm" type="button" id="dlcsv">Download as CSV</button>
+      <div class="status" id="sumstatus" role="status"></div>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section class="panel" id="p-method" role="tabpanel" aria-labelledby="t-method" hidden>
+  <div class="sect-head"><h2>How the numbers are made</h2><span class="small">Model version 2.0, 20 October 2026, fixed seed</span></div>
+  <div class="method">
+    <div class="card">
+      <h3 class="t">The simulation</h3>
+      <ol>
+        <li><b>The holding.</b> Each simulated year draws the holding's return around the chosen rate. At zero volatility it is a steady path, as in the P&amp;L.</li>
+        <li><b>Strategy one.</b> The overlay adds a draw around its average excess with the chosen spread, on the core's share of the book.</li>
+        <li><b>Strategy two.</b> Each confident call draws a move from the record's small and mid cap advisory meetings, posting close to the day after the vote. A right call earns the move, a wrong one loses it, less 0.4% in costs. The position is a share of the whole book, funded from the sleeve's cash.</li>
+        <li><b>Strategy three.</b> Each results day draws a move around Lilly's measured 6.3%. A right view earns the swing times the move, a wrong one loses it, less 0.4%.</li>
+        <li><b>The premium seller</b>, when switched on, is a scenario: about 4.5 points per 2% of risk, with a loss year one time in seven.</li>
+        <li><b>Fees</b> come off last: management on capital, performance on the excess over the holding when positive, no high-water mark.</li>
+      </ol>
+      <p class="small">2,000 paths a run, from a fixed seed so the same inputs always give the same figures. The strategies draw independently. Percentiles are read across paths.</p>
+    </div>
+    <div class="card">
+      <h3 class="t">Sources</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Source</th><th>Used for</th></tr></thead>
+        <tbody>
+          <tr><td>Daily prices, Lilly and 134 sector names, October 2021 to October 2026</td><td>Strategy one's overlay, the backtest, results-day moves</td></tr>
+          <tr><td>FDA advisory committee record, 332 meetings from 2008, votes from FDA minutes</td><td>The reader's hit rate and its backdated trades</td></tr>
+          <tr><td>FDA briefing documents, 204 scored</td><td>The reader's model, trained only on earlier meetings</td></tr>
+          <tr><td>Advisory meeting event study, small and mid caps</td><td>The size of each reader trade's move</td></tr>
+          <tr><td>Weekly prescription and demand data (purchased)</td><td>The nowcaster's view on each results day</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small">Detail is in the Simulation Record, the Redesign Record (sections 8 and 9), the Technical Specification (section 8.7) and the P&amp;L's Strategies sheet.</p>
+    </div>
+    <div class="card">
+      <h3 class="t">Terms used</h3>
+      <dl class="gloss">
+        <dt>The holding</dt><dd>The core company held outright, Eli Lilly. Every result is measured against it.</dd>
+        <dt>Above the holding</dt><dd>The book's compounded return a year less the holding's, in percentage points.</dd>
+        <dt>Confident call</dt><dd>A meeting where the reader's model is at least 70% sure either way. It passes on the rest.</dd>
+        <dt>Hit rate</dt><dd>The share of calls or views that turn out right.</dd>
+        <dt>Results day</dt><dd>A company's quarterly earnings release.</dd>
+        <dt>Swing</dt><dd>How far the nowcaster raises or lowers exposure into a results day, as a share of the core.</dd>
+        <dt>Percentile</dt><dd>The 10th percentile is the outcome nine in ten paths beat.</dd>
+        <dt>Backtest</dt><dd>The rules run on past prices with only the information available at each date.</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h3 class="t">Plan and record</h3>
+      <ul>
+        <li><b>Plan</b> is the setting the business plan uses. Each input shows it beside the slider.</li>
+        <li><b>Record</b> is what has been measured on past data. Where a strategy has no past data, its record starts with live scoring.</li>
+        <li>The Record so far scenario sets the reader to its measured rate and the frequency the last five years supplied, and leaves the nowcaster off until it is scored.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="well disclose">
+    <p><b style="color:var(--ink)">Important information.</b> These are hypothetical results from a simulation and a backtest. They are not a forecast, are unaudited and are before tax. No capital was at risk in the backtest, and simulated trading does not reflect the costs, slippage and market impact of real execution. Past performance, simulated or actual, is not a reliable indicator of future performance.</p>
+    <p>Forward Matter Pty Ltd provides software. This page is general information only. It is not financial product advice and does not take into account any person's objectives, financial situation or needs. Trading involves risk, including the loss of capital.</p>
+  </div>
+</section>
 </div>
 
-<div class="topbar">
-  <div class="profiles"><span class="eyebrow">Profile</span><button type="button" class="pbtn" data-p="balanced">Balanced</button><button type="button" class="pbtn on" data-p="growth">Growth</button><button type="button" class="pbtn" data-p="underlying">Underlying only</button></div>
-  <button type="button" class="linkbtn" id="recap_open">Strategy recap</button>
-</div>
-
-<div class="layout">
-<aside class="controls">
-  <div class="ccard">
-    <h3>Capital and the holding</h3>
-    <div class="ctl"><label for="cap">Capital, $m</label><output id="o_cap">10</output><input type="range" id="cap" min="1" max="100" step="1" value="10"></div>
-    <div class="ctl"><label for="yrs">Years</label><output id="o_yrs">3</output><input type="range" id="yrs" min="1" max="5" step="1" value="3"></div>
-    <div class="ctl"><label for="ur">The holding's return a year, %</label><output id="o_ur">11</output><input type="range" id="ur" min="-20" max="40" step="1" value="11"><span class="hint">What Lilly, or the core holding, does on its own. 11% is the P&amp;L assumption.</span></div>
-  </div>
-  <div class="ccard">
-    <h3><span><span class="num">01</span> Platform core</span><button type="button" class="recap-link">what is this?</button></h3>
-    <p class="what">Hold the company with the dated pipeline, lift exposure into its event windows, cap volatility.</p>
-    <div class="ctl"><label for="core">Share of the book, %</label><output id="o_core">80</output><input type="range" id="core" min="50" max="100" step="5" value="80"><span class="hint">The rest is the reader's sleeve.</span></div>
-    <div class="ctl"><label for="cmu">Overlay above the holding, points a year</label><output id="o_cmu">2</output><input type="range" id="cmu" min="-5" max="8" step="0.5" value="2"><span class="hint">Measured at about 2 over five years.</span></div>
-  </div>
-  <div class="ccard">
-    <h3><span><span class="num">02</span> The reader</span><button type="button" class="recap-link">what is this?</button></h3>
-    <p class="what">Calls the FDA advisory vote from the briefing document, trades only when confident.</p>
-    <div class="ctl"><label for="hit">Hit rate on confident calls, %</label><output id="o_hit">75</output><input type="range" id="hit" min="50" max="90" step="1" value="75"><span class="hint">75% is the plan. The 204-document record measures 64% to 67%; drag it there to see that case.</span></div>
-    <div class="ctl"><label for="calls">Confident calls a year</label><output id="o_calls">8</output><input type="range" id="calls" min="0" max="15" step="1" value="8"><span class="hint">Eight is the plan, across committee meetings, Phase 3 readouts and FDA decisions.</span></div>
-    <div class="ctl"><label for="size">Position per call, % of the book</label><output id="o_size">20</output><input type="range" id="size" min="0" max="30" step="1" value="20"><span class="hint">Also sets the reader's size in the backtest.</span></div>
-  </div>
-  <div class="ccard">
-    <h3><span><span class="num">03</span> Demand nowcaster</span><button type="button" class="recap-link">what is this?</button></h3>
-    <p class="what">Reads prescription data into Lilly's and Novo's results days and swings exposure into the print. The premium seller is an optional extra.</p>
-    <div class="ctl"><label for="prem">Premium seller, % at risk per event</label><output id="o_prem">0</output><input type="range" id="prem" min="0" max="4" step="0.5" value="0"></div>
-    <div class="ctl"><label for="now">Demand nowcaster, swing on the core into a print, %</label><output id="o_now">50</output><input type="range" id="now" min="0" max="100" step="5" value="50"><span class="hint">Needs script data. 50% means the core goes to 50% or 150% exposure into a print it has a view on.</span></div>
-    <div class="ctl"><label for="nhit">Nowcaster hit rate, %</label><output id="o_nhit">70</output><input type="range" id="nhit" min="50" max="85" step="1" value="70"><span class="hint">70% is the plan. The edge comes from the self-pay and telehealth channel the public script counts miss.</span></div>
-    <div class="ctl"><label for="nprints">Prints a year it trades</label><output id="o_nprints">8</output><input type="range" id="nprints" min="0" max="8" step="1" value="8"><span class="hint">Eight is the plan: Lilly's and Novo's results days, about 6% each, Novo through options.</span></div>
-  </div>
-  <details class="more"><summary>More</summary>
-    <div class="ctl"><label for="uv">Holding's volatility, % (0 is a steady path)</label><output id="o_uv">0</output><input type="range" id="uv" min="0" max="60" step="1" value="0"></div>
-    <div class="ctl"><label for="csd">Overlay spread, points</label><output id="o_csd">6</output><input type="range" id="csd" min="0" max="15" step="1" value="6"></div>
-    <div class="ctl sw"><label for="ro">Let the reader draw readout moves too</label><input type="checkbox" id="ro"></div>
-    <div class="ctl"><label for="mf">Management fee, % a year</label><output id="o_mf">0</output><input type="range" id="mf" min="0" max="2" step="0.25" value="0"></div>
-    <div class="ctl"><label for="pf">Performance fee, % of excess over the holding</label><output id="o_pf">0</output><input type="range" id="pf" min="0" max="30" step="5" value="0"></div>
-  </details>
-</aside>
-<div class="out">
-<div class="tiles">
-  <div class="tile"><div class="lab">Median, end of horizon</div><div class="big" id="t_med">—</div><div class="sub" id="t_med_sub"></div></div>
-  <div class="tile"><div class="lab">Compounded a year, median</div><div class="big" id="t_cagr">—</div><div class="sub" id="t_cagr_sub"></div></div>
-  <div class="tile"><div class="lab">Bad outcome, 10th percentile</div><div class="big" id="t_bad">—</div><div class="sub" id="t_bad_sub"></div></div>
-  <div class="tile"><div class="lab">Above the holding, a year</div><div class="big" id="t_ex">—</div><div class="sub" id="t_ex_sub"></div></div>
-</div>
-<div class="legend"><span><i style="border-color:var(--ink)"></i>The holding, median</span><span><i style="border-color:var(--accent)"></i>The book, median</span><span><i class="band"></i>Book, 10th to 90th percentile</span></div>
-<figure id="fig"><div class="tip"></div></figure>
-<h2>Year by year, median path</h2>
-<div class="tablewrap"><table id="yt"></table></div>
-<h2>Where the return comes from</h2>
-<div class="tablewrap"><table id="ct"></table></div>
-<h2>Odds</h2>
-<div class="tablewrap"><table id="ot"></table></div>
-<p class="note">Method: each simulated year draws the holding from a lognormal at the chosen return and volatility; the core overlay from a normal at the chosen mean and spread; the reader from the record's measured moves (17 advisory meetings, optionally 52 readouts, small and mid caps), a right call earning the move and a wrong one losing it, at the chosen hit rate, calls and position size, where the position is a share of the whole book and the sleeve is the cash it is funded from; the premium seller as a scenario at +4.5 points per 2% of risk with a one-in-seven tail year; the nowcaster from the chosen number of prints at 6.3% a print at the chosen hit rate. Strategies are independent in the draw. Fees: management on capital, performance on the excess over the holding when positive, no high-water mark. Hypothetical, unaudited, no capital at risk.</p>
-
-<div class="sect"><h2>Backtest, October 2021 to October 2026</h2><span class="eyebrow">The same strategies on the record as it happened</span></div>
-<p class="note" style="margin:0 0 6px">Strategy one is the calendar overlay run on Lilly's daily prices with no hindsight in its rules. Strategy two is the reader's historical model, trained only on meetings before each one, scoring every advisory committee meeting since 2022 that has a measured move. The filters below decide which of its calls it would have traded; the position size comes from the reader card above, and capital from the capital slider.</p>
-<div class="btctl">
-  <div class="ccard"><h3>Reader confidence</h3><div class="ctl"><label for="bth">Trade when the model is at least this sure, %</label><output id="o_bth">70</output><input type="range" id="bth" min="55" max="95" step="5" value="70"><span class="hint">70% is the plan's rule.</span></div></div>
-  <div class="ccard"><h3>Reader universe</h3><label for="bsz" class="what" style="display:block;margin:0 0 2px">Which companies it may trade</label><select id="bsz"><option value="sm" selected>Small and mid caps</option><option value="all">All sizes</option></select><span class="hint" style="font-size:12px;color:var(--muted)">The plan is small and mid caps; large caps barely move after the documents post.</span></div>
-  <div class="ccard"><h3>Strategy one</h3><div class="ctl sw"><label for="bov">Apply the calendar overlay to the holding</label><input type="checkbox" id="bov" checked></div><span class="hint" style="font-size:12px;color:var(--muted)">Off shows the reader on top of Lilly held outright.</span></div>
-</div>
-<div class="tiles">
-  <div class="tile"><div class="lab">The holding, five years</div><div class="big" id="b_u">—</div><div class="sub" id="b_u_sub"></div></div>
-  <div class="tile"><div class="lab">Strategy 1 alone</div><div class="big" id="b_c">—</div><div class="sub" id="b_c_sub"></div></div>
-  <div class="tile"><div class="lab">Both strategies, the book</div><div class="big" id="b_b">—</div><div class="sub" id="b_b_sub"></div></div>
-  <div class="tile"><div class="lab">Above the holding, a year</div><div class="big" id="b_x">—</div><div class="sub" id="b_x_sub"></div></div>
-</div>
-<div class="legend"><span><i style="border-color:var(--ink)"></i>The holding (Lilly)</span><span><i style="border-color:var(--accent-mid)"></i>Strategy 1, core overlay</span><span><i style="border-color:var(--accent)"></i>The book, both strategies</span></div>
-<figure id="bfig"><div class="tip"></div></figure>
-<h2>The reader's trades under these filters</h2>
-<div class="tablewrap"><table id="bt"></table></div>
-<p class="note" id="bt_note"></p>
-</div></div></div>
 <script>
 const MV = {"adcom_moves":[-0.486,-0.1047,-0.1994,0.1248,-0.3266,0.136,-0.0256,-0.013,0.3378,0.2538,-0.7488,0.5701,0.4327,-0.3441,-0.5858,-0.7873,0.2978],"readout_moves":[-0.0897,0.0562,0.5782,-0.0959,-0.8044,-0.4833,2.9185,0.0333,-0.0689,-0.0184,-0.2056,-0.0162,0.7849,0.0425,-0.0004,-0.3699,0.821,0.028,-0.0203,-0.7997,1.4341,0.0492,-0.0439,0.0394,2.9744,0.0227,0.208,0.0371,-0.7953,0.1852,0.0285,0.3593,0.2296,-0.0023,-0.3008,0.6311,-0.4536,0.0563,-0.0178,-0.0212,0.2845,0.0256,-0.0102,-0.5136,0.1956,-0.8303,-0.3337,0.0262,-0.6803,-0.7201,-0.6292,-0.0323],"lly_vol":0.326,"note":"moves measured on the record, small and mid caps; adcom = posting close to day after meeting; readout = decision session"};
 const BT = {"retro":{"underlying":[["2021-10-22",102.0],["2021-10-29",106.6],["2021-11-05",110.89],["2021-11-12",108.65],["2021-11-19",109.09],["2021-11-26",108.95],["2021-12-03",102.76],["2021-12-10",102.16],["2021-12-17",111.9],["2021-12-24",114.28],["2021-12-31",115.58],["2022-01-07",108.59],["2022-01-14",102.15],["2022-01-21",101.71],["2022-01-28",102.56],["2022-02-04",101.38],["2022-02-11",98.64],["2022-02-18",100.56],["2022-02-25",104.97],["2022-03-04",110.0],["2022-03-11",111.43],["2022-03-18",120.36],["2022-03-25",120.94],["2022-04-01",122.47],["2022-04-08",130.43],["2022-04-15",126.31],["2022-04-22",116.63],["2022-04-29",122.24],["2022-05-06",124.24],["2022-05-13",122.03],["2022-05-20",125.05],["2022-05-27",135.36],["2022-06-03",126.22],["2022-06-10",124.28],["2022-06-17",121.73],["2022-06-24",136.25],["2022-07-01",135.87],["2022-07-08",138.28],["2022-07-15",138.76],["2022-07-22",137.56],["2022-07-29",137.96],["2022-08-05",126.09],["2022-08-12",128.91],["2022-08-19",135.06],["2022-08-26",132.04],["2022-09-02",126.09],["2022-09-09",132.94],["2022-09-16",129.25],["2022-09-23",130.33],["2022-09-30",135.3],["2022-10-07",136.69],["2022-10-14",138.67],["2022-10-21",142.59],["2022-10-28",150.6],["2022-11-04",149.56],["2022-11-11",147.42],["2022-11-18",151.34],["2022-11-25",152.84],["2022-12-02",156.82],["2022-12-09",151.05],["2022-12-16",150.59],["2022-12-23",153.95],["2022-12-30",153.08],["2023-01-06",151.87],["2023-01-13",151.32],["2023-01-20",144.81],["2023-01-27",143.15],["2023-02-03",141.89],["2023-02-10",144.41],["2023-02-17",137.42],["2023-02-24",134.59],["2023-03-03",133.25],["2023-03-10",131.82],["2023-03-17",137.74],["2023-03-24",140.65],["2023-03-31",143.7],["2023-04-07",154.11],["2023-04-14",156.8],["2023-04-21",161.2],["2023-04-28",165.65],["2023-05-05",179.01],["2023-05-12",181.79],["2023-05-19",185.11],["2023-05-26",178.17],["2023-06-02",185.09],["2023-06-09",186.64],["2023-06-16",187.34],["2023-06-23",192.0],["2023-06-30",196.24],["2023-07-07",189.17],["2023-07-14",188.07],["2023-07-21",193.34],["2023-07-28",191.85],["2023-08-04",188.09],["2023-08-11",221.06],["2023-08-18",228.65],["2023-08-25",231.67],["2023-09-01",233.12],["2023-09-08",245.4],["2023-09-15",240.88],["2023-09-22",230.37],["2023-09-29",224.76],["2023-10-06",236.51],["2023-10-13",254.92],["2023-10-20",244.64],["2023-10-27",234.43],["2023-11-03",237.6],["2023-11-10",250.11],["2023-11-17",247.6],["2023-11-24",251.53],["2023-12-01",244.39],["2023-12-08",250.25],["2023-12-15",239.37],["2023-12-22",238.68],["2023-12-29",243.92],["2024-01-05",258.83],["2024-01-12",269.03],["2024-01-19",263.03],["2024-01-26",267.49],["2024-02-02",279.37],["2024-02-09",309.72],["2024-02-16",327.25],["2024-02-23",322.01],["2024-03-01",327.27],["2024-03-08",318.91],["2024-03-15",315.58],["2024-03-22",322.46],["2024-03-29",325.53],["2024-04-05",328.15],["2024-04-12",314.52],["2024-04-19",303.92],["2024-04-26",306.93],["2024-05-03",307.54],["2024-05-10",318.02],["2024-05-17",322.2],["2024-05-24",337.87],["2024-05-31",343.27],["2024-06-07",355.67],["2024-06-14",367.58],["2024-06-21",369.86],["2024-06-28",378.85],["2024-07-05",382.7],["2024-07-12",396.85],["2024-07-19",358.8],["2024-07-26",336.69],["2024-08-02",336.62],["2024-08-09",373.12],["2024-08-16",385.86],["2024-08-23",398.67],["2024-08-30",401.72],["2024-09-06",377.73],["2024-09-13",386.52],["2024-09-20",385.59],["2024-09-27",367.31],["2024-10-04",371.23],["2024-10-11",390.02],["2024-10-18",384.12],["2024-10-25",373.55],["2024-11-01",342.68],["2024-11-08",347.95],["2024-11-15",312.24],["2024-11-22",313.0],["2024-11-29",332.81],["2024-12-06",345.93],["2024-12-13",330.2],["2024-12-20",321.27],["2024-12-27",327.71],["2025-01-03",327.22],["2025-01-10",334.71],["2025-01-17",303.67],["2025-01-24",328.65],["2025-01-31",339.39],["2025-02-07",367.52],["2025-02-14",353.28],["2025-02-21",365.59],["2025-02-28",385.23],["2025-03-07",363.87],["2025-03-14",340.4],["2025-03-21",350.48],["2025-03-28",344.18],["2025-04-04",308.9],["2025-04-11",306.47],["2025-04-18",351.48],["2025-04-25",370.13],["2025-05-02",344.64],["2025-05-09",307.38],["2025-05-16",316.93],["2025-05-23",298.65],["2025-05-30",308.67],["2025-06-06",322.15],["2025-06-13",342.86],["2025-06-20",319.16],["2025-06-27",324.48],["2025-07-04",326.67],["2025-07-11",331.83],["2025-07-18",322.92],["2025-07-25",340.07],["2025-08-01",318.99],["2025-08-08",261.8],["2025-08-15",293.43],["2025-08-22",297.8],["2025-08-29",306.54],["2025-09-05",304.3],["2025-09-12",316.09],["2025-09-19",314.67],["2025-09-26",303.18],["2025-10-03",351.44],["2025-10-10",348.77],["2025-10-17",335.94],["2025-10-24",345.41],["2025-10-31",361.06],["2025-11-07",386.8],["2025-11-14",429.02],["2025-11-21",443.43],["2025-11-28",450.03],["2025-12-05",422.76],["2025-12-12",429.96],["2025-12-19",448.34],["2025-12-26",450.98],["2026-01-02",452.07],["2026-01-09",445.04],["2026-01-16",434.51],["2026-01-23",445.35],["2026-01-30",433.99],["2026-02-06",442.79],["2026-02-13",435.18],["2026-02-20",422.43],["2026-02-27",440.2],["2026-03-06",414.4],["2026-03-13",412.2],["2026-03-20",379.4],["2026-03-27",367.5],["2026-04-03",391.49],["2026-04-10",393.12],["2026-04-17",387.91],["2026-04-24",369.89],["2026-05-01",403.1],["2026-05-08",396.87],["2026-05-15",420.5],["2026-05-22",445.64],["2026-05-29",462.38],["2026-06-05",473.44],["2026-06-12",474.1],["2026-06-19",459.69],["2026-06-26",505.53],["2026-07-03",507.95],["2026-07-10",497.36],["2026-07-17",493.39],["2026-07-24",500.47],["2026-07-31",480.73],["2026-08-07",496.15],["2026-08-14",493.83],["2026-08-21",525.32],["2026-08-28",491.51],["2026-09-04",480.94],["2026-09-11",466.86],["2026-09-18",482.44],["2026-09-25",495.21],["2026-10-02",478.22],["2026-10-09",493.46],["2026-10-16",526.0]],"core_only":[["2021-10-22",102.0],["2021-10-29",106.61],["2021-11-05",110.89],["2021-11-12",108.65],["2021-11-19",109.09],["2021-11-26",108.95],["2021-12-03",102.76],["2021-12-10",102.16],["2021-12-17",111.91],["2021-12-24",114.28],["2021-12-31",115.59],["2022-01-07",107.4],["2022-01-14",100.96],["2022-01-21",100.51],["2022-01-28",101.36],["2022-02-04",99.29],["2022-02-11",96.21],["2022-02-18",97.33],["2022-02-25",102.47],["2022-03-04",108.96],["2022-03-11",111.09],["2022-03-18",123.3],["2022-03-25",124.37],["2022-04-01",125.5],["2022-04-08",137.95],["2022-04-15",131.36],["2022-04-22",120.35],["2022-04-29",126.05],["2022-05-06",128.09],["2022-05-13",125.16],["2022-05-20",128.23],["2022-05-27",138.72],["2022-06-03",129.42],["2022-06-10",127.45],["2022-06-17",124.84],["2022-06-24",139.63],["2022-07-01",139.25],["2022-07-08",141.7],["2022-07-15",142.18],["2022-07-22",140.97],["2022-07-29",141.37],["2022-08-05",129.28],["2022-08-12",132.16],["2022-08-19",138.42],["2022-08-26",135.35],["2022-09-02",129.29],["2022-09-09",136.26],["2022-09-16",132.51],["2022-09-23",133.6],["2022-09-30",138.67],["2022-10-07",140.08],["2022-10-14",142.09],["2022-10-21",146.09],["2022-10-28",154.24],["2022-11-04",153.18],["2022-11-11",151.0],["2022-11-18",154.99],["2022-11-25",156.52],["2022-12-02",160.57],["2022-12-09",154.7],["2022-12-16",154.22],["2022-12-23",157.64],["2022-12-30",156.77],["2023-01-06",154.24],["2023-01-13",152.05],["2023-01-20",144.45],["2023-01-27",138.41],["2023-02-03",137.19],["2023-02-10",139.92],["2023-02-17",131.33],["2023-02-24",128.59],["2023-03-03",127.29],["2023-03-10",125.91],["2023-03-17",131.5],["2023-03-24",135.1],["2023-03-31",139.11],["2023-04-07",154.77],["2023-04-14",158.15],["2023-04-21",165.12],["2023-04-28",172.21],["2023-05-05",190.74],["2023-05-12",193.69],["2023-05-19",197.24],["2023-05-26",189.47],["2023-06-02",198.33],["2023-06-09",200.69],["2023-06-16",201.64],["2023-06-23",209.59],["2023-06-30",217.29],["2023-07-07",206.23],["2023-07-14",202.58],["2023-07-21",209.15],["2023-07-28",206.03],["2023-08-04",201.14],["2023-08-11",240.78],["2023-08-18",250.85],["2023-08-25",255.23],["2023-09-01",257.8],["2023-09-08",272.56],["2023-09-15",265.55],["2023-09-22",252.74],["2023-09-29",246.47],["2023-10-06",259.59],["2023-10-13",280.13],["2023-10-20",264.94],["2023-10-27",251.48],["2023-11-03",254.94],["2023-11-10",268.62],["2023-11-17",265.87],["2023-11-24",270.16],["2023-12-01",262.35],["2023-12-08",268.75],["2023-12-15",256.85],["2023-12-22",256.08],["2023-12-29",261.81],["2024-01-05",284.48],["2024-01-12",300.28],["2024-01-19",291.66],["2024-01-26",299.52],["2024-02-02",318.04],["2024-02-09",365.25],["2024-02-16",392.3],["2024-02-23",378.63],["2024-03-01",383.51],["2024-03-08",370.07],["2024-03-15",362.84],["2024-03-22",369.33],["2024-03-29",373.38],["2024-04-05",369.32],["2024-04-12",352.14],["2024-04-19",340.21],["2024-04-26",343.59],["2024-05-03",344.28],["2024-05-10",356.07],["2024-05-17",360.77],["2024-05-24",378.4],["2024-05-31",384.48],["2024-06-07",396.51],["2024-06-14",403.92],["2024-06-21",403.17],["2024-06-28",418.18],["2024-07-05",426.16],["2024-07-12",449.1],["2024-07-19",403.67],["2024-07-26",378.97],["2024-08-02",378.89],["2024-08-09",421.2],["2024-08-16",437.57],["2024-08-23",454.69],["2024-08-30",459.71],["2024-09-06",426.41],["2024-09-13",433.66],["2024-09-20",432.6],["2024-09-27",411.74],["2024-10-04",416.2],["2024-10-11",437.62],["2024-10-18",427.83],["2024-10-25",416.05],["2024-11-01",381.67],["2024-11-08",387.54],["2024-11-15",342.91],["2024-11-22",343.75],["2024-11-29",365.81],["2024-12-06",379.55],["2024-12-13",356.67],["2024-12-20",346.96],["2024-12-27",353.96],["2025-01-03",353.42],["2025-01-10",361.56],["2025-01-17",325.52],["2025-01-24",352.64],["2025-01-31",362.88],["2025-02-07",399.53],["2025-02-14",379.9],["2025-02-21",397.29],["2025-02-28",428.32],["2025-03-07",399.26],["2025-03-14",371.52],["2025-03-21",382.69],["2025-03-28",370.95],["2025-04-04",332.69],["2025-04-11",330.05],["2025-04-18",378.86],["2025-04-25",399.09],["2025-05-02",371.44],["2025-05-09",331.02],["2025-05-16",341.38],["2025-05-23",321.55],["2025-05-30",332.42],["2025-06-06",347.04],["2025-06-13",369.49],["2025-06-20",343.79],["2025-06-27",348.78],["2025-07-04",351.15],["2025-07-11",354.83],["2025-07-18",339.49],["2025-07-25",358.53],["2025-08-01",331.3],["2025-08-08",271.9],["2025-08-15",306.32],["2025-08-22",311.53],["2025-08-29",322.0],["2025-09-05",319.68],["2025-09-12",339.33],["2025-09-19",335.8],["2025-09-26",317.73],["2025-10-03",377.23],["2025-10-10",374.06],["2025-10-17",354.27],["2025-10-24",364.31],["2025-10-31",383.62],["2025-11-07",419.03],["2025-11-14",473.85],["2025-11-21",491.03],["2025-11-28",497.35],["2025-12-05",463.82],["2025-12-12",471.78],["2025-12-19",492.12],["2025-12-26",495.04],["2026-01-02",496.14],["2026-01-09",487.69],["2026-01-16",471.32],["2026-01-23",480.97],["2026-01-30",468.07],["2026-02-06",477.04],["2026-02-13",466.4],["2026-02-20",452.56],["2026-02-27",471.83],["2026-03-06",442.72],["2026-03-13",437.81],["2026-03-20",398.35],["2026-03-27",385.7],["2026-04-03",411.16],["2026-04-10",412.88],["2026-04-17",404.05],["2026-04-24",381.19],["2026-05-01",415.64],["2026-05-08",407.83],["2026-05-15",436.76],["2026-05-22",468.62],["2026-05-29",491.16],["2026-06-05",501.21],["2026-06-12",501.48],["2026-06-19",480.92],["2026-06-26",544.43],["2026-07-03",549.43],["2026-07-10",534.94],["2026-07-17",528.03],["2026-07-24",531.44],["2026-07-31",510.41],["2026-08-07",526.84],["2026-08-14",524.36],["2026-08-21",557.88],["2026-08-28",521.89],["2026-09-04",510.64],["2026-09-11",495.64],["2026-09-18",512.22],["2026-09-25",529.78],["2026-10-02",505.28],["2026-10-09",528.88],["2026-10-16",576.24]]},"all":[{"t":"AMLX","d":"2022-03-30","p":0.607,"c":"small","v":"unfavourable","m":-0.486},{"t":"NVAX","d":"2022-06-07","p":0.781,"c":"mid","v":"favourable","m":-0.1047},{"t":"BLUE","d":"2022-06-09","p":0.366,"c":"small","v":"favourable","m":0.0332},{"t":"BLUE","d":"2022-06-10","p":0.886,"c":"small","v":"favourable","m":0.1828},{"t":"MRNA","d":"2022-06-14","p":0.539,"c":"large","v":"favourable","m":-0.0411},{"t":"AMLX","d":"2022-09-07","p":0.61,"c":"small","v":"favourable","m":0.1248},{"t":"VERU","d":"2022-11-09","p":0.482,"c":"small","v":"unfavourable","m":-0.3266},{"t":"CDTX","d":"2023-01-24","p":0.825,"c":"small","v":"favourable","m":0.6341},{"t":"EBS","d":"2023-02-15","p":0.858,"c":"small","v":"favourable","m":0.136},{"t":"PFE","d":"2023-03-16","p":0.682,"c":"large","v":"favourable","m":0.006},{"t":"BIIB","d":"2023-03-22","p":0.577,"c":"large","v":"favourable","m":0.0076},{"t":"INVA","d":"2023-04-17","p":0.846,"c":"small","v":"favourable","m":-0.0256},{"t":"PRGO","d":"2023-05-09","p":0.541,"c":"mid","v":"favourable","m":-0.013},{"t":"SPRY","d":"2023-05-11","p":0.577,"c":"small","v":"favourable","m":0.3378},{"t":"SRPT","d":"2023-05-12","p":0.599,"c":"mid","v":"favourable","m":0.2538},{"t":"PFE","d":"2023-05-18","p":0.787,"c":"large","v":"favourable","m":-0.0105},{"t":"BIIB","d":"2023-06-09","p":0.927,"c":"large","v":"favourable","m":0.0454},{"t":"BCLI","d":"2023-09-27","p":0.709,"c":"small","v":"unfavourable","m":-0.7488},{"t":"AMGN","d":"2023-10-05","p":0.497,"c":"large","v":"unfavourable","m":0.0044},{"t":"MRK","d":"2023-11-17","p":0.355,"c":"large","v":"unfavourable","m":0.005},{"t":"GERN","d":"2024-03-14","p":0.885,"c":"small","v":"favourable","m":0.5701},{"t":"BMY","d":"2024-03-15","p":0.738,"c":"large","v":"favourable","m":-0.0517},{"t":"JNJ","d":"2024-03-15","p":0.807,"c":"large","v":"favourable","m":-0.0367},{"t":"NVO","d":"2024-05-24","p":0.66,"c":"large","v":"unfavourable","m":-0.008},{"t":"LLY","d":"2024-06-10","p":0.862,"c":"large","v":"favourable","m":0.0409},{"t":"ZVRA","d":"2024-08-02","p":0.604,"c":"small","v":"favourable","m":0.4327},{"t":"BMY","d":"2024-09-26","p":0.775,"c":"large","v":"unfavourable","m":0.018},{"t":"MRK","d":"2024-09-26","p":0.775,"c":"large","v":"unfavourable","m":-0.0168},{"t":"LXRX","d":"2024-10-31","p":0.633,"c":"small","v":"unfavourable","m":-0.3441},{"t":"JNJ","d":"2025-05-20","p":0.597,"c":"large","v":"favourable","m":0.0239},{"t":"PFE","d":"2025-05-21","p":0.64,"c":"large","v":"unfavourable","m":0.0195},{"t":"URGN","d":"2025-05-21","p":0.561,"c":"small","v":"unfavourable","m":-0.5858},{"t":"GSK","d":"2025-07-17","p":0.759,"c":"large","v":"unfavourable","m":-0.0517},{"t":"AZN","d":"2026-04-30","p":0.796,"c":"large","v":"unfavourable","m":-0.0148},{"t":"MRNA","d":"2026-06-18","p":0.688,"c":"large","v":"favourable","m":0.1383},{"t":"CAPR","d":"2026-07-29","p":0.498,"c":"small","v":"unfavourable","m":-0.7873},{"t":"REPL","d":"2026-07-30","p":0.264,"c":"small","v":"favourable","m":0.2978}]};
-const ids = ["cap","yrs","ur","uv","core","cmu","csd","hit","calls","size","prem","now","nhit","nprints","mf","pf","bth"]; const el = {}; ids.forEach(i => el[i] = document.getElementById(i));
-const PROFILES = { balanced: {core: 90, cmu: 2, csd: 6, hit: 75, calls: 8, size: 10, prem: 0, now: 25, nhit: 70, nprints: 8, bth: 70}, growth: {core: 80, cmu: 2, csd: 6, hit: 75, calls: 8, size: 20, prem: 0, now: 50, nhit: 70, nprints: 8, bth: 70}, underlying: {core: 100, cmu: 0, csd: 0, hit: 75, calls: 0, size: 0, prem: 0, now: 0, nhit: 70, nprints: 8, bth: 70} };
-function rnd() { return Math.random(); } function randn() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
-const f1 = v => "$" + v.toFixed(1) + "m", pc = v => (v * 100 >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(0) + "%";
-function run() {
-  const P = {}; ids.forEach(i => { P[i] = parseFloat(el[i].value); document.getElementById("o_" + i).textContent = el[i].value; });
-  const ro = document.getElementById("ro").checked; const moves = ro ? MV.adcom_moves.concat(MV.readout_moves) : MV.adcom_moves;
-  const N = 2000, Y = P.yrs; const core = P.core / 100, reader = 1 - core;
-  const paths = [], upaths = [], comp = {core: 0, reader: 0, prem: 0, now: 0, fees: 0}; const yearRets = Array.from({length: Y}, () => []);
+
+// ---------- inputs: one definition drives the controls, the register, the summary and the sensitivity chart
+const INPUTS = [
+  { id: "cap", card: "book", label: "Capital", unit: "$m", min: 1, max: 100, step: 1, fmt: v => "$" + v + "m", record: null, source: "Your choice" },
+  { id: "yrs", card: "book", label: "Years", unit: "", min: 1, max: 5, step: 1, fmt: v => v + (v == 1 ? " year" : " years"), record: null, source: "Your choice" },
+  { id: "ur", card: "book", label: "Lilly's own return a year", unit: "%", min: -20, max: 40, step: 1, fmt: v => v + "%", record: { v: 39, t: "39%, Oct 2021 to Oct 2026" }, source: "Broker daily prices; 11% is the P&L assumption" },
+  { id: "core", card: "s1", label: "Share of the book in the core", unit: "%", min: 50, max: 100, step: 5, fmt: v => v + "%", record: null, source: "Technical Specification 8.7" },
+  { id: "cmu", card: "s1", label: "Overlay above the holding, a year", unit: "pts", min: -5, max: 8, step: 0.5, fmt: v => (v > 0 ? "+" : "") + v + " pts", record: { v: 2, t: "about +2, five years" }, source: "Simulation Record, calendar design on Lilly" },
+  { id: "hit", card: "s2", label: "Right on confident calls", unit: "%", min: 50, max: 90, step: 1, fmt: v => v + "%", record: { v: 65, t: "64% to 67%" }, source: "Redesign Record 8: 204 documents, trained only on earlier years" },
+  { id: "calls", card: "s2", label: "Confident calls a year", unit: "", min: 0, max: 15, step: 1, fmt: v => String(v), record: { v: 2, t: "about 2" }, source: "Committee record 2022 to 2026 at the 70% filter; plan adds readouts and decisions" },
+  { id: "size", card: "s2", label: "Each call, share of the book", unit: "%", min: 0, max: 30, step: 1, fmt: v => v + "%", record: null, source: "Technical Specification 8.7: 10% to 20% per call" },
+  { id: "now", card: "s3", label: "Swing into each results day", unit: "%", min: 0, max: 100, step: 5, fmt: v => v + "%", record: null, source: "Technical Specification 8.7: 25% or 50% of the core" },
+  { id: "nhit", card: "s3", label: "Right on results days", unit: "%", min: 50, max: 85, step: 1, fmt: v => v + "%", record: { v: null, t: "scored live from 29 Oct" }, source: "Purchased prescription data; first print 29 October 2026" },
+  { id: "nprints", card: "s3", label: "Results days a year", unit: "", min: 0, max: 8, step: 1, fmt: v => String(v), record: null, source: "Lilly four, Novo four through options" },
+  { id: "uv", card: "more", label: "Lilly's volatility (0 is a steady path)", unit: "%", min: 0, max: 60, step: 1, fmt: v => v + "%", record: { v: 33, t: "about 33%" }, source: "Broker daily prices" },
+  { id: "csd", card: "more", label: "Overlay spread, a year", unit: "pts", min: 0, max: 15, step: 1, fmt: v => v + " pts", record: { v: 6, t: "about 6" }, source: "Simulation Record" },
+  { id: "prem", card: "more", label: "Premium seller, risk per event", unit: "%", min: 0, max: 4, step: 0.5, fmt: v => v + "%", record: null, source: "Scenario until option history is bought" },
+  { id: "mf", card: "more", label: "Management fee, a year", unit: "%", min: 0, max: 2, step: 0.25, fmt: v => v + "%", record: null, source: "Fee model" },
+  { id: "pf", card: "more", label: "Performance fee, share of excess", unit: "%", min: 0, max: 30, step: 5, fmt: v => v + "%", record: null, source: "Fee model" },
+];
+const IN = Object.fromEntries(INPUTS.map(d => [d.id, d]));
+const PRESETS = {
+  growth: { name: "Growth plan", cap: 10, yrs: 3, ur: 11, core: 80, cmu: 2, hit: 75, calls: 8, size: 20, now: 50, nhit: 70, nprints: 8, uv: 0, csd: 6, prem: 0, mf: 0, pf: 0, ro: false },
+  balanced: { name: "Balanced plan", cap: 10, yrs: 3, ur: 11, core: 90, cmu: 2, hit: 75, calls: 8, size: 10, now: 25, nhit: 70, nprints: 8, uv: 0, csd: 6, prem: 0, mf: 0, pf: 0, ro: false },
+  record: { name: "Record so far", cap: 10, yrs: 3, ur: 11, core: 80, cmu: 2, hit: 65, calls: 2, size: 20, now: 0, nhit: 65, nprints: 4, uv: 0, csd: 6, prem: 0, mf: 0, pf: 0, ro: false },
+  holding: { name: "Holding only", cap: 10, yrs: 3, ur: 11, core: 100, cmu: 0, hit: 75, calls: 0, size: 0, now: 0, nhit: 70, nprints: 8, uv: 0, csd: 0, prem: 0, mf: 0, pf: 0, ro: false },
+};
+let P = { ...PRESETS.growth }; let preset = "growth"; let baseline = null;
+const PLAN = () => PRESETS[preset === "balanced" ? "balanced" : "growth"];
+
+// ---------- helpers
+const $ = id => document.getElementById(id);
+const f1 = v => "$" + v.toFixed(1) + "m";
+const pc = (v, d = 0) => (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(d) + "%";
+const pts = (v, d = 0) => (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(d) + " pts";
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const q = (arr, p) => { const a = Float64Array.from(arr).sort(); return a[Math.min(a.length - 1, Math.floor(p * a.length))]; };
+function niceStep(r) { const p = Math.pow(10, Math.floor(Math.log10(r))), f = r / p; return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p; }
+function svgEl(fig, W, H, inner, label) { fig.querySelectorAll("svg").forEach(e => e.remove()); const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("viewBox", `0 0 ${W} ${H}`); s.setAttribute("role", "img"); s.setAttribute("aria-label", label); s.innerHTML = inner; fig.appendChild(s); return s; }
+function showTip(fig, ev, html) { const tip = fig.querySelector(".tip"); const r = fig.getBoundingClientRect(); tip.innerHTML = html; tip.style.display = "block"; const x = ev.clientX - r.left, y = ev.clientY - r.top; tip.style.left = Math.max(0, Math.min(x + 14, r.width - tip.offsetWidth - 2)) + "px"; tip.style.top = Math.max(0, y - tip.offsetHeight - 10) + "px"; }
+const hideTip = fig => { fig.querySelector(".tip").style.display = "none"; };
+
+// ---------- the simulation
+function simulate(P, N, seed) {
+  const rnd = mulberry32(seed); const randn = () => { let u = 0, v = 0; while (u === 0) u = rnd(); while (v === 0) v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const moves = P.ro ? MV.adcom_moves.concat(MV.readout_moves) : MV.adcom_moves; const Y = P.yrs, core = P.core / 100, reader = 1 - core;
+  const paths = new Array(N), upaths = new Array(N), yearRets = Array.from({ length: Y }, () => new Float64Array(N)); const comp = { s1: 0, s2: 0, s3: 0, s3b: 0, fees: 0 };
   for (let s = 0; s < N; s++) {
     let book = P.cap, under = P.cap; const bp = [book], up = [under];
     for (let y = 0; y < Y; y++) {
-      const mu = Math.log(1 + P.ur / 100) - 0.5 * (P.uv / 100) ** 2; const u = Math.exp(mu + (P.uv / 100) * randn()) - 1;
+      const sig = P.uv / 100; const u = Math.exp(Math.log(1 + P.ur / 100) - 0.5 * sig * sig + sig * randn()) - 1;
       const cx = (P.cmu + P.csd * randn()) / 100;
-      let rd = 0; for (let k = 0; k < P.calls; k++) { const m = Math.abs(moves[Math.floor(rnd() * moves.length)]); const right = rnd() < P.hit / 100; rd += (P.size / 100) * ((right ? m : -m) - 0.004); }
-      let pm = 0; if (P.prem > 0) { pm = (rnd() < 0.15 ? (-0.08 + 0.04 * randn()) : (0.045 + 0.03 * randn())) * (P.prem / 2); }
-      let nw = 0; if (P.now > 0) { for (let k = 0; k < P.nprints; k++) { const mv = Math.abs(0.063 + 0.035 * randn()); nw += (P.now / 100) * ((rnd() < P.nhit / 100 ? mv : -mv) - 0.004); } }
+      let rd = 0; for (let k = 0; k < P.calls; k++) { const m = Math.abs(moves[Math.floor(rnd() * moves.length)]); rd += (P.size / 100) * ((rnd() < P.hit / 100 ? m : -m) - 0.004); }
+      let pm = 0; if (P.prem > 0) pm = (rnd() < 0.15 ? (-0.08 + 0.04 * randn()) : (0.045 + 0.03 * randn())) * (P.prem / 2);
+      let nw = 0; if (P.now > 0) for (let k = 0; k < P.nprints; k++) { const mv = Math.abs(0.063 + 0.035 * randn()); nw += (P.now / 100) * ((rnd() < P.nhit / 100 ? mv : -mv) - 0.004); }
       const gross = core * (1 + u) * (1 + cx + pm + nw) + reader + rd - 1;
       let fee = P.mf / 100; const ex = gross - u; if (ex > 0) fee += (P.pf / 100) * ex;
-      const net = gross - fee; yearRets[y].push(net);
-      comp.core += core * ((1 + u) * (1 + cx) - 1 - u); comp.reader += rd; comp.prem += core * (1 + u) * pm; comp.now += core * (1 + u) * nw; comp.fees -= fee;
+      const net = gross - fee; yearRets[y][s] = net;
+      comp.s1 += core * (1 + u) * cx; comp.s2 += rd; comp.s3 += core * (1 + u) * nw; comp.s3b += core * (1 + u) * pm; comp.fees -= fee;
       book *= 1 + net; under *= 1 + u; bp.push(book); up.push(under);
     }
-    paths.push(bp); upaths.push(up);
+    paths[s] = bp; upaths[s] = up;
   }
-  const q = (arr, p) => { const a = arr.slice().sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(p * a.length))]; };
+  const tot = N * Y; for (const k in comp) comp[k] /= tot;
   const col = (ps, y) => ps.map(p => p[y]); const med = [], lo = [], hi = [], um = [];
-  for (let y = 0; y <= Y; y++) { const c = col(paths, y); med.push(q(c, 0.5)); lo.push(q(c, 0.1)); hi.push(q(c, 0.9)); um.push(q(col(upaths, y), 0.5)); }
-  const endB = col(paths, Y), endU = col(upaths, Y); const medEnd = q(endB, 0.5), badEnd = q(endB, 0.1), goodEnd = q(endB, 0.9), uEnd = q(endU, 0.5);
-  const cagr = v => Math.pow(v / P.cap, 1 / Y) - 1; const exYr = endB.map((b, i) => cagr(b) - cagr(endU[i]));
-  document.getElementById("t_med").textContent = f1(medEnd); document.getElementById("t_med_sub").textContent = `the holding ${f1(uEnd)}; good outcome ${f1(goodEnd)}`;
-  document.getElementById("t_cagr").textContent = pc(cagr(medEnd)); document.getElementById("t_cagr_sub").textContent = `the holding ${pc(cagr(uEnd))} a year`;
-  document.getElementById("t_bad").textContent = f1(badEnd); document.getElementById("t_bad_sub").textContent = `${pc(cagr(badEnd))} a year on the 10th percentile path`;
-  document.getElementById("t_ex").textContent = pc(q(exYr, 0.5)).replace("%", "") + " pts"; document.getElementById("t_ex_sub").textContent = `median; 10th percentile ${pc(q(exYr, 0.1)).replace("%", "")} pts`;
-  const fig = document.getElementById("fig"); fig.querySelectorAll("svg").forEach(e => e.remove()); const tip = fig.querySelector(".tip");
-  const W = 760, H = 300, m = {t: 12, r: 86, b: 26, l: 46}; const y1 = Math.max(...hi) * 1.04, y0 = Math.min(P.cap * 0.6, Math.min(...lo)) * 0.96;
-  const X = y => m.l + y / Y * (W - m.l - m.r), Yy = v => m.t + (y1 - v) / (y1 - y0) * (H - m.t - m.b);
-  const stepv = (() => { const r = (y1 - y0) / 5, p = Math.pow(10, Math.floor(Math.log10(r))), f = r / p; return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p; })();
-  let g = ""; for (let v = Math.ceil(y0 / stepv) * stepv; v <= y1; v += stepv) g += `<line class="grid" x1="${m.l}" x2="${W - m.r}" y1="${Yy(v)}" y2="${Yy(v)}"/><text x="${m.l - 6}" y="${Yy(v) + 3}" text-anchor="end">${v.toFixed(0)}</text>`;
-  for (let y = 0; y <= Y; y++) g += `<text x="${X(y)}" y="${H - m.b + 14}" text-anchor="middle">${y === 0 ? "now" : "year " + y}</text>`;
-  const pts = arr => arr.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Yy(v).toFixed(1)}`).join("");
-  g += `<path d="${pts(lo)}${hi.slice().reverse().map((v, i) => `L${X(Y - i).toFixed(1)},${Yy(v).toFixed(1)}`).join("")}Z" fill="var(--band)"/>`;
-  g += `<path class="base" d="${pts(um)}"/><path class="line l1" d="${pts(med)}"/>`;
-  const labs = [{y: Yy(med[Y]) + 3, t: f1(med[Y]) + " book"}, {y: Yy(um[Y]) + 3, t: f1(um[Y]) + " holding"}]; labs.sort((a, b) => a.y - b.y); if (labs[1].y - labs[0].y < 12) labs[1].y = labs[0].y + 12; labs.forEach(l => g += `<text class="endlab" x="${W - m.r + 6}" y="${l.y}">${l.t}</text>`);
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "Simulated value of the book and the holding"); svg.innerHTML = g; fig.appendChild(svg);
-  svg.onmousemove = ev => { const r = svg.getBoundingClientRect(); const px = (ev.clientX - r.left) / r.width * W; const y = Math.round((px - m.l) / (W - m.l - m.r) * Y); if (y < 0 || y > Y) { tip.style.display = "none"; return; } tip.innerHTML = `<b>${y === 0 ? "now" : "year " + y}</b><br>book ${f1(med[y])} (${f1(lo[y])} to ${f1(hi[y])})<br>holding ${f1(um[y])}`; tip.style.display = "block"; tip.style.left = Math.min(ev.clientX - r.left + 12, r.width - tip.offsetWidth - 4) + "px"; tip.style.top = (ev.clientY - r.top - 8) + "px"; };
-  svg.onmouseleave = () => tip.style.display = "none";
-  let yt = "<thead><tr><th>Year</th><th class=\"n\">The holding</th><th class=\"n\">Book, median</th><th class=\"n\">Book, bad year</th><th class=\"n\">Book, good year</th><th class=\"n\">Value, median</th></tr></thead><tbody>";
-  for (let y = 0; y < Y; y++) { const yr = yearRets[y]; const ur = col(upaths, y + 1).map((v, i) => v / upaths[i][y] - 1); yt += `<tr><td>Year ${y + 1}</td><td class="n">${pc(q(ur, 0.5))}</td><td class="n"><b>${pc(q(yr, 0.5))}</b></td><td class="n">${pc(q(yr, 0.1))}</td><td class="n">${pc(q(yr, 0.9))}</td><td class="n">${f1(med[y + 1])}</td></tr>`; }
-  yt += `<tr class="tot"><td>${Y} years, compounded a year</td><td class="n">${pc(cagr(uEnd))}</td><td class="n">${pc(cagr(medEnd))}</td><td class="n">${pc(cagr(badEnd))}</td><td class="n">${pc(cagr(goodEnd))}</td><td class="n">${f1(medEnd)}</td></tr></tbody>`; document.getElementById("yt").innerHTML = yt;
-  const tot = N * Y; const cr = {core: comp.core / tot, reader: comp.reader / tot, prem: comp.prem / tot, now: comp.now / tot, fees: comp.fees / tot};
-  document.getElementById("ct").innerHTML = `<thead><tr><th>Source</th><th class="n">Points a year above the holding, mean</th></tr></thead><tbody><tr><td>Strategy 1, the core overlay (on ${P.core}% of the book)</td><td class="n">${pc(cr.core).replace("%","")}</td></tr><tr><td>Strategy 2, the reader (on ${(100 - P.core)}% of the book)</td><td class="n">${pc(cr.reader).replace("%","")}</td></tr><tr><td>Strategy 3, premium seller</td><td class="n">${pc(cr.prem).replace("%","")}</td></tr><tr><td>Strategy 3, demand nowcaster</td><td class="n">${pc(cr.now).replace("%","")}</td></tr><tr><td>Fees</td><td class="n">${pc(cr.fees).replace("%","")}</td></tr><tr class="tot"><td>Total</td><td class="n">${pc(cr.core + cr.reader + cr.prem + cr.now + cr.fees).replace("%","")}</td></tr></tbody>`;
-  const allYears = yearRets.flat(); const negY = allYears.filter(v => v < 0).length / allYears.length, big = allYears.filter(v => v > 0.30).length / allYears.length, worse = endB.filter((b, i) => b < endU[i]).length / N, lossY = allYears.filter(v => v < -0.20).length / allYears.length;
-  document.getElementById("ot").innerHTML = `<thead><tr><th>Outcome</th><th class="n">Chance</th></tr></thead><tbody><tr><td>A losing year</td><td class="n">${(negY*100).toFixed(0)}%</td></tr><tr><td>A year worse than −20%</td><td class="n">${(lossY*100).toFixed(0)}%</td></tr><tr><td>A year above +30%</td><td class="n">${(big*100).toFixed(0)}%</td></tr><tr><td>Finishing behind the holding after ${Y} years</td><td class="n">${(worse*100).toFixed(0)}%</td></tr></tbody>`;
-  backtest(P);
+  for (let y = 0; y <= Y; y++) { const c = col(paths, y); med.push(q(c, .5)); lo.push(q(c, .1)); hi.push(q(c, .9)); um.push(q(col(upaths, y), .5)); }
+  const endB = col(paths, Y), endU = col(upaths, Y); const cagr = v => Math.pow(Math.max(v, 1e-9) / P.cap, 1 / Y) - 1;
+  const exYr = endB.map((b, i) => cagr(b) - cagr(endU[i]));
+  return { P, Y, paths, upaths, yearRets, comp, med, lo, hi, um, endB, endU, cagr, medEnd: q(endB, .5), badEnd: q(endB, .1), goodEnd: q(endB, .9), uEnd: q(endU, .5), exMed: q(exYr, .5), exP10: q(exYr, .1), behind: endB.filter((b, i) => b < endU[i]).length / N };
 }
-function backtest(P) {
-  const size = P.size / 100, cap = P.cap, th = (P.bth - 50) / 100; const sizes = document.getElementById("bsz").value, overlay = document.getElementById("bov").checked;
-  const U = BT.retro.underlying, C = overlay ? BT.retro.core_only : U;
-  const tr = BT.all.filter(t => Math.abs(t.p - 0.5) >= th && (sizes === "all" || t.c === "small" || t.c === "mid")).map(t => ({...t, call: t.p > 0.5 ? 1 : -1})).map(t => ({...t, r: t.call * t.m - 0.004})).sort((a, b) => a.d < b.d ? -1 : 1);
-  let k = 0, sleeve = 1; const book = [];
-  for (let i = 0; i < C.length; i++) { while (k < tr.length && tr[k].d <= C[i][0]) { sleeve *= 1 + size * tr[k].r; k++; } book.push([C[i][0], C[i][1] * sleeve]); }
-  const yrs = 5, cg = v => Math.pow(v / 100, 1 / yrs) - 1; const uE = U[U.length - 1][1], cE = C[C.length - 1][1], bE = book[book.length - 1][1]; const $ = v => cap * v / 100;
-  document.getElementById("b_u").textContent = f1($(uE)); document.getElementById("b_u_sub").textContent = `${pc(cg(uE))} a year compounded`;
-  document.getElementById("b_c").textContent = f1($(cE)); document.getElementById("b_c_sub").textContent = overlay ? `${pc(cg(cE))} a year; ${pc(cg(cE) - cg(uE)).replace("%", "")} pts over the holding` : "overlay switched off: the holding alone";
-  document.getElementById("b_b").textContent = f1($(bE)); document.getElementById("b_b_sub").textContent = `${pc(cg(bE))} a year at ${P.size}% reader positions`;
-  document.getElementById("b_x").textContent = pc(cg(bE) - cg(uE)).replace("%", "") + " pts"; document.getElementById("b_x_sub").textContent = `the book against Lilly held outright, five years`;
-  const fig = document.getElementById("bfig"); fig.querySelectorAll("svg").forEach(e => e.remove()); const tip = fig.querySelector(".tip");
-  const W = 760, H = 300, m = {t: 12, r: 92, b: 26, l: 46}; const parse = s => new Date(s + "T00:00:00Z").getTime(); const x0 = parse(U[0][0]), x1 = parse(U[U.length - 1][0]);
-  const all = U.concat(C, book).map(p => p[1]); const y1 = Math.max(...all) * 1.04, y0 = Math.min(...all) * 0.9;
-  const X = t => m.l + (t - x0) / (x1 - x0) * (W - m.l - m.r), Yy = v => m.t + (y1 - v) / (y1 - y0) * (H - m.t - m.b);
-  const stepv = (() => { const r = (y1 - y0) / 5, p = Math.pow(10, Math.floor(Math.log10(r))), f = r / p; return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p; })();
-  let g = ""; for (let v = Math.ceil(y0 / stepv) * stepv; v <= y1; v += stepv) g += `<line class="grid" x1="${m.l}" x2="${W - m.r}" y1="${Yy(v)}" y2="${Yy(v)}"/><text x="${m.l - 6}" y="${Yy(v) + 3}" text-anchor="end">${v.toFixed(0)}</text>`;
-  for (let yr = 2022; yr <= 2026; yr++) { const t = Date.UTC(yr, 0, 1); g += `<text x="${X(t)}" y="${H - m.b + 14}" text-anchor="middle">${yr}</text>`; }
-  const pts = arr => arr.map((p, i) => `${i ? "L" : "M"}${X(parse(p[0])).toFixed(1)},${Yy(p[1]).toFixed(1)}`).join("");
-  g += `<path class="base" d="${pts(U)}"/>` + (overlay ? `<path class="line" style="stroke:var(--accent-mid)" d="${pts(C)}"/>` : "") + `<path class="line l1" d="${pts(book)}"/>`;
-  tr.forEach(t => { const x = X(parse(t.d)); g += `<line x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${H - m.b}" y2="${H - m.b - 7}" stroke="${t.r > 0 ? "var(--accent)" : "#8a3b3b"}" stroke-width="2"/>`; });
-  const labs = [{y: Yy(bE) + 3, t: `${bE.toFixed(0)} book`}, {y: Yy(uE) + 3, t: `${uE.toFixed(0)} holding`}]; if (overlay) labs.push({y: Yy(cE) + 3, t: `${cE.toFixed(0)} strategy 1`}); labs.sort((a, b) => a.y - b.y); for (let i = 1; i < labs.length; i++) if (labs[i].y - labs[i-1].y < 12) labs[i].y = labs[i-1].y + 12; labs.forEach(l => g += `<text class="endlab" x="${W - m.r + 6}" y="${l.y}">${l.t}</text>`);
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "Backtest: the holding, strategy one and the book, October 2021 to October 2026, indexed to 100; ticks mark the reader's trades"); svg.innerHTML = g; fig.appendChild(svg);
-  const nearest = (arr, t) => { let best = arr[0]; for (const p of arr) if (Math.abs(parse(p[0]) - t) < Math.abs(parse(best[0]) - t)) best = p; return best; };
-  svg.onmousemove = ev => { const r = svg.getBoundingClientRect(); const px = (ev.clientX - r.left) / r.width * W; if (px < m.l || px > W - m.r) { tip.style.display = "none"; return; } const t = x0 + (px - m.l) / (W - m.l - m.r) * (x1 - x0); const u = nearest(U, t), c = nearest(C, t), b = nearest(book, t); tip.innerHTML = `<b>${u[0]}</b><br>holding ${u[1].toFixed(0)}${overlay ? " · strategy 1 " + c[1].toFixed(0) : ""} · book ${b[1].toFixed(0)}`; tip.style.display = "block"; tip.style.left = Math.min(ev.clientX - r.left + 12, r.width - tip.offsetWidth - 4) + "px"; tip.style.top = (ev.clientY - r.top - 8) + "px"; };
-  svg.onmouseleave = () => tip.style.display = "none";
-  const hits = tr.filter(t => t.r > 0).length; const right = tr.filter(t => (t.call === 1) === (t.v === "favourable")).length;
-  document.getElementById("bt").innerHTML = `<thead><tr><th>Name</th><th>Meeting</th><th>Size</th><th class="n">Model</th><th>Call</th><th>Vote</th><th class="n">Move, posting close to after</th><th class="n">On a ${P.size}% position</th></tr></thead><tbody>` + (tr.length ? tr.map(t => `<tr><td><b>${t.t}</b></td><td>${t.d}</td><td>${t.c}</td><td class="n">${(t.p * 100).toFixed(0)}%</td><td>${t.call === 1 ? "favourable" : "unfavourable"}</td><td>${t.v}</td><td class="n">${pc(t.m)}</td><td class="n">${pc(size * t.r)}</td></tr>`).join("") : `<tr><td colspan="8">No meeting passes these filters.</td></tr>`) + `<tr class="tot"><td colspan="6">${tr.length} trades · ${right} called the vote right · ${hits} made money</td><td class="n"></td><td class="n">${pc(sleeve - 1)} on the book</td></tr></tbody>`;
-  document.getElementById("bt_note").textContent = `${BT.all.length} advisory committee meetings since 2022 have a model probability and a measured move; ${tr.length} pass the filters above. Each trade is entered at the close on the day the FDA posts its briefing document and closed the session after the vote. A call can be right on the vote and still lose a little when the stock had already moved on posting day. Forward, the plan assumes five such calls a year; this period supplied about one a year at the plan's filter.`;
+const SEED = 20261020;
+
+// ---------- controls
+function ctlHTML(d) {
+  const refs = [];
+  const planV = PLAN()[d.id];
+  if (d.card !== "book" || d.id === "ur") refs.push(`<button type="button" class="ref" data-set="${d.id}" data-v="${planV}">Plan <b>${esc(d.fmt(planV))}</b></button>`);
+  if (d.record) refs.push(d.record.v == null ? `<span class="ref static">Record <b>${esc(d.record.t)}</b></span>` : `<button type="button" class="ref" data-set="${d.id}" data-v="${d.record.v}">Record <b>${esc(d.record.t)}</b></button>`);
+  return `<div class="ctl"><label for="${d.id}">${esc(d.label)}</label><output id="o_${d.id}" class="num"></output><input type="range" id="${d.id}" min="${d.min}" max="${d.max}" step="${d.step}" value="${P[d.id]}">${refs.length ? `<div class="refs">${refs.join("")}</div>` : ""}</div>`;
 }
-function setProfile(name) { const p = PROFILES[name]; Object.keys(p).forEach(k => { el[k].value = p[k]; }); document.getElementById("bov").checked = name !== "underlying"; document.querySelectorAll(".pbtn").forEach(b => b.classList.toggle("on", b.dataset.p === name)); run(); }
-document.querySelectorAll(".pbtn").forEach(b => b.addEventListener("click", () => setProfile(b.dataset.p)));
-ids.forEach(i => el[i].addEventListener("input", () => { document.querySelectorAll(".pbtn").forEach(b => b.classList.remove("on")); run(); }));
-["ro", "bsz", "bov"].forEach(i => document.getElementById(i).addEventListener("change", run));
-const recap = document.getElementById("recap"); const openRecap = () => { recap.classList.add("open"); document.getElementById("recap_close").focus(); }; const closeRecap = () => { recap.classList.remove("open"); };
-document.getElementById("recap_open").addEventListener("click", openRecap); document.querySelectorAll(".recap-link").forEach(b => b.addEventListener("click", openRecap)); document.getElementById("recap_close").addEventListener("click", closeRecap);
-recap.addEventListener("click", ev => { if (ev.target === recap) closeRecap(); }); document.addEventListener("keydown", ev => { if (ev.key === "Escape") closeRecap(); });
-let seen = false; try { seen = sessionStorage.getItem("fm-recap") === "1"; sessionStorage.setItem("fm-recap", "1"); } catch (e) {}
-if (!seen) openRecap();
-run();
+const CARDS = {
+  book: { name: "Capital and the holding", sw: null, what: "What goes in, for how long, and what Lilly does on its own." },
+  s1: { name: "Strategy 1, platform core", sw: "var(--s1)", what: "Holds Lilly and lifts exposure into its dated events." },
+  s2: { name: "Strategy 2, the reader", sw: "var(--s2)", what: "Calls FDA advisory votes from the regulator's own documents." },
+  s3: { name: "Strategy 3, demand nowcaster", sw: "var(--s3)", what: "Leans the core into Lilly's and Novo's results days." },
+};
+function buildControls() {
+  for (const [k, c] of Object.entries(CARDS)) {
+    const about = k === "book" ? "" : `<button type="button" class="linkbtn" data-about="${k}">About</button>`;
+    $("c-" + k).innerHTML = `<div class="ccard-head"><span class="eyebrow">${c.sw ? `<span class="swatch" style="background:${c.sw}"></span>` : ""}${esc(c.name)}</span>${about}</div><p class="what">${esc(c.what)}</p>` + INPUTS.filter(d => d.card === k).map(ctlHTML).join("");
+  }
+  $("c-more-body").innerHTML = INPUTS.filter(d => d.card === "more").map(ctlHTML).join("") + `<div class="ctl sw"><label for="ro">Let the reader draw Phase 3 readout moves too</label><input type="checkbox" id="ro"></div>`;
+  INPUTS.forEach(d => $(d.id).addEventListener("input", () => { P[d.id] = parseFloat($(d.id).value); changed(); }));
+  $("ro").addEventListener("change", () => { P.ro = $("ro").checked; changed(); });
+  document.querySelectorAll("[data-set]").forEach(b => b.addEventListener("click", () => { const id = b.dataset.set; P[id] = parseFloat(b.dataset.v); $(id).value = P[id]; changed(); }));
+  document.querySelectorAll("[data-about]").forEach(b => b.addEventListener("click", () => { go("strategies"); const el = $(b.dataset.about); setTimeout(() => scrollParent(el.getBoundingClientRect().top + window.scrollY - 10), 30); }));
+}
+function syncControls() { INPUTS.forEach(d => { $(d.id).value = P[d.id]; }); $("ro").checked = !!P.ro; }
+function refreshOutputs() {
+  INPUTS.forEach(d => { $("o_" + d.id).textContent = d.fmt(P[d.id]); });
+  document.querySelectorAll("[data-set]").forEach(b => b.classList.toggle("active", Math.abs(P[b.dataset.set] - parseFloat(b.dataset.v)) < 1e-9));
+}
+function changedFromPlan() { const pl = PLAN(); return INPUTS.filter(d => d.card !== "book" || d.id === "ur").filter(d => Math.abs(P[d.id] - pl[d.id]) > 1e-9); }
+
+// ---------- rendering, simulate tab
+let SIM = null, sensTimer = null;
+function changed() { preset = matchPreset(); refreshOutputs(); render(); clearTimeout(sensTimer); sensTimer = setTimeout(renderSensitivity, 120); }
+function matchPreset() { for (const [k, p] of Object.entries(PRESETS)) if (INPUTS.every(d => Math.abs(P[d.id] - p[d.id]) < 1e-9) && !!P.ro === p.ro) return k; return "custom"; }
+function render() {
+  SIM = simulate(P, 2000, SEED); const S = SIM, Y = S.Y;
+  document.querySelectorAll("[data-preset]").forEach(b => b.classList.toggle("on", b.dataset.preset === preset));
+  const nm = preset === "custom" ? "Your scenario" : PRESETS[preset].name;
+  $("scenline").innerHTML = `<span><b>${nm}</b> · ${f1(P.cap)} for ${P.yrs} ${P.yrs == 1 ? "year" : "years"} · Lilly at ${P.ur}% a year${changedFromPlan().length && preset === "custom" ? ` · <span class="pill changed">${changedFromPlan().length} changed from plan</span>` : ""}</span><span>Median <b class="num">${f1(S.medEnd)}</b> · <b class="num">${pts(S.exMed)}</b> a year above Lilly</span>`;
+  // headline
+  const hold = S.uEnd;
+  $("say").innerHTML = preset === "holding" ? `Holding Lilly on its own turns <em>${f1(P.cap)}</em> into <em>${f1(hold)}</em> over ${Y} ${Y == 1 ? "year" : "years"} at ${P.ur}% a year. This is the line every other scenario is measured against.`
+    : `${nm} turns <em>${f1(P.cap)}</em> into <em>${f1(S.medEnd)}</em> over ${Y} ${Y == 1 ? "year" : "years"} in the median case, against ${f1(hold)} for holding Lilly. One outcome in ten ends below ${f1(S.badEnd)}.`;
+  const dl = (v, b, fmt) => { if (!baseline || b == null) return ""; const d = v - b; return ` <span class="delta ${d >= 0 ? "up" : "down"}">${d >= 0 ? "+" : "−"}${fmt(Math.abs(d))} vs baseline</span>`; };
+  $("st-end").textContent = f1(S.medEnd); $("st-end-d").innerHTML = `Lilly alone ${f1(hold)}` + dl(S.medEnd, baseline?.medEnd, v => "$" + v.toFixed(1) + "m");
+  $("st-cagr").textContent = pc(S.cagr(S.medEnd)); $("st-cagr-d").innerHTML = `Lilly ${pc(S.cagr(hold))} a year` + dl(S.cagr(S.medEnd), baseline?.cagr, v => (v * 100).toFixed(0) + " pts");
+  $("st-ex").textContent = pts(S.exMed); $("st-ex-d").innerHTML = `a year, median; 1 in 10 below ${pts(S.exP10)}` + dl(S.exMed, baseline?.ex, v => (v * 100).toFixed(0) + " pts");
+  $("st-bad").textContent = f1(S.badEnd); $("st-bad-d").innerHTML = `${pc(S.cagr(S.badEnd))} a year on that path` + dl(S.badEnd, baseline?.bad, v => "$" + v.toFixed(1) + "m");
+  $("baseinfo").textContent = baseline ? `Baseline: ${baseline.name}, ${f1(baseline.medEnd)}` : "";
+  $("pin").textContent = baseline ? "Clear baseline" : "Pin as baseline";
+  renderFan(); renderContrib(); renderHist(); renderTables(); renderStrategies(); renderRegister(); backtest();
+}
+function renderFan() {
+  const S = SIM, Y = S.Y, fig = $("fan"); const W = 760, H = 320, m = { t: 14, r: 112, b: 30, l: 48 };
+  const vals = S.hi.concat(S.lo, S.um, baseline ? baseline.med.slice(0, Y + 1) : []); const y1 = Math.max(...vals) * 1.05, y0 = Math.min(P.cap * .7, Math.min(...vals) * .95);
+  const X = y => m.l + y / Y * (W - m.l - m.r), Yy = v => m.t + (y1 - v) / (y1 - y0) * (H - m.t - m.b); const st = niceStep((y1 - y0) / 5);
+  let g = ""; for (let v = Math.ceil(y0 / st) * st; v <= y1; v += st) g += `<line class="grid" x1="${m.l}" x2="${W - m.r}" y1="${Yy(v)}" y2="${Yy(v)}"/><text x="${m.l - 8}" y="${Yy(v) + 4}" text-anchor="end">$${+v.toFixed(1)}m</text>`;
+  for (let y = 0; y <= Y; y++) g += `<text x="${X(y)}" y="${H - m.b + 18}" text-anchor="middle">${y === 0 ? "Today" : "Year " + y}</text>`;
+  const pth = a => a.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Yy(v).toFixed(1)}`).join("");
+  g += `<path d="${pth(S.lo)}${S.hi.slice().reverse().map((v, i) => `L${X(Y - i).toFixed(1)},${Yy(v).toFixed(1)}`).join("")}Z" fill="var(--band)"/>`;
+  if (baseline && baseline.Y === Y) g += `<path d="${pth(baseline.med)}" fill="none" stroke="var(--base)" stroke-width="2" stroke-dasharray="5 4"/>`;
+  g += `<path d="${pth(S.um)}" fill="none" stroke="var(--holding)" stroke-width="2"/><path d="${pth(S.med)}" fill="none" stroke="var(--book)" stroke-width="2.5"/>`;
+  g += `<circle cx="${X(Y)}" cy="${Yy(S.med[Y])}" r="4.5" fill="var(--book)" stroke="#fff" stroke-width="2"/><circle cx="${X(Y)}" cy="${Yy(S.um[Y])}" r="4" fill="var(--holding)" stroke="#fff" stroke-width="2"/>`;
+  const labs = [{ y: Yy(S.med[Y]), t: `${f1(S.med[Y])} book` }, { y: Yy(S.um[Y]), t: `${f1(S.um[Y])} Lilly` }]; if (baseline && baseline.Y === Y) labs.push({ y: Yy(baseline.med[Y]), t: `${f1(baseline.med[Y])} baseline` });
+  labs.sort((a, b) => a.y - b.y); for (let i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 15) labs[i].y = labs[i - 1].y + 15;
+  labs.forEach(l => g += `<text class="lab" x="${X(Y) + 10}" y="${l.y + 4}">${l.t}</text>`);
+  g += `<line id="fanx" x1="0" x2="0" y1="${m.t}" y2="${H - m.b}" stroke="#9aa6b4" stroke-dasharray="3 3" visibility="hidden"/>`;
+  const svg = svgEl(fig, W, H, g, `Simulated value of the book against holding Lilly over ${Y} years`); const cx = svg.querySelector("#fanx");
+  svg.onmousemove = ev => { const r = svg.getBoundingClientRect(); const px = (ev.clientX - r.left) / r.width * W; const y = Math.round((px - m.l) / (W - m.l - m.r) * Y); if (y < 0 || y > Y) { hideTip(fig); cx.setAttribute("visibility", "hidden"); return; } cx.setAttribute("x1", X(y)); cx.setAttribute("x2", X(y)); cx.setAttribute("visibility", "visible"); showTip(fig, ev, `<b>${y === 0 ? "Today" : "Year " + y}</b><br>Book ${f1(S.med[y])} median<br>${f1(S.lo[y])} to ${f1(S.hi[y])}, 8 in 10 paths<br>Lilly ${f1(S.um[y])}${baseline && baseline.Y === Y ? `<br>Baseline ${f1(baseline.med[y])}` : ""}`); };
+  svg.onmouseleave = () => { hideTip(fig); cx.setAttribute("visibility", "hidden"); };
+  $("fanlegend").innerHTML = `<span><i style="border-color:var(--book);border-top-width:2.5px"></i>The book, median</span><span><i class="band"></i>8 in 10 paths</span><span><i style="border-color:var(--holding)"></i>Lilly held</span>${baseline ? `<span><i class="dash" style="border-color:var(--base)"></i>Baseline, ${esc(baseline.name)}</span>` : ""}`;
+}
+function renderContrib() {
+  const c = SIM.comp, fig = $("contrib"); const rows = [["Strategy 1, core", c.s1, "var(--s1)"], ["Strategy 2, reader", c.s2, "var(--s2)"], ["Strategy 3, nowcaster", c.s3, "var(--s3)"]];
+  if (P.prem > 0) rows.push(["Strategy 3, premium seller", c.s3b, "var(--s3b)"]); if (P.mf > 0 || P.pf > 0) rows.push(["Fees", c.fees, "var(--fee)"]);
+  const total = rows.reduce((a, r) => a + r[1], 0); const W = 380, rowH = 34, m = { t: 6, r: 50, b: 30, l: 150 }, H = m.t + rowH * (rows.length + 1) + m.b;
+  const mx = Math.max(.02, ...rows.map(r => Math.abs(r[1])), Math.abs(total)) * 1.08, mn = Math.min(0, ...rows.map(r => r[1]), total) < 0 ? -mx : 0;
+  const X = v => m.l + (v - mn) / (mx - mn) * (W - m.l - m.r); let g = "";
+  const tk = niceStep((mx - mn) / 4); for (let v = Math.ceil(mn / tk) * tk; v <= mx + 1e-9; v += tk) g += `<line class="grid" x1="${X(v)}" x2="${X(v)}" y1="${m.t}" y2="${H - m.b}"/><text x="${X(v)}" y="${H - m.b + 16}" text-anchor="middle">${v > 0 ? "+" : ""}${(v * 100).toFixed(0)}</text>`;
+  [...rows, ["Total", total, "var(--ink)"]].forEach((r, i) => { const y = m.t + i * rowH + 6, h = rowH - 14, x0 = X(Math.min(0, r[1])), w = Math.max(1, Math.abs(X(r[1]) - X(0)));
+    g += `<text x="${m.l - 10}" y="${y + h / 2 + 4}" text-anchor="end" ${r[0] === "Total" ? 'class="lab"' : ""}>${r[0]}</text><rect class="hit" data-i="${i}" x="${x0}" y="${y}" width="${w}" height="${h}" rx="4" fill="${r[2]}"/><text class="lab" x="${X(r[1]) + (r[1] >= 0 ? 6 : -6)}" y="${y + h / 2 + 4}" text-anchor="${r[1] >= 0 ? "start" : "end"}">${(r[1] >= 0 ? "+" : "−") + Math.abs(r[1] * 100).toFixed(1)}</text>`; });
+  g += `<line class="zero" x1="${X(0)}" x2="${X(0)}" y1="${m.t}" y2="${H - m.b}"/>`;
+  const svg = svgEl(fig, W, H, g, "Average points a year above the holding, by strategy");
+  svg.querySelectorAll(".hit").forEach(el => { const r = [...rows, ["Total", total]][+el.dataset.i]; el.addEventListener("mousemove", ev => showTip(fig, ev, `<b>${r[0]}</b><br>${(r[1] >= 0 ? "+" : "−") + Math.abs(r[1] * 100).toFixed(1)} points a year, average`)); el.addEventListener("mouseleave", () => hideTip(fig)); });
+}
+function renderHist() {
+  const S = SIM, fig = $("hist"), e = S.endB; const lo = q(e, .01), hi = q(e, .99), nb = 26, bw = (hi - lo) / nb || 1; const bins = new Array(nb).fill(0);
+  e.forEach(v => { const i = Math.min(nb - 1, Math.max(0, Math.floor((v - lo) / bw))); bins[i]++; });
+  const W = 380, H = 230, m = { t: 26, r: 10, b: 30, l: 10 }; const mxb = Math.max(...bins); const X = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r), Yh = c => (H - m.b) - c / mxb * (H - m.t - m.b);
+  let g = ""; bins.forEach((c, i) => { const x = X(lo + i * bw), w = Math.max(1, X(lo + (i + 1) * bw) - x - 2); g += `<rect class="hb" data-i="${i}" x="${x + 1}" y="${Yh(c)}" width="${w}" height="${(H - m.b) - Yh(c)}" rx="2" fill="${lo + (i + .5) * bw < S.uEnd ? "#c7ced7" : "var(--accent-mid)"}"/>`; });
+  const mark = (v, t, cls) => { if (v < lo || v > hi) return; const x = X(v); g += `<line x1="${x}" x2="${x}" y1="${m.t - 6}" y2="${H - m.b}" stroke="${cls}" stroke-width="2" ${cls === "var(--holding)" ? "" : 'stroke-dasharray="4 3"'}/><text class="lab" x="${x}" y="${m.t - 10}" text-anchor="middle">${t}</text>`; };
+  mark(S.uEnd, "Lilly", "var(--holding)"); mark(S.medEnd, "Median", "var(--book)");
+  const st = niceStep((hi - lo) / 4); for (let v = Math.ceil(lo / st) * st; v <= hi; v += st) g += `<text x="${X(v)}" y="${H - m.b + 17}" text-anchor="middle">$${+v.toFixed(0)}m</text>`;
+  g += `<line class="zero" x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}"/>`;
+  const svg = svgEl(fig, W, H, g, "Distribution of the book's value at the horizon");
+  svg.querySelectorAll(".hb").forEach(el => { const i = +el.dataset.i; el.addEventListener("mousemove", ev => showTip(fig, ev, `<b>${f1(lo + i * bw)} to ${f1(lo + (i + 1) * bw)}</b><br>${(bins[i] / e.length * 100).toFixed(1)}% of paths`)); el.addEventListener("mouseleave", () => hideTip(fig)); });
+  $("histsub").textContent = `The book after ${S.Y} ${S.Y == 1 ? "year" : "years"}, share of paths. ${(100 - S.behind * 100).toFixed(0)}% of paths finish ahead of Lilly; grey bars finish behind it.`;
+}
+function renderSensitivity() {
+  if (!SIM) return; const fig = $("tornado"); const base = SIM.exMed; const N = 900;
+  const levers = [["hit", -10, 10], ["calls", -4, 4], ["size", -10, 10], ["nhit", -10, 10], ["now", -25, 25], ["nprints", -4, 4], ["cmu", -3, 3]];
+  const color = { s1: "var(--s1)", s2: "var(--s2)", s3: "var(--s3)" }; const res = [];
+  const ref = simulate(P, N, SEED).exMed;
+  for (const [id, dn, up] of levers) { const d = IN[id]; const lv = Math.max(d.min, P[id] + dn), hv = Math.min(d.max, P[id] + up); if (lv === hv) continue;
+    const a = simulate({ ...P, [id]: lv }, N, SEED).exMed - ref, b = simulate({ ...P, [id]: hv }, N, SEED).exMed - ref; res.push({ id, d, lv, hv, a, b, span: Math.abs(b - a) }); }
+  res.sort((x, y) => y.span - x.span); const W = 760, rowH = 36, m = { t: 10, r: 70, b: 34, l: 230 }, H = m.t + rowH * res.length + m.b;
+  const mx = Math.max(.01, ...res.map(r => Math.max(Math.abs(r.a), Math.abs(r.b)))) * 1.15; const X = v => m.l + (v + mx) / (2 * mx) * (W - m.l - m.r);
+  let g = ""; const tk = niceStep(mx / 2); for (let v = -Math.floor(mx / tk) * tk; v <= mx + 1e-9; v += tk) g += `<line class="grid" x1="${X(v)}" x2="${X(v)}" y1="${m.t}" y2="${H - m.b}"/><text x="${X(v)}" y="${H - m.b + 17}" text-anchor="middle">${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v * 100).toFixed(0)} pts</text>`;
+  res.forEach((r, i) => { const y = m.t + i * rowH + 7, h = rowH - 16; const c = color[r.d.card] || "var(--fee)";
+    const seg = (v, side) => { const x0 = Math.min(X(0), X(v)), w = Math.max(1, Math.abs(X(v) - X(0))); return `<rect class="tb" data-i="${i}" x="${x0}" y="${y}" width="${w}" height="${h}" rx="4" fill="${c}" opacity="${side === "lo" ? .45 : 1}"/>`; };
+    g += `<text x="${m.l - 12}" y="${y + h / 2 + 4}" text-anchor="end" fill="var(--ink)">${esc(r.d.label)}</text>` + seg(r.a, "lo") + seg(r.b, "hi");
+    g += `<text x="${X(r.a) + (r.a < 0 ? -6 : 6)}" y="${y + h / 2 + 4}" text-anchor="${r.a < 0 ? "end" : "start"}">${esc(r.d.fmt(r.lv))}</text><text class="lab" x="${X(r.b) + (r.b < 0 ? -6 : 6)}" y="${y + h / 2 + 4}" text-anchor="${r.b < 0 ? "end" : "start"}">${esc(r.d.fmt(r.hv))}</text>`; });
+  g += `<line class="zero" x1="${X(0)}" x2="${X(0)}" y1="${m.t}" y2="${H - m.b}"/>`;
+  const svg = svgEl(fig, W, H, g, "How much each input moves the median result, from its current setting");
+  svg.querySelectorAll(".tb").forEach(el => { const r = res[+el.dataset.i]; el.addEventListener("mousemove", ev => showTip(fig, ev, `<b>${esc(r.d.label)}</b><br>At ${esc(r.d.fmt(r.lv))}: ${pts(base + r.a)} a year<br>Now ${esc(r.d.fmt(P[r.id]))}: ${pts(base)}<br>At ${esc(r.d.fmt(r.hv))}: ${pts(base + r.b)}`)); el.addEventListener("mouseleave", () => hideTip(fig)); });
+}
+function renderTables() {
+  const S = SIM, Y = S.Y; let yt = `<thead><tr><th>Year</th><th class="n">Lilly</th><th class="n">Book</th><th class="n">Bad year</th><th class="n">Good year</th><th class="n">Value</th></tr></thead><tbody>`;
+  for (let y = 0; y < Y; y++) { const yr = S.yearRets[y]; const ur = S.upaths.map(p => p[y + 1] / p[y] - 1); yt += `<tr><td>Year ${y + 1}</td><td class="n">${pc(q(ur, .5))}</td><td class="n"><b>${pc(q(yr, .5))}</b></td><td class="n">${pc(q(yr, .1))}</td><td class="n">${pc(q(yr, .9))}</td><td class="n">${f1(S.med[y + 1])}</td></tr>`; }
+  yt += `<tr class="tot"><td>A year, compounded</td><td class="n">${pc(S.cagr(S.uEnd))}</td><td class="n">${pc(S.cagr(S.medEnd))}</td><td class="n">${pc(S.cagr(S.badEnd))}</td><td class="n">${pc(S.cagr(S.goodEnd))}</td><td class="n">${f1(S.medEnd)}</td></tr></tbody>`; $("yt").innerHTML = yt;
+  const all = []; S.yearRets.forEach(a => a.forEach(v => all.push(v))); const share = f => (all.filter(f).length / all.length * 100).toFixed(0) + "%";
+  $("ot").innerHTML = `<thead><tr><th>Outcome</th><th class="n">Chance</th></tr></thead><tbody><tr><td>A losing year</td><td class="n">${share(v => v < 0)}</td></tr><tr><td>A year worse than −20%</td><td class="n">${share(v => v < -.2)}</td></tr><tr><td>A year better than +30%</td><td class="n">${share(v => v > .3)}</td></tr><tr><td>Behind Lilly after ${Y} ${Y == 1 ? "year" : "years"}</td><td class="n">${(S.behind * 100).toFixed(0)}%</td></tr></tbody>`;
+}
+function renderStrategies() {
+  const c = SIM.comp; const f = v => (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(1);
+  const set = (k, v) => document.querySelectorAll(`[data-live="${k}"]`).forEach(e => e.textContent = v);
+  set("addS1", f(c.s1)); set("addS2", f(c.s2)); set("addS3", f(c.s3 + c.s3b)); set("corePct", P.core + "%"); set("sleevePct", (100 - P.core) + "%"); set("sizePct", P.size + "%"); set("nowPct", P.now + "%");
+  $("allocname").textContent = preset === "custom" ? "your scenario" : PRESETS[preset].name.toLowerCase();
+  $("allocbar").innerHTML = `<div style="flex:${P.core};background:var(--s1)"></div>` + (P.core < 100 ? `<div style="flex:${100 - P.core};background:var(--s2)"></div>` : "");
+  $("alloclegend").innerHTML = `<span><span class="swatch" style="background:var(--s1)"></span>Core ${P.core}%</span>` + (P.core < 100 ? `<span><span class="swatch" style="background:var(--s2)"></span>Reader sleeve ${100 - P.core}%</span>` : "");
+  $("overlaybar").textContent = P.now > 0 ? `Nowcaster overlay: swings the core ${P.now}% into ${P.nprints} results days a year` : "Nowcaster overlay: off in this scenario";
+}
+
+// ---------- backtest
+function backtest() {
+  const size = P.size / 100, cap = P.cap, th = (parseFloat($("bth").value) - 50) / 100; $("o_bth").textContent = $("bth").value + "%";
+  const sizes = $("bsz").value, overlay = $("bov").checked; const U = BT.retro.underlying, C = overlay ? BT.retro.core_only : U;
+  const tr = BT.all.filter(t => Math.abs(t.p - .5) >= th && (sizes === "all" || t.c === "small" || t.c === "mid")).map(t => ({ ...t, call: t.p > .5 ? 1 : -1 })).map(t => ({ ...t, r: t.call * t.m - .004 })).sort((a, b) => a.d < b.d ? -1 : 1);
+  let k = 0, sleeve = 1; const book = []; for (let i = 0; i < C.length; i++) { while (k < tr.length && tr[k].d <= C[i][0]) { sleeve *= 1 + size * tr[k].r; k++; } book.push([C[i][0], C[i][1] * sleeve]); }
+  const cg = v => Math.pow(v / 100, 1 / 5) - 1; const uE = U[U.length - 1][1], cE = C[C.length - 1][1], bE = book[book.length - 1][1]; const $m = v => cap * v / 100;
+  $("b_u").textContent = f1($m(uE)); $("b_u_d").textContent = `${pc(cg(uE))} a year`;
+  $("b_c").textContent = f1($m(cE)); $("b_c_d").textContent = overlay ? `${pc(cg(cE))} a year, ${pts(cg(cE) - cg(uE))} over Lilly` : "Overlay off: Lilly alone";
+  $("b_b").textContent = f1($m(bE)); $("b_b_d").textContent = `${pc(cg(bE))} a year at ${P.size}% per call`;
+  $("b_x").textContent = pts(cg(bE) - cg(uE)); $("b_x_d").textContent = "the book against Lilly held";
+  const fig = $("bfig"); const W = 760, H = 320, m = { t: 14, r: 108, b: 30, l: 48 }; const parse = s => Date.parse(s + "T00:00:00Z"); const x0 = parse(U[0][0]), x1 = parse(U[U.length - 1][0]);
+  const all = U.concat(C, book).map(p => p[1]); const y1 = Math.max(...all) * 1.04, y0 = Math.min(...all) * .88; const X = t => m.l + (t - x0) / (x1 - x0) * (W - m.l - m.r), Yy = v => m.t + (y1 - v) / (y1 - y0) * (H - m.t - m.b);
+  let g = ""; const st = niceStep((y1 - y0) / 5); for (let v = Math.ceil(y0 / st) * st; v <= y1; v += st) g += `<line class="grid" x1="${m.l}" x2="${W - m.r}" y1="${Yy(v)}" y2="${Yy(v)}"/><text x="${m.l - 8}" y="${Yy(v) + 4}" text-anchor="end">${v.toFixed(0)}</text>`;
+  for (let yr = 2022; yr <= 2026; yr++) { const t = Date.UTC(yr, 0, 1); g += `<text x="${X(t)}" y="${H - m.b + 18}" text-anchor="middle">${yr}</text>`; }
+  const pth = a => a.map((p, i) => `${i ? "L" : "M"}${X(parse(p[0])).toFixed(1)},${Yy(p[1]).toFixed(1)}`).join("");
+  g += `<path d="${pth(U)}" fill="none" stroke="var(--holding)" stroke-width="1.6"/>` + (overlay ? `<path d="${pth(C)}" fill="none" stroke="var(--s1)" stroke-width="1.8"/>` : "") + `<path d="${pth(book)}" fill="none" stroke="var(--book)" stroke-width="2.4"/>`;
+  tr.forEach((t, i) => { const x = X(parse(t.d)); g += `<rect class="tk" data-i="${i}" x="${x - 5}" y="${H - m.b - 16}" width="10" height="16" fill="transparent"/><circle cx="${x}" cy="${H - m.b - 6}" r="5" fill="${t.r > 0 ? "var(--good)" : "var(--bad)"}" stroke="#fff" stroke-width="1.5" pointer-events="none"/>`; });
+  const labs = [{ y: Yy(bE), t: `${bE.toFixed(0)} book` }, { y: Yy(uE), t: `${uE.toFixed(0)} Lilly` }]; if (overlay) labs.push({ y: Yy(cE), t: `${cE.toFixed(0)} strategy 1` }); labs.sort((a, b) => a.y - b.y); for (let i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 15) labs[i].y = labs[i - 1].y + 15; labs.forEach(l => g += `<text class="lab" x="${W - m.r + 8}" y="${l.y + 4}">${l.t}</text>`);
+  const svg = svgEl(fig, W, H, g, "Backtest: Lilly, strategy one and the book from October 2021, indexed to 100, with the reader's trades marked");
+  svg.querySelectorAll(".tk").forEach(el => { const t = tr[+el.dataset.i]; el.addEventListener("mousemove", ev => showTip(fig, ev, `<b>${esc(t.t)}, ${t.d}</b><br>Called ${t.call === 1 ? "favourable" : "unfavourable"} at ${(t.p * 100).toFixed(0)}%; vote ${t.v}<br>Move ${pc(t.m)}; ${pc(size * t.r, 1)} on the book`)); el.addEventListener("mouseleave", () => hideTip(fig)); });
+  const right = tr.filter(t => (t.call === 1) === (t.v === "favourable")).length, won = tr.filter(t => t.r > 0).length;
+  $("bt").innerHTML = `<thead><tr><th>Company</th><th>Meeting</th><th>Size</th><th class="n">Model</th><th>Call</th><th>Vote</th><th class="n">Move</th><th class="n">On the book</th><th>Result</th></tr></thead><tbody>` + (tr.length ? tr.map(t => `<tr><td><b>${esc(t.t)}</b></td><td class="num">${t.d}</td><td>${t.c}</td><td class="n">${(t.p * 100).toFixed(0)}%</td><td>${t.call === 1 ? "Favourable" : "Unfavourable"}</td><td>${t.v[0].toUpperCase() + t.v.slice(1)}</td><td class="n">${pc(t.m)}</td><td class="n">${pc(size * t.r, 1)}</td><td><span class="res ${t.r > 0 ? "win" : "loss"}">${t.r > 0 ? "Made money" : "Lost money"}</span></td></tr>`).join("") : `<tr><td colspan="9">No meeting passes these filters.</td></tr>`) + `<tr class="tot"><td colspan="7">${tr.length} trades · ${right} called the vote right · ${won} made money</td><td class="n">${pc(sleeve - 1, 1)}</td><td></td></tr></tbody>`;
+  $("bt_note").textContent = `${BT.all.length} advisory committee meetings since 2022 have a model probability and a measured move; ${tr.length} pass the filters above. Each trade enters at the close on the day the FDA posts its briefing document and exits at the close after the vote. A call can be right on the vote and still lose a little when the stock had already moved on posting day.`;
+}
+
+// ---------- assumptions register, summary, export
+function renderRegister() {
+  const pl = PLAN(); const diff = changedFromPlan().map(d => d.id);
+  $("reg").innerHTML = `<thead><tr><th>Input</th><th class="n">This scenario</th><th class="n">Plan</th><th>Record</th><th>Source</th></tr></thead><tbody>` + INPUTS.map(d => `<tr><td>${esc(d.label)}${diff.includes(d.id) ? ` <span class="pill changed">changed</span>` : ""}</td><td class="n cur">${esc(d.fmt(P[d.id]))}</td><td class="n">${esc(d.fmt(pl[d.id]))}</td><td>${d.record ? esc(d.record.t) : "Not applicable"}</td><td>${esc(d.source)}</td></tr>`).join("") + `<tr><td>Reader draws readout moves too</td><td class="n cur">${P.ro ? "Yes" : "No"}</td><td class="n">No</td><td>Not applicable</td><td>Sector readout study</td></tr></tbody>`;
+  $("changedcount").textContent = diff.length ? `${diff.length} ${diff.length == 1 ? "input differs" : "inputs differ"} from the ${pl.name.toLowerCase()}` : `Matches the ${pl.name.toLowerCase()}`;
+  $("sumtext").value = summaryText();
+}
+function summaryText() {
+  const S = SIM, nm = preset === "custom" ? "Your scenario" : PRESETS[preset].name; const L = [];
+  L.push(`Forward Matter simulator, model version 2.0 (20 October 2026), fixed seed ${SEED}`, `Scenario: ${nm}`, "", "Inputs");
+  INPUTS.forEach(d => L.push(`  ${d.label}: ${d.fmt(P[d.id])}  (plan ${d.fmt(PLAN()[d.id])}${d.record ? "; record " + d.record.t : ""})`));
+  L.push(`  Reader draws readout moves too: ${P.ro ? "yes" : "no"}`, "", `Results over ${S.Y} ${S.Y == 1 ? "year" : "years"}, 2,000 paths`);
+  L.push(`  Book, median: ${f1(S.medEnd)} (${pc(S.cagr(S.medEnd))} a year)`, `  Lilly held: ${f1(S.uEnd)} (${pc(S.cagr(S.uEnd))} a year)`, `  Above Lilly, median: ${pts(S.exMed)} a year; 10th percentile ${pts(S.exP10)}`, `  Book, 10th to 90th percentile: ${f1(S.badEnd)} to ${f1(S.goodEnd)}`, `  Paths behind Lilly at the end: ${(S.behind * 100).toFixed(0)}%`);
+  const c = S.comp; L.push(`  Average points a year: core ${(c.s1 * 100).toFixed(1)}, reader ${(c.s2 * 100).toFixed(1)}, nowcaster ${(c.s3 * 100).toFixed(1)}, premium ${(c.s3b * 100).toFixed(1)}, fees ${(c.fees * 100).toFixed(1)}`);
+  if (baseline) L.push(`  Baseline ${baseline.name}: ${f1(baseline.medEnd)}`);
+  L.push("", "Hypothetical results from a simulation. Not a forecast, unaudited, before tax. Not financial product advice.");
+  return L.join("\n");
+}
+function csvText() {
+  const S = SIM; const rows = [["item", "this scenario", "plan", "record", "source"]];
+  INPUTS.forEach(d => rows.push([d.label, d.fmt(P[d.id]), d.fmt(PLAN()[d.id]), d.record ? d.record.t : "", d.source]));
+  rows.push(["Book median ($m)", S.medEnd.toFixed(2), "", "", "simulation"], ["Lilly held ($m)", S.uEnd.toFixed(2), "", "", "simulation"], ["Above Lilly a year, median (pts)", (S.exMed * 100).toFixed(1), "", "", "simulation"], ["Book 10th percentile ($m)", S.badEnd.toFixed(2), "", "", "simulation"], ["Book 90th percentile ($m)", S.goodEnd.toFixed(2), "", "", "simulation"]);
+  return rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+}
+$("copysum").addEventListener("click", () => { const t = $("sumtext"); const done = ok => { $("sumstatus").textContent = ok ? "Copied to the clipboard." : "Select the text and copy it with your keyboard."; if (!ok) { t.focus(); t.select(); } };
+  try { navigator.clipboard.writeText(t.value).then(() => done(true), () => { t.select(); let ok = false; try { ok = document.execCommand("copy"); } catch (e) {} done(ok); }); } catch (e) { t.select(); let ok = false; try { ok = document.execCommand("copy"); } catch (e2) {} done(ok); } });
+$("dlcsv").addEventListener("click", () => { try { const b = new Blob([csvText()], { type: "text/csv" }); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "forward-matter-scenario.csv"; document.body.appendChild(a); a.click(); a.remove(); $("sumstatus").textContent = "Download started. If nothing arrives, use Copy summary."; } catch (e) { $("sumstatus").textContent = "Downloads are blocked here. Use Copy summary."; } });
+
+// ---------- tabs and parent page messages
+const TABS = ["strategies", "simulate", "backtest", "assumptions", "method"];
+const scrollParent = y => { try { parent.postMessage({ fmSimScrollTo: Math.max(0, y) }, "*"); } catch (e) {} };
+function go(name, scroll = true) {
+  TABS.forEach(t => { const on = t === name; $("t-" + t).setAttribute("aria-selected", on); $("t-" + t).tabIndex = on ? 0 : -1; $("p-" + t).hidden = !on; });
+  if (name === "simulate") setTimeout(renderSensitivity, 30);
+  if (scroll) scrollParent(0);
+}
+TABS.forEach((t, i) => { const b = $("t-" + t); b.addEventListener("click", () => go(t)); b.addEventListener("keydown", ev => { if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") { const n = TABS[(i + (ev.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length]; go(n, false); $("t-" + n).focus(); } }); });
+document.querySelectorAll("[data-goto]").forEach(b => b.addEventListener("click", () => go(b.dataset.goto)));
+document.querySelectorAll("[data-preset]").forEach(b => b.addEventListener("click", () => { P = { ...PRESETS[b.dataset.preset] }; syncControls(); changed(); }));
+$("pin").addEventListener("click", () => { if (baseline) baseline = null; else baseline = { name: preset === "custom" ? "your scenario" : PRESETS[preset].name, med: SIM.med.slice(), Y: SIM.Y, medEnd: SIM.medEnd, cagr: SIM.cagr(SIM.medEnd), ex: SIM.exMed, bad: SIM.badEnd }; render(); });
+["bth"].forEach(id => $(id).addEventListener("input", backtest)); ["bsz", "bov"].forEach(id => $(id).addEventListener("change", backtest));
+
+buildControls(); syncControls(); refreshOutputs(); render(); go("strategies", false);
+
 // Tell the host page how tall the document is, so the frame fits the content.
 const report = () => parent.postMessage({ fmSimHeight: document.documentElement.scrollHeight }, "*");
 new ResizeObserver(report).observe(document.body); window.addEventListener("load", report); report();
