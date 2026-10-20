@@ -387,14 +387,14 @@ export const simulatorPage = {
     "Hypothetical results from a simulation on recorded market moves. Unaudited, before tax, no capital at risk. Not financial product advice.",
   gate: {
     eyebrow: "Access",
-    title: "Enter the passphrase to open the simulator",
+    title: "Enter the access phrase to open the simulator",
     body:
       "The simulator is stored encrypted and is unlocked in your browser. Nothing you type here is sent anywhere.",
-    label: "Passphrase",
+    label: "Access phrase",
     button: "Open the simulator",
     opening: "Opening",
-    wrong: "That passphrase did not open the simulator. Check it and try again.",
+    wrong: "That access phrase did not open the simulator. Check it and try again.",
     unavailable: "The simulator could not be loaded. Please try again shortly.",
-    note: "Access is by invitation. If you were not given a passphrase, use the contact form and we will arrange it.",
+    note: "Access is by invitation. If you were not given an access phrase, use the contact form and we will arrange it.",
   },
 } as const;

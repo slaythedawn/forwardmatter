@@ -41,10 +41,10 @@ than letting a real prospect believe it reached you.
 
 ## The simulator page
 
-`/simulator` is for people we have given a passphrase to. The simulator is kept in
+`/simulator` is for people we have given an access phrase to. The simulator is kept in
 `simulator-src/app.html` and is never served as is: `npm run build:simulator`
 encrypts it (AES-256-GCM, key from the passphrase by PBKDF2) into
-`public/simulator/payload.json`, which is what the page fetches. The passphrase form
+`public/simulator/payload.json`, which is what the page fetches. The access phrase form
 derives the key in the visitor's browser and renders the decrypted simulator in a
 sandboxed frame, so there is no server-side secret and it works on the static
 export as well.
@@ -68,7 +68,7 @@ secret; the passphrase is.
 | `app/page.tsx` | Home — hero, intelligence system, catalyst panel, platform, case study, closing block |
 | `app/about/page.tsx` | About us — why we exist, the team, contact CTA |
 | `app/simulator/page.tsx` | Simulator — a password-locked internal page (noindex, not in the sitemap) |
-| `components/SimulatorGate.tsx` | The passphrase form; decrypts and frames the simulator in the browser |
+| `components/SimulatorGate.tsx` | The access phrase form; decrypts and frames the simulator in the browser |
 | `simulator-src/app.html` | The simulator itself, styled with the site's tokens; never served in the clear |
 | `scripts/build-simulator.mjs` | Encrypts the simulator into `public/simulator/payload.json` |
 | `app/api/contact/route.ts` | Server-side validation and delivery for the enquiry form |
