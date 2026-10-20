@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Forward Matter simulator</title>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@300,400,500,600,700&display=swap" rel="stylesheet">
+<style>
+/* Forward Matter design tokens, mirrored from app/globals.css so the simulator reads as one page with the site. */
+:root { --ground:#eef0f3; --ink:#242d38; --muted:#546171; --faint:#7d8a99; --accent:#345984; --accent-mid:#5b82b4; --accent-light:#8fb4dd; --hairline:#c6ced7; --border-card:#c9d2dc; --border-well:#c7d0db; --surface-raised:linear-gradient(145deg,#fafcfd,#e4e9ef); --surface-well:#e6ebf0; --shadow-card:inset 1px 1px #fff, 12px 14px 28px #c7ced7, -12px -12px 25px #fff; --shadow-well:inset 2px 3px 6px #c3cfdb, 0 1px #fff; --emboss:0 1px #fff; --band:rgba(91,130,180,0.16); --font:"Switzer",ui-sans-serif,system-ui,-apple-system,sans-serif; }
+* { box-sizing:border-box; }
+html, body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--font); -webkit-font-smoothing:antialiased; }
+body { padding:4px 2px 12px; overflow-x:hidden; }
+.sim { font:400 15px/1.55 var(--font); color:var(--ink); }
+.sim .lede { color:var(--muted); max-width:72ch; margin:0 0 22px; font-size:16px; line-height:1.6; }
+.layout { display:grid; grid-template-columns:320px minmax(0,1fr); gap:28px; align-items:start; }
+.controls { padding:22px 22px 14px; border-radius:20px; border:1px solid var(--border-card); border-bottom:3px solid #bbc7d4; background:var(--surface-raised); box-shadow:var(--shadow-card); position:sticky; top:12px; }
+.controls h3 { font-size:12px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); text-shadow:var(--emboss); margin:16px 0 8px; }
+.controls h3:first-child { margin-top:0; }
+.ctl { display:grid; grid-template-columns:1fr 64px; gap:4px 10px; align-items:center; margin:6px 0 10px; }
+.ctl label { font-size:13.5px; color:var(--muted); }
+.ctl output { font-size:13px; font-weight:600; text-align:right; color:var(--ink); font-variant-numeric:tabular-nums; }
+.ctl input[type=range] { grid-column:1 / span 2; width:100%; accent-color:var(--accent); height:22px; margin:0; }
+.ctl.sw { grid-template-columns:1fr auto; } .ctl.sw input { accent-color:var(--accent); width:18px; height:18px; margin:0; }
+.tiles { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin:0 0 22px; }
+.tile { padding:16px 16px 14px; min-width:0; border-radius:16px; border:1px solid var(--border-card); border-bottom:3px solid #bbc7d4; background:var(--surface-raised); box-shadow:var(--shadow-card); }
+.tile .lab { font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); text-shadow:var(--emboss); }
+.tile .big { font-size:28px; font-weight:600; letter-spacing:-.03em; line-height:1.1; margin:8px 0 4px; font-variant-numeric:tabular-nums; text-shadow:var(--emboss); }
+.tile .sub { font-size:12.5px; color:var(--muted); line-height:1.45; }
+figure { margin:0 0 14px; position:relative; padding:16px 14px 10px; border-radius:16px; border:1px solid var(--border-well); background:var(--surface-well); box-shadow:var(--shadow-well); }
+.legend { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin:0 0 10px; }
+.legend span { display:inline-flex; align-items:center; gap:7px; } .legend i { width:18px; height:0; border-top:2px solid; display:inline-block; } .legend i.band { height:10px; border:0; background:var(--band); border-radius:2px; }
+svg { width:100%; height:auto; display:block; overflow:visible; } svg text { font-family:var(--font); fill:var(--muted); font-size:10.5px; } svg .grid { stroke:#d6dde5; } svg .base { stroke:var(--ink); stroke-width:1.6; fill:none; } svg .line { stroke-width:2; fill:none; } svg .l1 { stroke:var(--accent); } svg .endlab { font-weight:600; fill:var(--ink); }
+.tip { position:absolute; pointer-events:none; background:var(--ink); color:#f2f5f8; font-size:12px; line-height:1.45; padding:7px 9px; border-radius:8px; white-space:nowrap; display:none; }
+table { border-collapse:collapse; width:100%; font-size:14px; margin:6px 0 18px; } th { text-align:left; font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); text-shadow:var(--emboss); border-bottom:1px solid var(--hairline); padding:6px 10px 8px 0; } th.n, td.n { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; } td { padding:8px 10px 8px 0; border-bottom:1px solid #dde3ea; color:var(--ink); } tr.tot td { font-weight:600; border-top:1px solid var(--hairline); border-bottom:0; }
+.sim h2 { font-size:19px; font-weight:600; letter-spacing:-.025em; margin:22px 0 6px; text-shadow:var(--emboss); } .note { font-size:13px; color:var(--muted); max-width:80ch; margin:10px 0 0; line-height:1.55; }
+.tablewrap { overflow-x:auto; }
+@media (max-width:820px) { .layout { grid-template-columns:1fr; } .controls { position:static; } .tiles { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:480px) { .tiles { grid-template-columns:1fr; } }
+</style></head><body>
+<div class="sim">
+<div class="layout">
+<div class="controls">
+<h3>Capital and horizon</h3>
+<div class="ctl"><label for="cap">Capital, $m</label><output id="o_cap">10</output><input type="range" id="cap" min="1" max="100" step="1" value="10"></div>
+<div class="ctl"><label for="yrs">Years</label><output id="o_yrs">3</output><input type="range" id="yrs" min="1" max="5" step="1" value="3"></div>
+<h3>The underlying</h3>
+<div class="ctl"><label for="ur">Return a year, %</label><output id="o_ur">11</output><input type="range" id="ur" min="-20" max="40" step="1" value="11"></div>
+<div class="ctl"><label for="uv">Volatility, % (0 is a steady path)</label><output id="o_uv">0</output><input type="range" id="uv" min="0" max="60" step="1" value="0"></div>
+<h3>Strategy 1 · platform core</h3>
+<div class="ctl"><label for="core">Share of the book, %</label><output id="o_core">80</output><input type="range" id="core" min="50" max="100" step="5" value="80"></div>
+<div class="ctl"><label for="cmu">Overlay excess a year, points</label><output id="o_cmu">2</output><input type="range" id="cmu" min="-5" max="8" step="0.5" value="2"></div>
+<div class="ctl"><label for="csd">Overlay spread, points</label><output id="o_csd">6</output><input type="range" id="csd" min="0" max="15" step="1" value="6"></div>
+<h3>Strategy 2 · the reader</h3>
+<div class="ctl"><label for="hit">Hit rate on confident calls, %</label><output id="o_hit">78</output><input type="range" id="hit" min="50" max="90" step="1" value="78"></div>
+<div class="ctl"><label for="calls">Confident calls a year</label><output id="o_calls">5</output><input type="range" id="calls" min="0" max="15" step="1" value="5"></div>
+<div class="ctl"><label for="size">Position per call, % of the book</label><output id="o_size">20</output><input type="range" id="size" min="0" max="30" step="1" value="20"></div>
+<div class="ctl sw"><label for="ro">Include readout moves in the draw</label><input type="checkbox" id="ro"></div>
+<h3>Strategy 3 · next engine</h3>
+<div class="ctl"><label for="prem">Premium seller, % risk per event</label><output id="o_prem">0</output><input type="range" id="prem" min="0" max="4" step="0.5" value="0"></div>
+<div class="ctl"><label for="now">Nowcaster swing, % of core</label><output id="o_now">0</output><input type="range" id="now" min="0" max="100" step="5" value="0"></div>
+<h3>Fees</h3>
+<div class="ctl"><label for="mf">Management, % a year</label><output id="o_mf">0</output><input type="range" id="mf" min="0" max="2" step="0.25" value="0"></div>
+<div class="ctl"><label for="pf">Performance, % of excess over the underlying</label><output id="o_pf">0</output><input type="range" id="pf" min="0" max="30" step="5" value="0"></div>
+</div>
+<div class="out">
+<div class="tiles">
+  <div class="tile"><div class="lab">Median, end of horizon</div><div class="big" id="t_med">—</div><div class="sub" id="t_med_sub"></div></div>
+  <div class="tile"><div class="lab">Compounded a year, median</div><div class="big" id="t_cagr">—</div><div class="sub" id="t_cagr_sub"></div></div>
+  <div class="tile"><div class="lab">Bad outcome, 10th percentile</div><div class="big" id="t_bad">—</div><div class="sub" id="t_bad_sub"></div></div>
+  <div class="tile"><div class="lab">Above the underlying, a year</div><div class="big" id="t_ex">—</div><div class="sub" id="t_ex_sub"></div></div>
+</div>
+<div class="legend"><span><i style="border-color:var(--ink)"></i>Underlying, median</span><span><i style="border-color:var(--s1)"></i>The book, median</span><span><i class="band"></i>Book, 10th to 90th percentile</span></div>
+<figure id="fig"><div class="tip"></div></figure>
+<h2>Year by year, median path</h2>
+<div class="tablewrap"><table id="yt"></table></div>
+<h2>Where the return comes from</h2>
+<div class="tablewrap"><table id="ct"></table></div>
+<h2>Odds</h2>
+<div class="tablewrap"><table id="ot"></table></div>
+<p class="note">Method: each simulated year draws the underlying from a lognormal at the chosen return and volatility (at zero volatility it is a steady path, as in the P&amp;L; Lilly's own is about 33%, and a volatile underlying has a median path below its average return); the core overlay from a normal at the chosen mean and spread; the reader from the record's measured moves (17 advisory meetings, optionally 52 readouts, small and mid caps), a right call earning the move and a wrong one losing it, at the chosen hit rate, calls and position size, where the position is a share of the whole book and the sleeve is the cash it is funded from; the premium seller as a scenario at +4.5 points per 2% of risk with a one-in-seven tail year; the nowcaster from four prints at 6.3% at a 60% hit rate. Strategies are independent in the draw. Fees: management on capital, performance on the excess over the underlying when positive, no high-water mark. Hypothetical, unaudited, no capital at risk.</p>
+</div></div></div>
+<script>
+const MV = {"adcom_moves": [-0.486, -0.1047, -0.1994, 0.1248, -0.3266, 0.136, -0.0256, -0.013, 0.3378, 0.2538, -0.7488, 0.5701, 0.4327, -0.3441, -0.5858, -0.7873, 0.2978], "readout_moves": [-0.0897, 0.0562, 0.5782, -0.0959, -0.8044, -0.4833, 2.9185, 0.0333, -0.0689, -0.0184, -0.2056, -0.0162, 0.7849, 0.0425, -0.0004, -0.3699, 0.821, 0.028, -0.0203, -0.7997, 1.4341, 0.0492, -0.0439, 0.0394, 2.9744, 0.0227, 0.208, 0.0371, -0.7953, 0.1852, 0.0285, 0.3593, 0.2296, -0.0023, -0.3008, 0.6311, -0.4536, 0.0563, -0.0178, -0.0212, 0.2845, 0.0256, -0.0102, -0.5136, 0.1956, -0.8303, -0.3337, 0.0262, -0.6803, -0.7201, -0.6292, -0.0323], "lly_vol": 0.326, "note": "moves measured on the record, small and mid caps; adcom = posting close to day after meeting; readout = decision session"};
+const ids = ["cap","yrs","ur","uv","core","cmu","csd","hit","calls","size","prem","now","mf","pf"]; const el = {}; ids.forEach(i => el[i] = document.getElementById(i));
+function rnd() { return Math.random(); } function randn() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+function run() {
+  const P = {}; ids.forEach(i => { P[i] = parseFloat(el[i].value); document.getElementById("o_" + i).textContent = el[i].value; });
+  const ro = document.getElementById("ro").checked; const moves = ro ? MV.adcom_moves.concat(MV.readout_moves) : MV.adcom_moves;
+  const N = 2000, Y = P.yrs; const core = P.core / 100, reader = 1 - core;
+  const paths = [], upaths = [], comp = {core: 0, reader: 0, prem: 0, now: 0, fees: 0}; const yearRets = Array.from({length: Y}, () => []);
+  for (let s = 0; s < N; s++) {
+    let book = P.cap, under = P.cap; const bp = [book], up = [under];
+    for (let y = 0; y < Y; y++) {
+      const mu = Math.log(1 + P.ur / 100) - 0.5 * (P.uv / 100) ** 2; const u = Math.exp(mu + (P.uv / 100) * randn()) - 1;
+      const cx = (P.cmu + P.csd * randn()) / 100;
+      let rd = 0; for (let k = 0; k < P.calls; k++) { const m = Math.abs(moves[Math.floor(rnd() * moves.length)]); const right = rnd() < P.hit / 100; rd += (P.size / 100) * ((right ? m : -m) - 0.004); }
+      let pm = 0; if (P.prem > 0) { pm = (rnd() < 0.15 ? (-0.08 + 0.04 * randn()) : (0.045 + 0.03 * randn())) * (P.prem / 2); }
+      let nw = 0; if (P.now > 0) { for (let k = 0; k < 4; k++) { const mv = Math.abs(0.063 + 0.035 * randn()); nw += (P.now / 100) * ((rnd() < 0.6 ? mv : -mv) - 0.004); } }
+      const gross = core * (1 + u) * (1 + cx + pm + nw) + reader + rd - 1;
+      let fee = P.mf / 100; const ex = gross - u; if (ex > 0) fee += (P.pf / 100) * ex;
+      const net = gross - fee; yearRets[y].push(net);
+      comp.core += core * ((1 + u) * (1 + cx) - 1 - u); comp.reader += rd; comp.prem += core * (1 + u) * pm; comp.now += core * (1 + u) * nw; comp.fees -= fee;
+      book *= 1 + net; under *= 1 + u; bp.push(book); up.push(under);
+    }
+    paths.push(bp); upaths.push(up);
+  }
+  const q = (arr, p) => { const a = arr.slice().sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(p * a.length))]; };
+  const col = (ps, y) => ps.map(p => p[y]); const med = [], lo = [], hi = [], um = [];
+  for (let y = 0; y <= Y; y++) { const c = col(paths, y); med.push(q(c, 0.5)); lo.push(q(c, 0.1)); hi.push(q(c, 0.9)); um.push(q(col(upaths, y), 0.5)); }
+  const endB = col(paths, Y), endU = col(upaths, Y); const medEnd = q(endB, 0.5), badEnd = q(endB, 0.1), goodEnd = q(endB, 0.9), uEnd = q(endU, 0.5);
+  const cagr = v => Math.pow(v / P.cap, 1 / Y) - 1; const exYr = endB.map((b, i) => cagr(b) - cagr(endU[i]));
+  const f1 = v => "$" + v.toFixed(1) + "m", pc = v => (v * 100 >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(0) + "%";
+  document.getElementById("t_med").textContent = f1(medEnd); document.getElementById("t_med_sub").textContent = `underlying ${f1(uEnd)}; good outcome ${f1(goodEnd)}`;
+  document.getElementById("t_cagr").textContent = pc(cagr(medEnd)); document.getElementById("t_cagr_sub").textContent = `underlying ${pc(cagr(uEnd))} a year`;
+  document.getElementById("t_bad").textContent = f1(badEnd); document.getElementById("t_bad_sub").textContent = `${pc(cagr(badEnd))} a year on the 10th percentile path`;
+  document.getElementById("t_ex").textContent = pc(q(exYr, 0.5)).replace("%", "") + " pts"; document.getElementById("t_ex_sub").textContent = `median; 10th percentile ${pc(q(exYr, 0.1)).replace("%", "")} pts`;
+  // chart
+  const fig = document.getElementById("fig"); fig.querySelectorAll("svg").forEach(e => e.remove()); const tip = fig.querySelector(".tip");
+  const W = 760, H = 300, m = {t: 12, r: 86, b: 26, l: 46}; const y1 = Math.max(...hi) * 1.04, y0 = Math.min(P.cap * 0.6, Math.min(...lo)) * 0.96;
+  const X = y => m.l + y / Y * (W - m.l - m.r), Yy = v => m.t + (y1 - v) / (y1 - y0) * (H - m.t - m.b);
+  const stepv = (() => { const r = (y1 - y0) / 5, p = Math.pow(10, Math.floor(Math.log10(r))), f = r / p; return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p; })();
+  let g = ""; for (let v = Math.ceil(y0 / stepv) * stepv; v <= y1; v += stepv) g += `<line class="grid" x1="${m.l}" x2="${W - m.r}" y1="${Yy(v)}" y2="${Yy(v)}"/><text x="${m.l - 6}" y="${Yy(v) + 3}" text-anchor="end">${v.toFixed(0)}</text>`;
+  for (let y = 0; y <= Y; y++) g += `<text x="${X(y)}" y="${H - m.b + 14}" text-anchor="middle">${y === 0 ? "now" : "year " + y}</text>`;
+  const pts = arr => arr.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Yy(v).toFixed(1)}`).join("");
+  g += `<path d="${pts(lo)}${hi.slice().reverse().map((v, i) => `L${X(Y - i).toFixed(1)},${Yy(v).toFixed(1)}`).join("")}Z" fill="var(--band)"/>`;
+  g += `<path class="base" d="${pts(um)}"/><path class="line l1" d="${pts(med)}"/>`;
+  const labs = [{y: Yy(med[Y]) + 3, t: f1(med[Y]) + " book"}, {y: Yy(um[Y]) + 3, t: f1(um[Y]) + " underlying"}]; labs.sort((a, b) => a.y - b.y); if (labs[1].y - labs[0].y < 12) labs[1].y = labs[0].y + 12; labs.forEach(l => g += `<text class="endlab" x="${W - m.r + 6}" y="${l.y}">${l.t}</text>`);
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "Simulated value of the book and the underlying"); svg.innerHTML = g; fig.appendChild(svg);
+  svg.onmousemove = ev => { const r = svg.getBoundingClientRect(); const px = (ev.clientX - r.left) / r.width * W; const y = Math.round((px - m.l) / (W - m.l - m.r) * Y); if (y < 0 || y > Y) { tip.style.display = "none"; return; } tip.innerHTML = `<b>${y === 0 ? "now" : "year " + y}</b><br>book ${f1(med[y])} (${f1(lo[y])} to ${f1(hi[y])})<br>underlying ${f1(um[y])}`; tip.style.display = "block"; tip.style.left = Math.min(ev.clientX - r.left + 12, r.width - tip.offsetWidth - 4) + "px"; tip.style.top = (ev.clientY - r.top - 8) + "px"; };
+  svg.onmouseleave = () => tip.style.display = "none";
+  // year table: median of each year's return, and compounded
+  let yt = "<thead><tr><th>Year</th><th class=\"n\">Underlying</th><th class=\"n\">Book, median</th><th class=\"n\">Book, bad year</th><th class=\"n\">Book, good year</th><th class=\"n\">Value, median</th></tr></thead><tbody>";
+  for (let y = 0; y < Y; y++) { const yr = yearRets[y]; const ur = col(upaths, y + 1).map((v, i) => v / upaths[i][y] - 1); yt += `<tr><td>Year ${y + 1}</td><td class="n">${pc(q(ur, 0.5))}</td><td class="n"><b>${pc(q(yr, 0.5))}</b></td><td class="n">${pc(q(yr, 0.1))}</td><td class="n">${pc(q(yr, 0.9))}</td><td class="n">${f1(med[y + 1])}</td></tr>`; }
+  yt += `<tr class="tot"><td>${Y} years, compounded a year</td><td class="n">${pc(cagr(uEnd))}</td><td class="n">${pc(cagr(medEnd))}</td><td class="n">${pc(cagr(badEnd))}</td><td class="n">${pc(cagr(goodEnd))}</td><td class="n">${f1(medEnd)}</td></tr></tbody>`; document.getElementById("yt").innerHTML = yt;
+  const tot = N * Y; const cr = {core: comp.core / tot, reader: comp.reader / tot, prem: comp.prem / tot, now: comp.now / tot, fees: comp.fees / tot};
+  document.getElementById("ct").innerHTML = `<thead><tr><th>Source</th><th class="n">Points a year above the underlying, mean</th></tr></thead><tbody><tr><td>Strategy 1, core overlay (on ${P.core}% of the book)</td><td class="n">${pc(cr.core).replace("%","")}</td></tr><tr><td>Strategy 2, the reader (on ${(100 - P.core)}% of the book)</td><td class="n">${pc(cr.reader).replace("%","")}</td></tr><tr><td>Strategy 3, premium seller</td><td class="n">${pc(cr.prem).replace("%","")}</td></tr><tr><td>Strategy 3, nowcaster</td><td class="n">${pc(cr.now).replace("%","")}</td></tr><tr><td>Fees</td><td class="n">${pc(cr.fees).replace("%","")}</td></tr><tr class="tot"><td>Total</td><td class="n">${pc(cr.core + cr.reader + cr.prem + cr.now + cr.fees).replace("%","")}</td></tr></tbody>`;
+  const allYears = yearRets.flat(); const negY = allYears.filter(v => v < 0).length / allYears.length, big = allYears.filter(v => v > 0.30).length / allYears.length, worse = endB.filter((b, i) => b < endU[i]).length / N, lossY = allYears.filter(v => v < -0.20).length / allYears.length;
+  document.getElementById("ot").innerHTML = `<thead><tr><th>Outcome</th><th class="n">Chance</th></tr></thead><tbody><tr><td>A losing year</td><td class="n">${(negY*100).toFixed(0)}%</td></tr><tr><td>A year worse than −20%</td><td class="n">${(lossY*100).toFixed(0)}%</td></tr><tr><td>A year above +30%</td><td class="n">${(big*100).toFixed(0)}%</td></tr><tr><td>Finishing behind the underlying after ${Y} years</td><td class="n">${(worse*100).toFixed(0)}%</td></tr></tbody>`;
+}
+ids.forEach(i => el[i].addEventListener("input", run)); document.getElementById("ro").addEventListener("change", run); run();
+
+// Tell the host page how tall the document is, so the frame fits the content.
+const report = () => parent.postMessage({ fmSimHeight: document.documentElement.scrollHeight }, "*");
+new ResizeObserver(report).observe(document.body); window.addEventListener("load", report); report();
+</script></body></html>

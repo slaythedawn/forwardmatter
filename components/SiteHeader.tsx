@@ -9,7 +9,7 @@ import { siteMeta } from "@/content/site";
  * `page` decides which nav item is marked current and whether the section links
  * resolve within the current document or back to the home page.
  */
-export function SiteHeader({ page }: { page: "home" | "about" }) {
+export function SiteHeader({ page }: { page: "home" | "about" | "simulator" }) {
   const onHome = page === "home";
   const href = (hash: string) => route(onHome ? hash : `/${hash}`);
 

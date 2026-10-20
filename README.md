@@ -39,12 +39,38 @@ browser's preflight passes. Without an endpoint the preview still shows the succ
 state — it is there to show the design — but says the enquiry was not sent, rather
 than letting a real prospect believe it reached you.
 
+## The simulator page
+
+`/simulator` is for people we have given a passphrase to. The simulator is kept in
+`simulator-src/app.html` and is never served as is: `npm run build:simulator`
+encrypts it (AES-256-GCM, key from the passphrase by PBKDF2) into
+`public/simulator/payload.json`, which is what the page fetches. The passphrase form
+derives the key in the visitor's browser and renders the decrypted simulator in a
+sandboxed frame, so there is no server-side secret and it works on the static
+export as well.
+
+The passphrase is never in the repository. To set or change it:
+
+```bash
+SIMULATOR_PASSPHRASE='the passphrase' npm run build:simulator
+git add public/simulator/payload.json && git commit -m "Rotate the simulator passphrase"
+```
+
+A rotation is a new file, not a revocation: anyone who saved an old
+`payload.json` can still open it with the old passphrase. The page is `noindex`,
+excluded from the sitemap and disallowed in `robots.txt`, but the URL is not a
+secret; the passphrase is.
+
 ## Layout
 
 | Path | What it holds |
 |---|---|
 | `app/page.tsx` | Home — hero, intelligence system, catalyst panel, platform, case study, closing block |
 | `app/about/page.tsx` | About us — why we exist, the team, contact CTA |
+| `app/simulator/page.tsx` | Simulator — a password-locked internal page (noindex, not in the sitemap) |
+| `components/SimulatorGate.tsx` | The passphrase form; decrypts and frames the simulator in the browser |
+| `simulator-src/app.html` | The simulator itself, styled with the site's tokens; never served in the clear |
+| `scripts/build-simulator.mjs` | Encrypts the simulator into `public/simulator/payload.json` |
 | `app/api/contact/route.ts` | Server-side validation and delivery for the enquiry form |
 | `app/globals.css` | Design tokens and every shared surface, button and section style |
 | `components/` | Shell (header, footer, brand mark) and one component per home section |

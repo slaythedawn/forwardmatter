@@ -4,7 +4,7 @@ import { Wordmark } from "./Wordmark";
 import { href as route } from "@/lib/href";
 import { siteMeta } from "@/content/site";
 
-export function SiteFooter({ page }: { page: "home" | "about" }) {
+export function SiteFooter({ page }: { page: "home" | "about" | "simulator" }) {
   const onHome = page === "home";
   const href = (hash: string) => route(onHome ? hash : `/${hash}`);
 

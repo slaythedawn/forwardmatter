@@ -10,6 +10,7 @@ const STATIC = process.env.NEXT_PUBLIC_STATIC_EXPORT === "1";
 const STATIC_ROUTES: Record<string, string> = {
   "/": "index.html",
   "/about": "about.html",
+  "/simulator": "simulator.html",
 };
 
 export function href(route: string): string {
