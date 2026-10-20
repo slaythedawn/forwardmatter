@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Apify",
+      "mcp__Alpha_Vantage_MCP_Server",
+      "mcp__Interactive_Brokers_IBKR__get_price_history",
+      "mcp__Interactive_Brokers_IBKR__get_price_snapshot",
+      "mcp__Interactive_Brokers_IBKR__search_contracts",
+      "WebSearch",
+      "WebFetch"
+    ]
+  }
+}
