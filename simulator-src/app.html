@@ -135,6 +135,13 @@ h3.t { font-size: 17px; font-weight: 600; letter-spacing: -.015em; text-shadow: 
 .parts div { display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
 .parts div.off { color: var(--muted); opacity: .7; }
 .parts .swatch { margin-right: 6px; }
+.why { padding: 16px 20px; display: grid; gap: 8px; font-size: 14px; line-height: 1.55; }
+.why h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.why p { margin: 0; }
+.why ul { margin: 0; padding-left: 18px; display: grid; gap: 2px; }
+.why .lesson { color: var(--muted); font-size: 13.5px; }
+tr.dropped td { color: var(--muted); }
+tr.dropped td b { font-weight: 500; }
 .tri { display: inline-block; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid var(--s3); }
 .nwdays summary { cursor: pointer; font-weight: 500; }
 details.more { padding: 4px 18px; }
@@ -378,6 +385,7 @@ dl.gloss dd { margin: 0; color: var(--muted); }
     <div class="card tile"><div class="lab">Above Lilly, a year</div><div class="v" id="b_x"></div><div class="d" id="b_x_d"></div></div>
     <div class="card tile"><div class="lab">From each strategy</div><div class="parts" id="b_parts"></div></div>
   </div>
+  <div class="well why" id="bwhy" aria-live="polite"></div>
   <div class="card chartcard">
     <div class="legend"><span><i style="border-color:var(--holding)"></i>Lilly held</span><span><i id="lg_book" style="border-color:var(--book)"></i><span id="lg_book_t">The book</span></span><span id="lg_tr"><span class="res win">Reader trade made money</span></span><span id="lg_tr2"><span class="res loss">Reader trade lost money</span></span><span id="lg_nw" style="display:none"><span class="tri"></span>Results day</span></div>
     <figure id="bfig"><div class="tip"></div></figure>
@@ -697,7 +705,34 @@ function backtest() {
   document.querySelectorAll("[data-bnh]").forEach(b => b.classList.toggle("active", +b.dataset.bnh === +$("bnh").value));
   const U = BT.retro.underlying, C = s1 ? BT.retro.core_only : U;
   // Strategy two: the reader's trades, posting-day close to the close after the vote.
-  const tr = !s2 ? [] : BT.all.filter(t => Math.abs(t.p - .5) >= th && (sizes === "all" || t.c === "small" || t.c === "mid")).map(t => ({ ...t, call: t.p > .5 ? 1 : -1 })).map(t => ({ ...t, r: t.call * t.m - .004 })).sort((a, b) => a.d < b.d ? -1 : 1);
+  const pick = (thr, sz) => BT.all.filter(t => Math.abs(t.p - .5) >= thr && (sz === "all" || t.c === "small" || t.c === "mid")).map(t => ({ ...t, call: t.p > .5 ? 1 : -1, sure: Math.max(t.p, 1 - t.p) })).map(t => ({ ...t, r: t.call * t.m - .004 })).sort((a, b) => a.d < b.d ? -1 : 1);
+  const tr = !s2 ? [] : pick(th, sizes), base = pick(.2, "sm"), key = t => t.t + t.d, inCur = new Set(tr.map(key)), inBase = new Set(base.map(key));
+  const out = base.filter(t => !inCur.has(key(t))), add = tr.filter(t => !inBase.has(key(t)));
+  const thP = +$("bth").value, fs = v => { const r = Math.round(v * 100); return r >= thP && v * 100 < thP ? (v * 100).toFixed(1) : r; }, compound = a => a.reduce((v, t) => v * (1 + size * t.r), 1) - 1;
+  const why = (t, verb) => `<li><b>${esc(t.t)}</b>, ${t.d}: model ${fs(t.sure)}% sure; ${verb === "out" ? "would have " + (t.r > 0 ? "made" : "lost") : t.r > 0 ? "made" : "lost"} ${Math.abs(size * t.r * 100).toFixed(1)}% on the book</li>`;
+  $("bwhy").hidden = !s2;
+  if (s2) {
+    const atPlan = thP === 70 && sizes === "sm", grp = sizes === "sm" ? "small or mid cap" : "company";
+    let h = "", body = "", lesson = "";
+    if (atPlan) { h = "The plan rule"; body = `<p>70% is the plan's rule, fixed before this backtest was run. ${tr.length} trades pass in five years: ${tr.filter(t => (t.call === 1) === (t.v === "favourable")).length} called the vote right, ${tr.filter(t => t.r > 0).length} made money, ${pc(compound(tr), 1)} on the book in all. Move the slider to see what a higher or lower bar would have kept and left out.</p>`; }
+    else if (!tr.length) { h = `Why nothing trades at ${thP}%`; body = `<p>The model was never ${thP}% sure on a ${grp} in these five years, so the reader sits out and adds nothing. A higher bar cannot help when nothing clears it.</p>`; }
+    else {
+      h = `Why the result changes at ${thP}%${sizes === "all" ? ", all sizes" : ""}`;
+      body = `<p>${tr.length} ${tr.length == 1 ? "trade passes" : "trades pass"}, against ${base.length} under the plan's rule. The reader's total on the book moves from ${pc(compound(base), 1)} to ${pc(compound(tr), 1)}.</p>`;
+      if (out.length) body += `<p>Left out:</p><ul>${out.map(t => why(t, "out")).join("")}</ul>`;
+      if (add.length) body += `<p>Added:</p><ul>${add.map(t => why(t, "in")).join("")}</ul>`;
+      const net = (a, nm) => { if (!a.length) return ""; const v = compound(a); return `Between them the trades ${nm} ${v >= 0 ? "made" : "lost"} ${Math.abs(v * 100).toFixed(1)}%. `; };
+      const big = out.filter(t => size * t.r > .05).sort((a, b) => b.r - a.r)[0];
+      body += `<p>${net(out, "left out")}${net(add, "added")}${big ? `The setting also cuts out ${esc(big.t)}, one of the record's biggest winners, because the model was only ${fs(big.sure)}% sure on it.` : ""}</p>`;
+    }
+    if (!atPlan) {
+      if (thP > 70 && tr.length) lesson += "A higher bar keeps only the calls the model was surest of. Those are right more often, but there are fewer of them, and a trade left out can be a winner as easily as a loser. Past a point the bar cuts out the big winners too, and then everything. ";
+      if (thP < 70) lesson += "A lower bar lets in calls the model was less sure of: more trades, but more of them wrong, and the costs add up. ";
+      if (sizes === "all") lesson += "Large caps are let in here. They barely move after the documents post, so they add trades but little return. ";
+      lesson += "With about two trades a year, one trade in or out swings the five-year result. Choosing whichever setting looks best on this record would fit the rule to the answer, so the plan keeps 70%, fixed in advance; the longer 2014 to 2021 record will test whether a higher bar holds up.";
+    }
+    $("bwhy").innerHTML = `<h3>${h}</h3>${body}${lesson ? `<p class="lesson">${lesson}</p>` : ""}`;
+  }
   $("bth_n").innerHTML = `<b>${tr.length}</b> ${tr.length == 1 ? "trade" : "trades"} pass in five years`;
   // Strategy three, modelled: actual results-day moves, a call right with probability nh, the swing applied to the core's share.
   const sw = (P.now / 100) * (P.core / 100);
@@ -728,7 +763,7 @@ function backtest() {
   svg.querySelectorAll(".nk").forEach(el => { const e = ND[+el.dataset.i]; el.addEventListener("mousemove", ev => showTip(fig, ev, `<b>${e.t} results, ${e.d}</b><br>Shares moved ${pc(e.m, 1)}<br>Modelled: ${pc(e.x, 2)} on the book, expected`)); el.addEventListener("mouseleave", () => hideTip(fig)); });
   if (s3) { $("nw_sum").textContent = `The ${ND.length} results days behind the modelled nowcaster`; $("nwt").innerHTML = `<thead><tr><th>Date</th><th>Company</th><th class="n">Move</th><th class="n">If right</th><th class="n">If wrong</th><th class="n">Expected</th></tr></thead><tbody>` + ND.map(e => `<tr><td class="num">${e.d}</td><td>${e.t}</td><td class="n">${pc(e.m, 1)}</td><td class="n">${pc(sw * (Math.abs(e.m) - .004), 2)}</td><td class="n">${pc(sw * (-Math.abs(e.m) - .004), 2)}</td><td class="n">${pc(e.x, 2)}</td></tr>`).join("") + `<tr class="tot"><td colspan="5">Expected across all ${ND.length}, compounded</td><td class="n">${pc(nf - 1, 1)}</td></tr></tbody>`; }
   if (s2) { const right = tr.filter(t => (t.call === 1) === (t.v === "favourable")).length, won = tr.filter(t => t.r > 0).length;
-    $("bt").innerHTML = `<thead><tr><th>Company</th><th>Meeting</th><th>Size</th><th class="n">Model</th><th>Call</th><th>Vote</th><th class="n">Move</th><th class="n">On the book</th><th>Result</th></tr></thead><tbody>` + (tr.length ? tr.map(t => `<tr><td><b>${esc(t.t)}</b></td><td class="num">${t.d}</td><td>${t.c}</td><td class="n">${(t.p * 100).toFixed(0)}%</td><td>${t.call === 1 ? "Favourable" : "Unfavourable"}</td><td>${t.v[0].toUpperCase() + t.v.slice(1)}</td><td class="n">${pc(t.m)}</td><td class="n">${pc(size * t.r, 1)}</td><td><span class="res ${t.r > 0 ? "win" : "loss"}">${t.r > 0 ? "Made money" : "Lost money"}</span></td></tr>`).join("") : `<tr><td colspan="9">No meeting passes these settings.</td></tr>`) + `<tr class="tot"><td colspan="7">${tr.length} trades · ${right} called the vote right · ${won} made money</td><td class="n">${pc(sleeve - 1, 1)}</td><td></td></tr></tbody>`;
+    $("bt").innerHTML = `<thead><tr><th>Company</th><th>Meeting</th><th>Size</th><th class="n">Model, favourable</th><th>Call</th><th>Vote</th><th class="n">Move</th><th class="n">On the book</th><th>Result</th></tr></thead><tbody>` + (tr.length || out.length ? tr.concat(out).sort((a, b) => a.d < b.d ? -1 : 1).map(t => inCur.has(key(t)) ? `<tr><td><b>${esc(t.t)}</b>${inBase.has(key(t)) ? "" : ` <span class="pill">Added</span>`}</td><td class="num">${t.d}</td><td>${t.c}</td><td class="n">${(t.p * 100).toFixed(0)}%</td><td>${t.call === 1 ? "Favourable" : "Unfavourable"}</td><td>${t.v[0].toUpperCase() + t.v.slice(1)}</td><td class="n">${pc(t.m)}</td><td class="n">${pc(size * t.r, 1)}</td><td><span class="res ${t.r > 0 ? "win" : "loss"}">${t.r > 0 ? "Made money" : "Lost money"}</span></td></tr>` : `<tr class="dropped"><td><b>${esc(t.t)}</b></td><td class="num">${t.d}</td><td>${t.c}</td><td class="n">${(t.p * 100).toFixed(0)}%</td><td>${t.call === 1 ? "Favourable" : "Unfavourable"}</td><td>${t.v[0].toUpperCase() + t.v.slice(1)}</td><td class="n">${pc(t.m)}</td><td class="n">not traded</td><td>Left out: ${fs(t.sure)}% sure, below ${thP}%</td></tr>`).join("") : `<tr><td colspan="9">No meeting passes these settings.</td></tr>`) + `<tr class="tot"><td colspan="7">${tr.length} trades · ${right} called the vote right · ${won} made money</td><td class="n">${pc(sleeve - 1, 1)}</td><td></td></tr></tbody>`;
     $("bt_note").textContent = `${BT.all.length} advisory committee meetings since 2022 have a model probability and a measured move; ${tr.length} pass the settings above. Each trade enters at the close on the day the FDA posts its briefing document and exits at the close after the vote. A call can be right on the vote and still lose a little when the stock had already moved on posting day.`; }
 }
 
