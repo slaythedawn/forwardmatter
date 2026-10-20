@@ -125,10 +125,17 @@ h3.t { font-size: 17px; font-weight: 600; letter-spacing: -.015em; text-shadow: 
 .ctl.sw input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
 .ctl.off { opacity: .42; }
 .ctl.off input, .ctl.off button { cursor: not-allowed; }
-.nowbt { margin-top: 16px; padding: 16px 18px 12px; display: grid; grid-template-columns: minmax(0,1.35fr) minmax(0,1fr); gap: 4px 28px; align-items: start; }
-.nowbt > .ctl.sw { grid-column: 1 / -1; }
-.nowbt .small { margin: 2px 0 0; }
-.tiles.five { grid-template-columns: repeat(5, minmax(0,1fr)); }
+.bstrats .ccard { display: flex; flex-direction: column; gap: 6px; }
+.bstrats .ctl.head { border: 0; padding: 0 0 2px; }
+.bstrats .ctl.head label { display: inline-flex; align-items: center; gap: 8px; }
+.bstrats .ctl:not(.head) { padding: 8px 0 4px; }
+.bstrats select { margin: 4px 0 0; grid-column: 1 / -1; }
+.bstrats .ccard.offcard { opacity: .72; }
+.parts { display: grid; gap: 3px; margin-top: 8px; font-size: 13px; }
+.parts div { display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
+.parts div.off { color: var(--muted); opacity: .7; }
+.parts .swatch { margin-right: 6px; }
+.tri { display: inline-block; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid var(--s3); }
 .nwdays summary { cursor: pointer; font-weight: 500; }
 details.more { padding: 4px 18px; }
 details.more > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; min-height: 44px; font-size: 12px; font-weight: 600; letter-spacing: .11em; text-transform: uppercase; color: var(--muted); }
@@ -195,7 +202,7 @@ dl.gloss dd { margin: 0; color: var(--muted); }
 .next { display: flex; justify-content: flex-end; }
 
 @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } .strats { grid-template-columns: 1fr; } .intro { grid-template-columns: 1fr; } .howto { grid-template-columns: 1fr 1fr; } .method { grid-template-columns: 1fr; } }
-@media (max-width: 760px) { .two, .filters { grid-template-columns: 1fr; } .stats, .tiles { grid-template-columns: repeat(2, minmax(0,1fr)); row-gap: 16px; } .stat:nth-child(3) { padding-left: 0; border-left: 0; } .summary { grid-template-columns: 1fr; } .summary .acts { flex-direction: row; flex-wrap: wrap; } .nowbt { grid-template-columns: 1fr; } .tiles.five { grid-template-columns: repeat(2, minmax(0,1fr)); } .tiles.five .tile:last-child { grid-column: 1 / -1; } }
+@media (max-width: 760px) { .two, .filters { grid-template-columns: 1fr; } .stats, .tiles { grid-template-columns: repeat(2, minmax(0,1fr)); row-gap: 16px; } .stat:nth-child(3) { padding-left: 0; border-left: 0; } .summary { grid-template-columns: 1fr; } .summary .acts { flex-direction: row; flex-wrap: wrap; } }
 @media (max-width: 560px) { .tabs { flex-wrap: wrap; overflow: visible; } .tab { flex: 1 1 auto; padding: 8px 10px; font-size: 13.5px; } }
 @media (max-width: 460px) { .howto { grid-template-columns: 1fr; } .intro, .headline { padding: 20px; } dl.gloss { grid-template-columns: 1fr; gap: 2px 0; } dl.gloss dd { margin-bottom: 8px; } .facts { grid-template-columns: 1fr; gap: 2px; } .facts dd { margin-bottom: 6px; } }
 </style></head><body>
@@ -346,37 +353,44 @@ dl.gloss dd { margin: 0; color: var(--muted); }
 <!-- BACKTEST -->
 <section class="panel" id="p-backtest" role="tabpanel" aria-labelledby="t-backtest" hidden>
   <div class="sect-head"><h2>Backtest, October 2021 to October 2026</h2><span class="small">The same strategies on the record as it happened</span></div>
-  <p class="lede">Strategy one is the calendar overlay run on Lilly's daily prices, with no hindsight in its rules. Strategy two is the reader's historical model, trained only on meetings before each one, scoring every advisory committee meeting since 2022 with a measured move. The nowcaster's calls start scoring live on 29 October 2026; switch it on below to model it on the actual Lilly and Novo results days since 2022, at a hit rate you set. Position size comes from the reader input on the Simulate tab, capital from the capital input.</p>
-  <div class="filters">
-    <div class="card ccard"><div class="ctl" style="border:0;padding:0"><label for="bth">Trade when the model is at least this sure</label><output id="o_bth" class="num">70%</output><input type="range" id="bth" min="55" max="95" step="5" value="70"><div class="refs"><span class="ref static">Plan rule <b>70%</b></span></div></div></div>
-    <div class="card ccard"><label for="bsz" style="font-size:13.5px;font-weight:500">Companies it may trade</label><select id="bsz"><option value="sm" selected>Small and mid caps</option><option value="all">All sizes</option></select><div class="small">The plan is small and mid caps. Large caps barely move after the documents post.</div></div>
-    <div class="card ccard"><div class="ctl sw" style="border:0;padding:0"><label for="bov">Apply strategy one's overlay</label><input type="checkbox" id="bov" checked></div><div class="small">Off shows the reader on top of Lilly held outright.</div></div>
-  </div>
-  <div class="card ccard nowbt">
-    <div class="ctl sw" style="border:0;padding:0"><label for="bnw"><b>Add strategy three, the nowcaster</b> (modelled on the actual results days)</label><input type="checkbox" id="bnw"></div>
-    <p class="small" id="bnw_note"></p>
-    <div class="ctl" id="bnh_ctl" style="border:0;padding:0"><label for="bnh">Right on results days</label><output id="o_bnh" class="num">70%</output><input type="range" id="bnh" min="50" max="85" step="1" value="70"><div class="refs"><button type="button" class="ref" data-bnh="70">Plan <b>70%</b></button><button type="button" class="ref" data-bnh="50">Coin toss <b>50%</b></button></div></div>
+  <p class="lede">Switch each strategy on or off to see what it added. Strategies one and two are measured: the calendar overlay on Lilly's daily prices with rules fixed in advance, and the reader's historical model, trained only on meetings before each one. Strategy three is modelled: the Lilly and Novo results days and their moves are actual, and you set how often its call is right. Position size, swing and capital come from the Simulate tab.</p>
+  <div class="filters bstrats">
+    <div class="card ccard">
+      <div class="ctl sw head"><label for="bov"><span class="swatch" style="background:var(--s1)"></span><b>Strategy 1, calendar overlay</b></label><input type="checkbox" id="bov" checked></div>
+      <p class="small"><span class="pill">Measured</span> Lifts exposure into Lilly's dated events. Off holds Lilly outright.</p>
+    </div>
+    <div class="card ccard">
+      <div class="ctl sw head"><label for="brd"><span class="swatch" style="background:var(--s2)"></span><b>Strategy 2, the reader</b></label><input type="checkbox" id="brd" checked></div>
+      <p class="small"><span class="pill">Measured</span> Trades advisory committee votes from the FDA's briefing documents.</p>
+      <div class="ctl" id="bth_ctl"><label for="bth">Trade when the model is at least this sure</label><output id="o_bth" class="num">70%</output><input type="range" id="bth" min="55" max="95" step="5" value="70"><div class="refs"><span class="ref static">Plan rule <b>70%</b></span></div></div>
+      <div class="ctl" id="bsz_ctl"><label for="bsz">Companies it may trade</label><select id="bsz"><option value="sm" selected>Small and mid caps (the plan)</option><option value="all">All sizes</option></select></div>
+    </div>
+    <div class="card ccard">
+      <div class="ctl sw head"><label for="bnw"><span class="swatch" style="background:var(--s3)"></span><b>Strategy 3, the nowcaster</b></label><input type="checkbox" id="bnw"></div>
+      <p class="small"><span class="pill">Modelled</span> Leans the core into each results day. Its calls score live from 29 October 2026.</p>
+      <div class="ctl" id="bnh_ctl"><label for="bnh">Right on results days</label><output id="o_bnh" class="num">70%</output><input type="range" id="bnh" min="50" max="85" step="1" value="70"><div class="refs"><button type="button" class="ref" data-bnh="70">Plan <b>70%</b></button><button type="button" class="ref" data-bnh="50">Coin toss <b>50%</b></button></div></div>
+      <p class="small" id="bnw_note"></p>
+    </div>
   </div>
   <div class="tiles">
     <div class="card tile"><div class="lab">Lilly held, five years</div><div class="v" id="b_u"></div><div class="d" id="b_u_d"></div></div>
-    <div class="card tile"><div class="lab">Strategy 1 alone</div><div class="v" id="b_c"></div><div class="d" id="b_c_d"></div></div>
-    <div class="card tile"><div class="lab">Both strategies</div><div class="v" id="b_b"></div><div class="d" id="b_b_d"></div></div>
-    <div class="card tile" id="b_n_tile" hidden><div class="lab">With the nowcaster</div><div class="v" id="b_n"></div><div class="d" id="b_n_d"></div></div>
+    <div class="card tile"><div class="lab">The book</div><div class="v" id="b_b"></div><div class="d" id="b_b_d"></div></div>
     <div class="card tile"><div class="lab">Above Lilly, a year</div><div class="v" id="b_x"></div><div class="d" id="b_x_d"></div></div>
+    <div class="card tile"><div class="lab">From each strategy</div><div class="parts" id="b_parts"></div></div>
   </div>
   <div class="card chartcard">
-    <div class="legend"><span><i style="border-color:var(--holding)"></i>Lilly held</span><span><i style="border-color:var(--s1)"></i>Strategy 1</span><span><i style="border-color:var(--book)"></i>The book</span><span id="lg_nw" style="display:none"><i class="dash" style="border-color:var(--s3)"></i>With the nowcaster, modelled</span><span><span class="res win">Trade made money</span></span><span><span class="res loss">Trade lost money</span></span></div>
+    <div class="legend"><span><i style="border-color:var(--holding)"></i>Lilly held</span><span><i id="lg_book" style="border-color:var(--book)"></i><span id="lg_book_t">The book</span></span><span id="lg_tr"><span class="res win">Reader trade made money</span></span><span id="lg_tr2"><span class="res loss">Reader trade lost money</span></span><span id="lg_nw" style="display:none"><span class="tri"></span>Results day</span></div>
     <figure id="bfig"><div class="tip"></div></figure>
   </div>
-  <div class="card chartcard">
-    <h3 class="t">The reader's trades under these filters</h3>
+  <div class="card chartcard" id="btcard">
+    <h3 class="t">The reader's trades under these settings</h3>
     <div class="tablewrap"><table id="bt"></table></div>
     <p class="small" id="bt_note"></p>
   </div>
   <div class="card chartcard" id="nwcard" hidden>
     <details class="nwdays"><summary id="nw_sum">The results days behind the modelled nowcaster</summary>
     <div class="tablewrap" style="margin-top:12px"><table id="nwt"></table></div>
-    <p class="small">Each results day's move is the actual close-to-close move in the reporting company's shares. The modelled call is right with the probability set above; the expected figure on the book is the swing times the core's share times the move, weighted by that probability, less 0.4% in costs. Novo is traded through options.</p></details>
+    <p class="small">Each results day's move is the actual close-to-close move in the reporting company's shares. The modelled call is right with the probability set above. The expected figure on the book is the swing times the core's share times the move, weighted by that probability, less 0.4% in costs. Novo is traded through options.</p></details>
   </div>
 </section>
 
@@ -675,41 +689,46 @@ function renderStrategies() {
 
 // ---------- backtest
 function backtest() {
-  const size = P.size / 100, cap = P.cap, th = (parseFloat($("bth").value) - 50) / 100; $("o_bth").textContent = $("bth").value + "%";
-  const sizes = $("bsz").value, overlay = $("bov").checked; const U = BT.retro.underlying, C = overlay ? BT.retro.core_only : U;
-  const tr = BT.all.filter(t => Math.abs(t.p - .5) >= th && (sizes === "all" || t.c === "small" || t.c === "mid")).map(t => ({ ...t, call: t.p > .5 ? 1 : -1 })).map(t => ({ ...t, r: t.call * t.m - .004 })).sort((a, b) => a.d < b.d ? -1 : 1);
-  let k = 0, sleeve = 1; const book = []; for (let i = 0; i < C.length; i++) { while (k < tr.length && tr[k].d <= C[i][0]) { sleeve *= 1 + size * tr[k].r; k++; } book.push([C[i][0], C[i][1] * sleeve]); }
+  const size = P.size / 100, cap = P.cap, th = (parseFloat($("bth").value) - 50) / 100; $("o_bth").textContent = $("bth").value + "%"; $("o_bnh").textContent = $("bnh").value + "%";
+  const s1 = $("bov").checked, s2 = $("brd").checked, s3 = $("bnw").checked, sizes = $("bsz").value, nh = parseFloat($("bnh").value) / 100;
+  const dim = (id, on) => { const c = $(id); c.classList.toggle("off", !on); c.querySelectorAll("input,select,button").forEach(e => e.disabled = !on); };
+  dim("bth_ctl", s2); dim("bsz_ctl", s2); dim("bnh_ctl", s3);
+  [["bov", s1], ["brd", s2], ["bnw", s3]].forEach(([id, on]) => $(id).closest(".ccard").classList.toggle("offcard", !on));
+  document.querySelectorAll("[data-bnh]").forEach(b => b.classList.toggle("active", +b.dataset.bnh === +$("bnh").value));
+  const U = BT.retro.underlying, C = s1 ? BT.retro.core_only : U;
+  // Strategy two: the reader's trades, posting-day close to the close after the vote.
+  const tr = !s2 ? [] : BT.all.filter(t => Math.abs(t.p - .5) >= th && (sizes === "all" || t.c === "small" || t.c === "mid")).map(t => ({ ...t, call: t.p > .5 ? 1 : -1 })).map(t => ({ ...t, r: t.call * t.m - .004 })).sort((a, b) => a.d < b.d ? -1 : 1);
   // Strategy three, modelled: actual results-day moves, a call right with probability nh, the swing applied to the core's share.
-  const nwOn = $("bnw").checked, nh = parseFloat($("bnh").value) / 100, sw = (P.now / 100) * (P.core / 100); $("o_bnh").textContent = $("bnh").value + "%";
-  $("bnh").disabled = !nwOn; $("bnh_ctl").classList.toggle("off", !nwOn); document.querySelectorAll("[data-bnh]").forEach(b => { b.disabled = !nwOn; b.classList.toggle("active", +b.dataset.bnh === +$("bnh").value); });
-  const ND = BT.now.filter(e => e.d > U[0][0] && e.d <= U[U.length - 1][0]).map(e => ({ ...e, x: sw * ((2 * nh - 1) * Math.abs(e.m) - .004) }));
-  let j = 0, nf = 1; const bookN = book.map(p => { while (j < ND.length && ND[j].d <= p[0]) { nf *= 1 + ND[j].x; j++; } return [p[0], p[1] * nf]; });
-  const nr = mulberry32(SEED), draws = new Float64Array(2000); for (let s = 0; s < draws.length; s++) { let f = 1; for (const e of ND) f *= 1 + sw * ((nr() < nh ? 1 : -1) * Math.abs(e.m) - .004); draws[s] = f; }
-  const cg = v => Math.pow(v / 100, 1 / 5) - 1; const uE = U[U.length - 1][1], cE = C[C.length - 1][1], bE = book[book.length - 1][1], nE = bookN[bookN.length - 1][1]; const $m = v => cap * v / 100;
-  const fE = nwOn ? nE : bE;
+  const sw = (P.now / 100) * (P.core / 100);
+  const ND = !s3 ? [] : BT.now.filter(e => e.d > U[0][0] && e.d <= U[U.length - 1][0]).map(e => ({ ...e, x: sw * ((2 * nh - 1) * Math.abs(e.m) - .004) }));
+  let k = 0, j = 0, sleeve = 1, nf = 1; const mid = [], book = [];
+  for (let i = 0; i < C.length; i++) { const d = C[i][0]; while (k < tr.length && tr[k].d <= d) { sleeve *= 1 + size * tr[k].r; k++; } while (j < ND.length && ND[j].d <= d) { nf *= 1 + ND[j].x; j++; } mid.push([d, C[i][1] * sleeve]); book.push([d, C[i][1] * sleeve * nf]); }
+  const nr = mulberry32(SEED), draws = new Float64Array(s3 ? 2000 : 1).fill(1); if (s3) for (let n = 0; n < draws.length; n++) { let f = 1; for (const e of ND) f *= 1 + sw * ((nr() < nh ? 1 : -1) * Math.abs(e.m) - .004); draws[n] = f; }
+  const cg = v => Math.pow(v / 100, 1 / 5) - 1; const uE = U[U.length - 1][1], cE = C[C.length - 1][1], mE = mid[mid.length - 1][1], bE = book[book.length - 1][1]; const $m = v => cap * v / 100;
   $("b_u").textContent = f1($m(uE)); $("b_u_d").textContent = `${pc(cg(uE))} a year`;
-  $("b_c").textContent = f1($m(cE)); $("b_c_d").textContent = overlay ? `${pc(cg(cE))} a year, ${pts(cg(cE) - cg(uE))} over Lilly` : "Overlay off: Lilly alone";
-  $("b_b").textContent = f1($m(bE)); $("b_b_d").textContent = `${pc(cg(bE))} a year at ${P.size}% per call`;
-  $("b_n_tile").hidden = !nwOn; document.querySelector(".tiles").classList.toggle("five", nwOn); $("lg_nw").style.display = nwOn ? "" : "none"; $("nwcard").hidden = !nwOn;
-  if (nwOn) { $("b_n").textContent = f1($m(nE)); $("b_n_d").textContent = `${pc(cg(nE))} a year expected; ${pc(cg(bE * q(draws, .1)))} to ${pc(cg(bE * q(draws, .9)))} in 8 of 10 draws`; }
-  $("b_x").textContent = pts(cg(fE) - cg(uE)); $("b_x_d").textContent = nwOn ? "the book with the modelled nowcaster against Lilly held" : "the book against Lilly held, measured strategies only";
-  $("bnw_note").textContent = P.now === 0 ? "The swing is set to 0% on the Simulate tab, so this layer adds nothing until it is raised there." : `The ${ND.length} scheduled Lilly and Novo results days since 2022 and their moves are actual; whether each call was right is set by the hit rate. The line shows the expected result, the tile the range across 2,000 draws. Swing of ${P.now}% on a core of ${P.core}%, both from the Simulate tab.`;
-  const fig = $("bfig"); const W = 760, H = 320, m = { t: 14, r: 108, b: 30, l: 48 }; const parse = s => Date.parse(s + "T00:00:00Z"); const x0 = parse(U[0][0]), x1 = parse(U[U.length - 1][0]);
-  const all = U.concat(C, book, nwOn ? bookN : []).map(p => p[1]); const y1 = Math.max(...all) * 1.04, y0 = Math.min(...all) * .88; const X = t => m.l + (t - x0) / (x1 - x0) * (W - m.l - m.r), Yy = v => m.t + (y1 - v) / (y1 - y0) * (H - m.t - m.b);
+  $("b_b").textContent = f1($m(bE)); $("b_b_d").textContent = `${pc(cg(bE))} a year` + (s3 ? `, expected; ${pc(cg(mE * q(draws, .1)))} to ${pc(cg(mE * q(draws, .9)))} in 8 of 10 draws` : "");
+  $("b_x").textContent = pts(cg(bE) - cg(uE)); $("b_x_d").textContent = !(s1 || s2 || s3) ? "every strategy is off" : s3 ? "includes the modelled nowcaster" : "measured strategies only";
+  const part = (on, sw_, nm, v) => `<div class="${on ? "" : "off"}"><span><span class="swatch" style="background:${sw_}"></span>${nm}</span><b>${on ? pts(v) : "off"}</b></div>`;
+  $("b_parts").innerHTML = part(s1, "var(--s1)", "Overlay", cg(cE) - cg(uE)) + part(s2, "var(--s2)", "Reader", cg(mE) - cg(cE)) + part(s3, "var(--s3)", "Nowcaster", cg(bE) - cg(mE));
+  $("bnw_note").textContent = !s3 ? "" : P.now === 0 ? "The swing is 0% on the Simulate tab, so this adds nothing until it is raised there." : `${ND.length} scheduled Lilly and Novo results days since 2022. Swing of ${P.now}% on a core of ${P.core}%, from the Simulate tab. The line shows the expected result.`;
+  $("lg_book").className = s3 ? "dash" : ""; $("lg_book_t").textContent = s3 ? "The book, with the modelled nowcaster" : "The book"; $("lg_nw").style.display = s3 ? "" : "none"; $("lg_tr").style.display = $("lg_tr2").style.display = s2 ? "" : "none";
+  $("btcard").hidden = !s2; $("nwcard").hidden = !s3;
+  const fig = $("bfig"); const W = 760, H = 320, m = { t: 14, r: 92, b: 30, l: 48 }; const parse = s => Date.parse(s + "T00:00:00Z"); const x0 = parse(U[0][0]), x1 = parse(U[U.length - 1][0]);
+  const all = U.concat(book).map(p => p[1]); const y1 = Math.max(...all) * 1.06, y0 = Math.min(...all) * .88; const X = t => m.l + (t - x0) / (x1 - x0) * (W - m.l - m.r), Yy = v => m.t + (y1 - v) / (y1 - y0) * (H - m.t - m.b);
   let g = ""; const st = niceStep((y1 - y0) / 5); for (let v = Math.ceil(y0 / st) * st; v <= y1; v += st) g += `<line class="grid" x1="${m.l}" x2="${W - m.r}" y1="${Yy(v)}" y2="${Yy(v)}"/><text x="${m.l - 8}" y="${Yy(v) + 4}" text-anchor="end">${v.toFixed(0)}</text>`;
   for (let yr = 2022; yr <= 2026; yr++) { const t = Date.UTC(yr, 0, 1); g += `<text x="${X(t)}" y="${H - m.b + 18}" text-anchor="middle">${yr}</text>`; }
   const pth = a => a.map((p, i) => `${i ? "L" : "M"}${X(parse(p[0])).toFixed(1)},${Yy(p[1]).toFixed(1)}`).join("");
-  g += `<path d="${pth(U)}" fill="none" stroke="var(--holding)" stroke-width="1.6"/>` + (overlay ? `<path d="${pth(C)}" fill="none" stroke="var(--s1)" stroke-width="1.8"/>` : "") + `<path d="${pth(book)}" fill="none" stroke="var(--book)" stroke-width="2.4"/>` + (nwOn ? `<path d="${pth(bookN)}" fill="none" stroke="var(--s3)" stroke-width="2.2" stroke-dasharray="6 4"/>` : "");
-  if (nwOn) ND.forEach((e, i) => { const x = X(parse(e.d)); g += `<rect class="nk" data-i="${i}" x="${x - 4}" y="${m.t}" width="8" height="12" fill="transparent"/><path d="M${x - 4},${m.t + 1}L${x + 4},${m.t + 1}L${x},${m.t + 8}Z" fill="var(--s3)" opacity="${e.t === "Lilly" ? 1 : .55}" pointer-events="none"/>`; });
+  g += `<path d="${pth(U)}" fill="none" stroke="var(--holding)" stroke-width="1.6"/><path d="${pth(book)}" fill="none" stroke="var(--book)" stroke-width="2.4"${s3 ? ` stroke-dasharray="7 4"` : ""}/>`;
+  ND.forEach((e, i) => { const x = X(parse(e.d)); g += `<rect class="nk" data-i="${i}" x="${x - 4}" y="${m.t}" width="8" height="12" fill="transparent"/><path d="M${x - 4},${m.t + 1}L${x + 4},${m.t + 1}L${x},${m.t + 8}Z" fill="var(--s3)" opacity="${e.t === "Lilly" ? 1 : .55}" pointer-events="none"/>`; });
   tr.forEach((t, i) => { const x = X(parse(t.d)); g += `<rect class="tk" data-i="${i}" x="${x - 5}" y="${H - m.b - 16}" width="10" height="16" fill="transparent"/><circle cx="${x}" cy="${H - m.b - 6}" r="5" fill="${t.r > 0 ? "var(--good)" : "var(--bad)"}" stroke="#fff" stroke-width="1.5" pointer-events="none"/>`; });
-  const labs = [{ y: Yy(bE), t: `${bE.toFixed(0)} book` }, { y: Yy(uE), t: `${uE.toFixed(0)} Lilly` }]; if (overlay) labs.push({ y: Yy(cE), t: `${cE.toFixed(0)} strategy 1` }); if (nwOn) labs.push({ y: Yy(nE), t: `${nE.toFixed(0)} nowcaster` }); labs.sort((a, b) => a.y - b.y); for (let i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 15) labs[i].y = labs[i - 1].y + 15; labs.forEach(l => g += `<text class="lab" x="${W - m.r + 8}" y="${l.y + 4}">${l.t}</text>`);
-  const svg = svgEl(fig, W, H, g, "Backtest: Lilly, strategy one and the book from October 2021, indexed to 100, with the reader's trades marked");
+  const labs = [{ y: Yy(bE), t: `${bE.toFixed(0)} book` }, { y: Yy(uE), t: `${uE.toFixed(0)} Lilly` }]; labs.sort((a, b) => a.y - b.y); if (labs[1].y - labs[0].y < 15) labs[1].y = labs[0].y + 15; labs.forEach(l => g += `<text class="lab" x="${W - m.r + 8}" y="${l.y + 4}">${l.t}</text>`);
+  const svg = svgEl(fig, W, H, g, "Backtest: Lilly held and the book from October 2021, indexed to 100, with the strategies switched on marked");
   svg.querySelectorAll(".tk").forEach(el => { const t = tr[+el.dataset.i]; el.addEventListener("mousemove", ev => showTip(fig, ev, `<b>${esc(t.t)}, ${t.d}</b><br>Called ${t.call === 1 ? "favourable" : "unfavourable"} at ${(t.p * 100).toFixed(0)}%; vote ${t.v}<br>Move ${pc(t.m)}; ${pc(size * t.r, 1)} on the book`)); el.addEventListener("mouseleave", () => hideTip(fig)); });
   svg.querySelectorAll(".nk").forEach(el => { const e = ND[+el.dataset.i]; el.addEventListener("mousemove", ev => showTip(fig, ev, `<b>${e.t} results, ${e.d}</b><br>Shares moved ${pc(e.m, 1)}<br>Modelled: ${pc(e.x, 2)} on the book, expected`)); el.addEventListener("mouseleave", () => hideTip(fig)); });
-  if (nwOn) { $("nw_sum").textContent = `The ${ND.length} results days behind the modelled nowcaster`; $("nwt").innerHTML = `<thead><tr><th>Date</th><th>Company</th><th class="n">Move</th><th class="n">If right</th><th class="n">If wrong</th><th class="n">Expected</th></tr></thead><tbody>` + ND.map(e => `<tr><td class="num">${e.d}</td><td>${e.t}</td><td class="n">${pc(e.m, 1)}</td><td class="n">${pc(sw * (Math.abs(e.m) - .004), 2)}</td><td class="n">${pc(sw * (-Math.abs(e.m) - .004), 2)}</td><td class="n">${pc(e.x, 2)}</td></tr>`).join("") + `<tr class="tot"><td colspan="5">Expected across all ${ND.length}, compounded</td><td class="n">${pc(nf - 1, 1)}</td></tr></tbody>`; }
-  const right = tr.filter(t => (t.call === 1) === (t.v === "favourable")).length, won = tr.filter(t => t.r > 0).length;
-  $("bt").innerHTML = `<thead><tr><th>Company</th><th>Meeting</th><th>Size</th><th class="n">Model</th><th>Call</th><th>Vote</th><th class="n">Move</th><th class="n">On the book</th><th>Result</th></tr></thead><tbody>` + (tr.length ? tr.map(t => `<tr><td><b>${esc(t.t)}</b></td><td class="num">${t.d}</td><td>${t.c}</td><td class="n">${(t.p * 100).toFixed(0)}%</td><td>${t.call === 1 ? "Favourable" : "Unfavourable"}</td><td>${t.v[0].toUpperCase() + t.v.slice(1)}</td><td class="n">${pc(t.m)}</td><td class="n">${pc(size * t.r, 1)}</td><td><span class="res ${t.r > 0 ? "win" : "loss"}">${t.r > 0 ? "Made money" : "Lost money"}</span></td></tr>`).join("") : `<tr><td colspan="9">No meeting passes these filters.</td></tr>`) + `<tr class="tot"><td colspan="7">${tr.length} trades · ${right} called the vote right · ${won} made money</td><td class="n">${pc(sleeve - 1, 1)}</td><td></td></tr></tbody>`;
-  $("bt_note").textContent = `${BT.all.length} advisory committee meetings since 2022 have a model probability and a measured move; ${tr.length} pass the filters above. Each trade enters at the close on the day the FDA posts its briefing document and exits at the close after the vote. A call can be right on the vote and still lose a little when the stock had already moved on posting day.`;
+  if (s3) { $("nw_sum").textContent = `The ${ND.length} results days behind the modelled nowcaster`; $("nwt").innerHTML = `<thead><tr><th>Date</th><th>Company</th><th class="n">Move</th><th class="n">If right</th><th class="n">If wrong</th><th class="n">Expected</th></tr></thead><tbody>` + ND.map(e => `<tr><td class="num">${e.d}</td><td>${e.t}</td><td class="n">${pc(e.m, 1)}</td><td class="n">${pc(sw * (Math.abs(e.m) - .004), 2)}</td><td class="n">${pc(sw * (-Math.abs(e.m) - .004), 2)}</td><td class="n">${pc(e.x, 2)}</td></tr>`).join("") + `<tr class="tot"><td colspan="5">Expected across all ${ND.length}, compounded</td><td class="n">${pc(nf - 1, 1)}</td></tr></tbody>`; }
+  if (s2) { const right = tr.filter(t => (t.call === 1) === (t.v === "favourable")).length, won = tr.filter(t => t.r > 0).length;
+    $("bt").innerHTML = `<thead><tr><th>Company</th><th>Meeting</th><th>Size</th><th class="n">Model</th><th>Call</th><th>Vote</th><th class="n">Move</th><th class="n">On the book</th><th>Result</th></tr></thead><tbody>` + (tr.length ? tr.map(t => `<tr><td><b>${esc(t.t)}</b></td><td class="num">${t.d}</td><td>${t.c}</td><td class="n">${(t.p * 100).toFixed(0)}%</td><td>${t.call === 1 ? "Favourable" : "Unfavourable"}</td><td>${t.v[0].toUpperCase() + t.v.slice(1)}</td><td class="n">${pc(t.m)}</td><td class="n">${pc(size * t.r, 1)}</td><td><span class="res ${t.r > 0 ? "win" : "loss"}">${t.r > 0 ? "Made money" : "Lost money"}</span></td></tr>`).join("") : `<tr><td colspan="9">No meeting passes these settings.</td></tr>`) + `<tr class="tot"><td colspan="7">${tr.length} trades · ${right} called the vote right · ${won} made money</td><td class="n">${pc(sleeve - 1, 1)}</td><td></td></tr></tbody>`;
+    $("bt_note").textContent = `${BT.all.length} advisory committee meetings since 2022 have a model probability and a measured move; ${tr.length} pass the settings above. Each trade enters at the close on the day the FDA posts its briefing document and exits at the close after the vote. A call can be right on the vote and still lose a little when the stock had already moved on posting day.`; }
 }
 
 // ---------- assumptions register, summary, export
@@ -752,7 +771,7 @@ TABS.forEach((t, i) => { const b = $("t-" + t); b.addEventListener("click", () =
 document.querySelectorAll("[data-goto]").forEach(b => b.addEventListener("click", () => go(b.dataset.goto)));
 document.querySelectorAll("[data-preset]").forEach(b => b.addEventListener("click", () => { P = { ...PRESETS[b.dataset.preset] }; syncControls(); changed(); }));
 $("pin").addEventListener("click", () => { if (baseline) baseline = null; else baseline = { name: preset === "custom" ? "your scenario" : PRESETS[preset].name, med: SIM.med.slice(), Y: SIM.Y, medEnd: SIM.medEnd, cagr: SIM.cagr(SIM.medEnd), ex: SIM.exMed, bad: SIM.badEnd }; render(); });
-["bth", "bnh"].forEach(id => $(id).addEventListener("input", backtest)); ["bsz", "bov", "bnw"].forEach(id => $(id).addEventListener("change", backtest));
+["bth", "bnh"].forEach(id => $(id).addEventListener("input", backtest)); ["bsz", "bov", "brd", "bnw"].forEach(id => $(id).addEventListener("change", backtest));
 document.querySelectorAll("[data-bnh]").forEach(b => b.addEventListener("click", () => { $("bnh").value = b.dataset.bnh; backtest(); }));
 
 buildControls(); syncControls(); refreshOutputs(); render(); go("strategies", false);
