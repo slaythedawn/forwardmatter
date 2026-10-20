@@ -9,3 +9,6 @@ next-env.d.ts
 
 # Scratch output from screenshot tooling with an unset path
 undefined/
+
+# Unencrypted simulator source: kept outside the repository, encrypted into public/simulator/payload.json
+simulator-src/
