@@ -88,7 +88,7 @@ export type Capability = {
 export const capabilities: Capability[] = [
   {
     title: "Predictive models",
-    body: "Outcome probabilities for events that already have a date on them.",
+    body: "Outcome probabilities for events that already have a date on them, read from the evidence published before they resolve.",
     lampTop: "#6b93c4",
     lampBottom: "#345984",
     glow: "rgba(52,89,132,0.6)",
@@ -152,6 +152,15 @@ export const timeline: TimelineEvent[] = [
     ring: "#8fb4dd",
     dot: "#5b82b4",
     glow: "rgba(143,180,221,0.5)",
+  },
+  {
+    when: "Scheduled",
+    label: "Advisory committee",
+    note: "Documents posted two days before",
+    weight: "76%",
+    ring: "#8fb4dd",
+    dot: "transparent",
+    glow: "rgba(143,180,221,0.45)",
   },
   {
     when: "Scheduled",
@@ -251,7 +260,7 @@ export const caseStudy = {
     },
     {
       lead: "The evidence is documented.",
-      body: "Protocols, filings, labels and transcripts are public text, which is what our models read at scale.",
+      body: "Protocols, filings, FDA briefing documents and transcripts are public text, which is what our models read at scale.",
     },
     {
       lead: "The sequence repeats.",
@@ -372,7 +381,7 @@ export const simulatorPage = {
   titleLead: "Run the book ",
   titleAccent: "yourself.",
   lead:
-    "Every slider is an assumption the record has a view on. The defaults are the measured or planned values; move them to see what the result depends on. Two thousand simulated paths rerun on every change.",
+    "Matter Engine's two strategies, the platform core and the reader, run forward on recorded market moves, with the five-year backtest beneath. Every slider is an assumption the record has a view on; the defaults are the measured or planned values, and two thousand simulated paths rerun on every change.",
   frameTitle: "Forward Matter live simulator",
   legal:
     "Hypothetical results from a simulation on recorded market moves. Unaudited, before tax, no capital at risk. Not financial product advice.",
@@ -386,6 +395,6 @@ export const simulatorPage = {
     opening: "Opening",
     wrong: "That passphrase did not open the simulator. Check it and try again.",
     unavailable: "The simulator could not be loaded. Please try again shortly.",
-    note: "If you were not given a passphrase, use the contact form and we will arrange access.",
+    note: "Access is by invitation. If you were not given a passphrase, use the contact form and we will arrange it.",
   },
 } as const;

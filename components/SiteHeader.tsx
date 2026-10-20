@@ -33,6 +33,13 @@ export function SiteHeader({ page }: { page: "home" | "about" | "simulator" }) {
         >
           About us
         </SiteLink>
+        <SiteLink
+          href={route("/simulator")}
+          className={`site-nav__link${page === "simulator" ? " site-nav__link--current" : ""}`}
+          aria-current={page === "simulator" ? "page" : undefined}
+        >
+          Simulator
+        </SiteLink>
         <SiteLink href={href("#contact")} className="btn btn--primary btn--compact">
           Contact
         </SiteLink>

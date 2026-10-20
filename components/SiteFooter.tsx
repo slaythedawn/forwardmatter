@@ -18,6 +18,7 @@ export function SiteFooter({ page }: { page: "home" | "about" | "simulator" }) {
         <SiteLink href={href("#technology")}>Technology</SiteLink>
         <SiteLink href={href("#platform")}>Platform</SiteLink>
         <SiteLink href={route("/about")}>About us</SiteLink>
+        <SiteLink href={route("/simulator")}>Simulator</SiteLink>
         <SiteLink href={href("#contact")}>Contact</SiteLink>
       </div>
       <div className="site-footer__legal">
