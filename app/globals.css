@@ -1745,13 +1745,12 @@ textarea {
   margin: 20px 0 0;
 }
 
-/* The decrypted simulator renders in a sandboxed frame set into a well. */
+/* The decrypted simulator renders in a sandboxed frame, flat on the page ground: it has its own design. */
 .simulator__frame-wrap {
-  padding: 18px;
-  border-radius: 24px;
-  border: 1px solid var(--border-well);
-  background: var(--surface-well-deep);
-  box-shadow: var(--shadow-well-deep);
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
 }
 
 .simulator__frame {
@@ -1771,9 +1770,4 @@ textarea {
   margin: 22px 0 0;
 }
 
-@media (max-width: 560px) {
-  .simulator__frame-wrap {
-    padding: 8px;
-    border-radius: 16px;
-  }
-}
+
