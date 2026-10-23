@@ -379,9 +379,9 @@ export const simulatorPage = {
   metaTitle: "Simulator",
   eyebrow: "Matter Engine · live simulator",
   titleLead: "Run the fund ",
-  titleAccent: "forward.",
+  titleAccent: "forward and back.",
   lead:
-    "Matter Engine's three portfolios and two readers, simulated forward on recorded market moves and backtested over the last five years. See what A$10m becomes, what drives it and the gate each reader must pass. Every setting shows what the plan assumes and what the record measured.",
+    "Matter Engine's three portfolios and two readers, simulated forward on recorded market moves, and backtested from past starting points. See what A$10m becomes, what drives it and the gate each reader must pass. Every setting shows what the plan assumes and what the record measured.",
   frameTitle: "Forward Matter live simulator",
   legal:
     "Hypothetical results from a simulation on recorded market moves. Unaudited, before tax, no capital at risk. Not financial product advice.",
