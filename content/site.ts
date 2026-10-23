@@ -384,7 +384,7 @@ export const simulatorPage = {
     "Matter Engine's three portfolios and two readers, simulated forward on recorded market moves, and backtested from past starting points. See what A$10m becomes, what drives it and the gate each reader must pass. Every setting shows what the plan assumes and what the record measured.",
   frameTitle: "Forward Matter live simulator",
   legal:
-    "Hypothetical results from a simulation on recorded market moves. Unaudited, before tax, no capital at risk. Not financial product advice.",
+    "Hypothetical results from a simulation and backtests on recorded market moves. Unaudited, before tax, no capital at risk. Not financial product advice.",
   gate: {
     eyebrow: "Access",
     title: "Enter the access phrase to open the simulator",
