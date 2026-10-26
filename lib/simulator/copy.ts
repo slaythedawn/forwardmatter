@@ -5,15 +5,29 @@
  */
 
 export const hero = {
-  kicker: "Matter Engine · Strategy simulator",
-  titleBefore: "Healthcare value arrives on a calendar.",
-  titleAccent: "We trade the dates.",
-  body: "Results days, FDA committee votes and trial readouts move healthcare shares on dates known in advance. Forward Matter is a quantitative, automated trading platform. Matter Engine is the strategy it runs inside a partner's fund or mandate: a foundation of healthcare stocks that aims to beat the market, and four engines that trade those dates: the Nowcaster, the Prescription Reader, the Catalyst engine and Momentum into results. Set the hurdle each layer is measured against, then run the strategy through our simulator. No engine carries capital until it passes its gate.",
+  kicker: "Matter Engine",
+  title: "How to read this",
+  body: "Forward Matter supplies the platform. The Matter Engine strategy runs inside a partner's fund or mandate. A foundation of healthcare stocks aims to beat the market. Four engines trade dates that are known in advance: results days, FDA committee votes and trial readouts. You set a hurdle for each layer. The page then shows a target, or a modelled outcome from stored paths. The healthcare ETF is the comparison beside that figure. It is never the result. No engine carries capital until it passes its gate.",
+  steps: [
+    {
+      title: "The platform",
+      body: "Forward Matter is a quantitative, automated trading platform. Systematic, rules-based, and already built.",
+    },
+    {
+      title: "The mandate",
+      body: "The strategy runs inside a partner's fund or mandate, under that partner's arrangements. This page does not offer a product.",
+    },
+    {
+      title: "The figure",
+      body: "A target is a hurdle we will measure. A modelled figure is the middle of 2,000 stored paths. Neither is a forecast or a guarantee.",
+    },
+  ],
   stats: [
     { value: "+5–10", label: "pts a year: Foundation target over global healthcare" },
     { value: "118", label: "Monthly trial-registry snapshots, 2017–2026" },
   ],
-  baseStatLabel: "Base target a year, net of the 5% fee",
+  baseStatLabel: "Base target a year at A$10m, net of the 5% fee. The page opens at A$1m.",
+  upsideStatLabel: "Upside ambition at A$10m, net of the 5% fee. Not a promise.",
   pills: ["Wholesale clients only", "Confidential · October 2026"],
 } as const;
 
@@ -48,7 +62,6 @@ export const shell = {
     { id: "hyb", label: "B · Conviction hybrid" },
     { id: "sc", label: "C · Strategies at scale" },
     { id: "rec", label: "Six-sleeve portfolio" },
-    { id: "nocredit", label: "No-credit baseline" },
   ],
   signal: "Signal assumption (C)",
   signals: [
@@ -66,39 +79,39 @@ export const shell = {
 export const sections = {
   outcome: {
     n: "01",
-    kicker: "The outcome",
-    title: "Start with what the capital becomes, stated two ways.",
-    lede: "The target is the hurdle we set ourselves. The model is what 2,000 simulated paths give on the evidence so far. Each figure carries its label.",
+    kicker: "Outcome",
+    title: "The strategy is the figure. The ETF is the comparison.",
+    lede: "The number in front of you is the Matter Engine setup you have selected. The healthcare ETF, held in the same mandate with no engine credit, sits beside it so you can see the gap. A target is a hurdle. A modelled figure is the middle of 2,000 stored paths.",
   },
   stack: {
     n: "02",
-    kicker: "The return stack",
-    title: "A foundation that aims to beat the market, and four engines on top.",
-    lede: "The foundation earns from the first allocation. Each engine adds points around dated events, against a hurdle of its own. Switch any layer off and the stack shows what is left.",
+    kicker: "The stack",
+    title: "Switch a layer off, and the hurdle changes.",
+    lede: "The foundation is on from the first allocation. Each engine adds points around dated events, against a hurdle of its own.",
     note: "Targets are gross points a year over an 8% reference return for the global healthcare market, before the 5% fee. The fee is charged on assets, so it is 5% × (1 + gross return). They are hurdles Forward Matter will measure itself against, not forecasts; none of the trading engines has a live record yet.",
   },
   rulebook: {
     n: "02",
-    kicker: "The rulebook",
-    title: "Each setting is a set of rules, fixed before the run.",
+    kicker: "The setting",
+    title: "The rules are fixed before the run.",
   },
   range: {
     n: "03",
-    kicker: "The range",
-    title: "Two thousand paths, with the falls in plain view.",
-    targetNote: "Target paths compound smoothly; real returns will not.",
-    modelledNote: "Percentiles of NAV, month by month, across 2,000 simulated paths, net of fees.",
+    kicker: "The paths",
+    title: "Read the middle path, and the paths around it.",
+    targetNote: "Target paths compound smoothly. Real returns will not.",
+    modelledNote: "Percentiles of value, month by month, across 2,000 simulated paths, net of fees. These are the selected strategy, not the baseline.",
   },
   beside: {
     n: "04",
-    kicker: "Beside property",
-    title: "A liquid growth allocation beside property and credit.",
+    kicker: "Context",
+    title: "Set this beside property and credit.",
     note: "A-REITs (6% a year), the global healthcare ETF (8% a year, the market reference, held directly before our fee) and property-secured private credit (10% a year) are benchmark assumptions for context, not forecasts. These investments have different risk, income, security and liquidity.",
   },
   bridge: {
     n: "05",
-    kicker: "What the capital keeps",
-    title: "Every point from gross to net, shown.",
+    kicker: "What is kept",
+    title: "See what the fee and the data cost take.",
     targetNote:
       "Points a year. Data costs (~A$500 a year in the first allocation, ~A$45k at scale) are not deducted from targets.",
     modelledNote:
@@ -106,8 +119,8 @@ export const sections = {
   },
   source: {
     n: "06",
-    kicker: "Where the return comes from",
-    title: "Every engine is measured against the strategy without it.",
+    kicker: "Attribution",
+    title: "See which layer is earning the points.",
     targetNote:
       "Each engine's target is set as a hurdle and will be measured from day one by running the strategy with and without it, every reporting period.",
     modelledNote:
@@ -116,8 +129,8 @@ export const sections = {
   },
   gates: {
     n: "07",
-    kicker: "How an engine earns capital",
-    title: "No engine carries money until it passes its gate.",
+    kicker: "The gates",
+    title: "A built engine is not yet a funded engine.",
     lede: "The technology is already built: a point-in-time archive of monthly ClinicalTrials.gov registry snapshots, a survivor-free universe, a readout library and a live, time-stamped call record. The gates decide what it is allowed to trade.",
     asOf: "Status at 26 October 2026 (AEDT)",
     note: "Every rule is pre-registered before it sees outcomes, tested walk-forward on point-in-time, survivor-free data, corrected for multiple testing (Holm), and run on paper with time-stamped calls before it carries capital. Kill switches, an append-only decision log and with/without attribution apply from day one.",
@@ -125,8 +138,8 @@ export const sections = {
   },
   conviction: {
     n: "08",
-    kicker: "The conviction position",
-    title: "One position is sized on conviction, and disclosed as such.",
+    kicker: "One name",
+    title: "One holding is sized on conviction, and it is named.",
   },
 } as const;
 
@@ -153,8 +166,8 @@ export const descriptions: Record<string, { title: string; body: string }> = {
     body: "A diversified healthcare portfolio in six sleeves (core, momentum, next-approval, biotech, quality, defensives) at 1.2× with the −25% rail: a broad, rules-based alternative to the conviction settings.",
   },
   nocredit: {
-    title: "No-credit baseline.",
-    body: "A plain global healthcare ETF held in the same mandate and fee structure, with no credit for stock selection or any engine: an 8% gross reference less the 5% fee on assets. This is what the Foundation has to beat.",
+    title: "Healthcare ETF, no engine credit.",
+    body: "A comparison only. A plain global healthcare ETF in the same mandate and fee structure, with no credit for stock selection or any engine. It is what the Foundation has to beat. It is never the headline.",
   },
 };
 
@@ -244,24 +257,35 @@ export const legal: { title: string; body: string }[] = [
   },
 ];
 
-export const docFooter = {
-  entity: "Forward Matter Pty Ltd · Sydney",
-  code: "Matter Engine simulator · FM-SIM-002",
+export const guide = {
+  enginesKicker: "The strategy",
+  enginesTitle: "What to take from this",
+  enginesLede:
+    "Five layers. The Foundation picks the stocks. The Nowcaster, the Prescription Reader, the Catalyst engine and Momentum into results trade the dates. Open a card for the rule, what it holds or reads, the target, the evidence, the test and what it contributes.",
+  toolKicker: "The simulator",
+  toolTitle: "The one thing to notice here",
+  toolLede:
+    "The figure in the outcome is the Matter Engine strategy, opening on Conviction hybrid at A$1,000,000. The healthcare ETF, with no engine credit, is only the comparison. Changing the capital does not switch you to that baseline.",
+  run: "Run the numbers",
+  notes: "Screens, signals and what stays out",
+  empty: "The engine notes are not in this copy of the simulator.",
+  baseline: "Healthcare ETF in the same mandate, no engine credit",
+  baselineSub: "Comparison only. Same capital, same horizon, no engine credit.",
 } as const;
 
 export const workspace = {
   label: "Workspace",
   views: [
     { id: "scenario", label: "Scenario" },
-    { id: "engines", label: "Engines" },
+    { id: "engines", label: "Engine notes" },
     { id: "compare", label: "Compare" },
     { id: "backtests", label: "Backtests" },
     { id: "sources", label: "Sources" },
     { id: "method", label: "Method" },
   ],
-  enginesTitle: "The foundation, and the four engines on it.",
+  enginesTitle: "The detail behind the five cards.",
   enginesLede:
-    "Each layer as it is written now: what it holds or reads, the rule, the hurdle, the evidence, and what the stored paths credit. Holdings are listed only where the current specification names them.",
+    "Holdings are named only where the current specification names them. The cards above are the overview. This is the rest of the book: the screens, the signals, and what stays out.",
   published: "Published figures",
   publishedNote:
     "A$10m over three years, net of the 5% fee used in the stored run. The controls above change the working scenario. They do not replace these figures.",
@@ -280,7 +304,7 @@ export const workspace = {
     { id: "base", label: "Base" },
     { id: "upside", label: "Upside" },
     { id: "conservative", label: "Conservative" },
-    { id: "nocredit", label: "No engine credit" },
+    { id: "nocredit", label: "ETF comparison" },
     { id: "stress", label: "Stress" },
   ],
   fee: "Platform fee, proposed",

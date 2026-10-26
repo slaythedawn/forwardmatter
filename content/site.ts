@@ -377,11 +377,11 @@ export const contactCopy = {
 
 export const simulatorPage = {
   metaTitle: "Strategy simulator",
-  eyebrow: "Matter Engine · Strategy simulator",
-  titleLead: "Healthcare value arrives ",
-  titleAccent: "on a calendar.",
+  eyebrow: "Matter Engine",
+  titleLead: "How to read ",
+  titleAccent: "this.",
   lead:
-    "Forward Matter is a quantitative, automated trading platform. The Matter Engine strategy runs inside a partner's fund or mandate. Open the simulator with the access phrase. Figures inside are targets or modelled results, not guarantees.",
+    "Forward Matter supplies the platform. The Matter Engine strategy runs inside a partner's fund or mandate. The simulator shows a target or a modelled outcome for that strategy. The healthcare ETF is a comparison, not the result. Open it with the access phrase.",
   frameTitle: "Matter Engine strategy simulator",
   legal:
     "Targets and modelled results. Not a forecast, not a guarantee, and not an offer of financial products.",

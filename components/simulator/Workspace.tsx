@@ -37,7 +37,7 @@ const COMPARE_LABELS: Record<CompareKey, string> = {
   sc_base_pit: "C · Scale, base, mechanical",
   sc_strong_pit: "C · Scale, strong, mechanical",
   rec: "Six-sleeve portfolio",
-  nocredit: "No-credit baseline",
+  nocredit: "Healthcare ETF, no engine credit",
   target: "Your target (arithmetic)",
 };
 

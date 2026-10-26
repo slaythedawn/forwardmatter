@@ -12,6 +12,7 @@ import {
   defaultState,
   disp,
   feePoints,
+  headlineSetup,
   formatHistory,
   isCanonicalBase,
   isModelGrid,
@@ -19,6 +20,7 @@ import {
   money,
   normalizeGrid,
   normalizeLabel,
+  openingState,
   outcomeKind,
   r1,
   runAccounting,
@@ -162,6 +164,17 @@ test("canonical modelled medians from the local grid", (ctx) => {
   assert.equal(disp(disc, "med", true), "12.5");
   assert.equal(disp(hybrid, "med", true), "16.3");
   assert.equal(disp(strong, "med", true), "22.6");
+  const atOne = {
+    disc: lookupCell(prepared, "disc", 3, 1),
+    hyb: lookupCell(prepared, "hyb", 3, 1),
+    strong: lookupCell(prepared, "sc_strong", 3, 1),
+    base: lookupCell(prepared, "nocredit", 3, 1),
+  };
+  assert.equal(disp(atOne.disc, "med", true), "12.5");
+  assert.equal(disp(atOne.hyb, "med", true), "16.3");
+  assert.equal(disp(atOne.strong, "med", true), "18.3");
+  assert.equal(r1(atOne.strong.nodata), "23.1");
+  assert.equal(disp(atOne.base, "med", true), "3.0");
   assert.equal(disc.exact && hybrid.exact && strong.exact, true);
   assert.equal(prepared.meta.paths, 2000);
   assert.equal(prepared.meta.seed, 1);
@@ -247,8 +260,14 @@ test("scenario presets keep the canonical targets and do not pretend to re-simul
 
   const nocredit = applyPreset(defaultState(), "nocredit");
   assert.equal(nocredit.mode, "modelled");
-  assert.equal(setupKey(nocredit), "nocredit");
+  assert.equal(nocredit.setup, "disc");
+  assert.notEqual(setupKey(nocredit), "nocredit");
   assert.equal(outcomeKind(nocredit), "modelled");
+
+  const kept = applyPreset({ ...defaultState(), setup: "hyb", size: 1 }, "nocredit");
+  assert.equal(kept.setup, "hyb");
+  assert.equal(kept.size, 1);
+  assert.equal(kept.mode, "modelled");
 
   const stress = applyPreset(defaultState(), "stress");
   assert.equal(outcomeKind(stress), "stress");
@@ -286,6 +305,26 @@ test("the stored grid accounts for 1,320,000 paths and log interpolation is not 
   assert.equal(ends[0].p10, fan[0][11]);
   assert.equal(ends[1].p50, fan[2][23]);
   assert.equal(yearEnds(fan, 3).length, 2);
+});
+
+test("the simulator opens at A$1m on a strategy, never the baseline", () => {
+  const open = openingState();
+  assert.equal(open.size, 1);
+  assert.equal(open.setup, "hyb");
+  assert.equal(open.mode, "modelled");
+  assert.equal(headlineSetup(open), "hyb");
+  assert.equal(headlineSetup({ ...open, setup: "nocredit", sig: "strong", pick: "lly" }), "hyb");
+  assert.equal(headlineSetup({ ...open, setup: "sc", sig: "strong", pick: "lly" }), "sc_strong");
+
+  const coerced = applyHash(openingState(), "#setup=nocredit&size=1&years=3&preset=nocredit");
+  assert.equal(coerced.setup, "hyb");
+  assert.equal(coerced.size, 1);
+  assert.equal(coerced.years, 3);
+  assert.equal(coerced.mode, "modelled");
+
+  const chip = applyHash(openingState(), "#size=2");
+  assert.equal(chip.setup, "hyb");
+  assert.equal(chip.size, 2);
 });
 
 test("a shared link restores the fee, the workspace and the comparison", () => {

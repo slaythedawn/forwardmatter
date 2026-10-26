@@ -24,32 +24,31 @@ import {
   benches,
   chips,
   descriptions,
-  docFooter,
   gates,
-  hero,
+  guide,
   legal,
   scaleWarnAbove,
   scaleWarnBelow,
   sections,
   shell,
 } from "@/lib/simulator/copy";
+import { Guide } from "./Guide";
 import {
   AREIT_RATE,
   applyHash,
   applyPreset,
   compound,
   computeTargets,
-  defaultState,
   disp,
-  HEALTHCARE_ETF_RATE,
+  headlineSetup,
   LAYERS,
   lookupCell,
   money,
   neg,
   normalizeGrid,
+  openingState,
   r1,
   rxAvailable,
-  setupKey,
   signed,
   sizeToSlider,
   sliderToSize,
@@ -70,13 +69,12 @@ function Chip({ kind, children }: { kind: "target" | "modelled"; children: strin
 }
 
 function SectionHead({
-  n,
   kicker,
   title,
   lede,
   aside,
 }: {
-  n: string;
+  n?: string;
   kicker: string;
   title: string;
   lede?: string;
@@ -85,9 +83,7 @@ function SectionHead({
   return (
     <div className="sim-sec__head">
       <div>
-        <div className="sim-kicker">
-          {n} · {kicker}
-        </div>
+        <div className="eyebrow eyebrow--accent">{kicker}</div>
         <h2 className="sim-h2">{title}</h2>
         {lede ? <p className="sim-lede">{lede}</p> : null}
       </div>
@@ -100,7 +96,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
   const grid = useMemo(() => normalizeGrid(bundle.grid), [bundle.grid]);
   const evidence = bundle.evidence;
   const [state, setState] = useState<SimState>(() =>
-    typeof window === "undefined" ? defaultState() : applyHash(defaultState(), window.location.hash),
+    typeof window === "undefined" ? openingState() : applyHash(openingState(), window.location.hash),
   );
   const [copied, setCopied] = useState(false);
 
@@ -119,14 +115,13 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
 
   const targets = computeTargets(state);
   const modelled = state.mode === "modelled";
-  const key = setupKey(state);
+  const key = headlineSetup(state);
   const cell = modelled ? lookupCell(grid, key, state.years, state.size) : null;
-  const base = modelled ? lookupCell(grid, "nocredit", state.years, state.size) : null;
+  const base = lookupCell(grid, "nocredit", state.years, state.size);
   const setup = modelled ? grid.setups[key] : null;
   const start = state.size * 1e6;
   const yearsWord = ["one year", "two years", "three years", "four years", "five years"][state.years - 1];
   const rxOn = rxAvailable(state.size);
-  const baseTargets = computeTargets(defaultState());
   const lly = state.pick === "lly" && state.setup !== "rec" && state.setup !== "nocredit";
   const pickLocked = state.setup === "rec" || state.setup === "nocredit";
 
@@ -179,36 +174,31 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
     URL.revokeObjectURL(url);
   }
 
+  const scaleKey = state.setup === "sc" ? key : "sc_strong";
+  const scaleCell = state.size < 5 ? lookupCell(grid, scaleKey, state.years, state.size) : null;
+  const scaleName =
+    state.setup === "sc" ? (shell.signals.find((item) => item.id === state.sig)?.label ?? "Strong") : "Strong";
+  const gapSetups = [
+    ["disc", "Disciplined"],
+    ["hyb", "Conviction hybrid"],
+    ["sc_strong", "Strategies at scale (strong)"],
+  ] as const;
+
   return (
     <div className="sim">
-      <section className="sim-hero">
-        <div className="sim-hero__meta">
-          <span>{hero.kicker}</span>
-          <span>{hero.pills.join(" · ")}</span>
-        </div>
-        <div className="sim-hero__copy">
-          <h1 className="sim-h1">
-            {hero.titleBefore} <span className="accent">{hero.titleAccent}</span>
-          </h1>
-          <p className="sim-hero__body">{hero.body}</p>
-        </div>
-        <div className="sim-stats">
-          <div>
-            <b>{hero.stats[0].value}</b>
-            <span>{hero.stats[0].label}</span>
-          </div>
-          <div>
-            <b>{r1(baseTargets.net)}%</b>
-            <span>{hero.baseStatLabel}</span>
-          </div>
-          <div>
-            <b>{hero.stats[1].value}</b>
-            <span>{hero.stats[1].label}</span>
-          </div>
-        </div>
-      </section>
+      <Guide
+        evidence={evidence}
+        grid={grid}
+        state={state}
+        targets={targets}
+        onRun={() => document.getElementById("scenario")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+        onNotes={() => {
+          patch({ view: "engines" });
+          document.getElementById("scenario")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
+      />
 
-      <div className="sim-app">
+      <div className="sim-app" id="scenario">
         <div className="sim-console">
         <div className="sim-app__bar">
           <div className="sim-brand">
@@ -393,7 +383,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
               <div className="sim-lab">
                 {modelled && setup
                   ? `Modelled · ${setup.label} · middle of 2,000 simulated paths`
-                  : `Target · stacked layers · ${money(start)} over ${yearsWord}`}
+                  : `Target · ${descriptions[state.setup === "nocredit" ? "hyb" : state.setup].title.replace(/\.$/, "")} · ${money(start)} over ${yearsWord}`}
               </div>
               <p className="sim-outcome__big">
                 <span className="sim-num">{money(start)}</span> becomes
@@ -418,7 +408,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                     ["Good outcome (1 in 10 better)", "90th percentile path, net", cell.p90],
                     ["Middle outcome", "Median path, net", cell.med],
                     ["Poor outcome (1 in 10 worse)", "10th percentile path, net", cell.p10],
-                    ["Healthcare ETF in the same mandate, no credit", "No-credit baseline, net", base.med],
+                    [guide.baseline, guide.baselineSub, base.med],
                   ]}
                   start={start}
                   years={state.years}
@@ -429,6 +419,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                     ["Foundation only", "Market reference + stock-picking target, net", targets.foNet],
                     ["Your stacked target", "Layers switched on, net", targets.net],
                     ["Upside ambition", "Every layer at the top of its range, net · not promised", targets.upNet],
+                    [guide.baseline, `${guide.baselineSub} Modelled median, not a target.`, base.med],
                   ]}
                   start={start}
                   years={state.years}
@@ -436,6 +427,19 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
               )}
             </div>
           </div>
+          <p className="sim-gap">
+            At {money(start)} over {yearsWord}, modelled medians:{" "}
+            {gapSetups
+              .map(([id, label]) => `${label} ${disp(lookupCell(grid, id, state.years, state.size), "med", true)}%`)
+              .join(", ")}
+            . {guide.baseline}: {disp(base, "med", true)}%.
+          </p>
+          {scaleCell ? (
+            <p className="sim-cost">
+              {scaleName} at {money(start)} is {disp(scaleCell, "med", true)}% after the A$45k a year data cost, or{" "}
+              {r1(scaleCell.nodata)}% without it. Both figures are modelled.
+            </p>
+          ) : null}
           {modelled && cell ? (
             <Kpis
               items={[
@@ -688,8 +692,8 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                         color: item.color,
                       })),
                       {
-                        name: "Healthcare ETF in the same mandate",
-                        sub: "No-credit baseline, after 5% fee",
+                        name: guide.baseline,
+                        sub: "Comparison only, after the 5% fee",
                         value: base.med,
                         text: `${disp(base, "med", true)}%`,
                         color: "var(--sim-p1)",
@@ -782,12 +786,8 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
             <b>{item.title}</b> {item.body}
           </p>
         ))}
+        {runDate ? <p>{runDate}. Paths and seed are in the strip above the scenario.</p> : null}
       </section>
-      <footer className="sim-doc">
-        <span>{docFooter.entity}</span>
-        <span>{docFooter.code}</span>
-        {runDate ? <span>{runDate}</span> : null}
-      </footer>
     </div>
   );
 }
@@ -804,7 +804,7 @@ function OutcomeRows({
   return (
     <>
       {rows.map(([name, sub, rate]) => (
-        <div className="sim-row" key={name}>
+        <div className={`sim-row${name.startsWith("Healthcare ETF") ? " sim-row--base" : ""}`} key={name}>
           <div>
             {name}
             <small>{sub}</small>

@@ -232,6 +232,11 @@ export function defaultState(): SimState {
   };
 }
 
+/** What the simulator shows on first open. The canonical target stack stays at A$10m. */
+export function openingState(): SimState {
+  return { ...defaultState(), size: 1, setup: "hyb", mode: "modelled" };
+}
+
 export function rxAvailable(size: number): boolean {
   return size >= 5;
 }
@@ -285,9 +290,9 @@ export function applyPreset(state: SimState, preset: PresetId): SimState {
       next.val[layer.k] = preset === "upside" ? layer.up : layer.base;
     }
   } else if (preset === "nocredit") {
+    // The healthcare ETF is a comparison row. It is never the selected setup.
     next.mode = "modelled";
-    next.setup = "nocredit";
-    for (const layer of LAYERS) next.on[layer.k] = false;
+    if (next.setup === "nocredit") next.setup = "hyb";
   } else if (preset === "stress") {
     next.mode = "modelled";
     next.stress = true;
@@ -388,6 +393,12 @@ export function setupKey(state: Pick<SimState, "setup" | "sig" | "pick">): strin
   if (key === "sc") key = `sc_${state.sig}`;
   if (state.pick === "pit" && (key === "disc" || key === "hyb" || key.startsWith("sc_"))) key += "_pit";
   return key;
+}
+
+/** Grid key for the outcome, the fan and the percentile table. Never the baseline. */
+export function headlineSetup(state: Pick<SimState, "setup" | "sig" | "pick">): string {
+  if (state.setup === "nocredit") return setupKey({ ...state, setup: "hyb" });
+  return setupKey(state);
 }
 
 export function normalizeLabel(label: string): string {
@@ -560,6 +571,7 @@ export function applyHash(base: SimState, hash: string): SimState {
     const keys = compare.split(",");
     if (keys.length === 3 && keys.every(isCompareKey)) next.compare = [keys[0], keys[1], keys[2]];
   }
+  if (next.setup === "nocredit") next.setup = "hyb";
   return next;
 }
 

@@ -7,9 +7,9 @@ import {
   computeTargets,
   defaultState,
   disp,
+  headlineSetup,
   lookupCell,
   r1,
-  setupKey,
   signed,
   type ModelGrid,
   type SimState,
@@ -36,12 +36,12 @@ export function EnginesPanel({
   const base = computeTargets(applyPreset(defaultState(), "base"));
   const foundation = computeTargets(applyPreset(defaultState(), "conservative"));
   const published = PUBLISHED.map((item) => ({ ...item, cell: lookupCell(grid, item.key, 3, 10) }));
-  const active = lookupCell(grid, setupKey(state), state.years, state.size);
+  const active = lookupCell(grid, headlineSetup(state), state.years, state.size);
 
   return (
     <div className="sim-engines">
       <section className="sim-sec">
-        <p className="sim-kicker">Exhibit · The book</p>
+        <p className="eyebrow eyebrow--accent">The book</p>
         <h2 className="sim-h2">{workspace.enginesTitle}</h2>
         <p className="sim-lede">{workspace.enginesLede}</p>
 
