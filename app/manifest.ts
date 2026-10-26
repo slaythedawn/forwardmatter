@@ -11,7 +11,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Forward Matter",
     short_name: "Forward Matter",
     description:
-      "Automated market intelligence. Trading and portfolio intelligence software for wealth advisers, asset managers and funds.",
+      "A quantitative, automated trading platform. The Matter Engine strategy runs inside a partner's fund or mandate.",
     start_url: "/",
     display: "standalone",
     background_color: "#eef0f3",

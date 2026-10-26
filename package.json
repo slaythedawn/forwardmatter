@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
     "build:static": "node scripts/build-static.mjs",
     "build:brand": "node scripts/build-brand.mjs",
     "build:simulator": "node scripts/build-simulator.mjs"
@@ -21,6 +22,7 @@
     "@types/node": "22.18.1",
     "@types/react": "19.1.13",
     "@types/react-dom": "19.1.9",
+    "tsx": "4.20.6",
     "typescript": "5.9.2"
   }
 }

@@ -1,23 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { Simulator } from "./simulator/Simulator";
 import { ArrowIcon } from "./ArrowIcon";
 import { simulatorPage } from "@/content/site";
+import { isModelGrid, type ModelGrid } from "@/lib/simulator/model";
 
-/* The simulator is served encrypted (see scripts/build-simulator.mjs). The key is
- * derived from the passphrase here, in the browser, and the decrypted document is
- * rendered in a sandboxed frame. Nothing about the attempt leaves the page, and a
- * wrong passphrase simply fails to decrypt: there is no server to ask and no
- * plain copy to find.
+/* The model grid is served encrypted (see scripts/build-simulator.mjs). The key
+ * is derived from the access phrase here, in the browser. A wrong phrase fails
+ * to decrypt. Nothing about the attempt leaves the page.
  *
- * The payload path is relative so it resolves on the normal build (/simulator ->
- * /simulator/payload.json) and on the static export (simulator.html at the host's
- * root -> simulator/payload.json) alike. */
+ * The payload path is relative so it resolves on the normal build
+ * (/simulator -> /simulator/payload.json) and on the static export alike. */
 const PAYLOAD_URL = "simulator/payload.json";
 
 type Payload = { v: number; iter: number; salt: string; iv: string; data: string };
 
-const fromBase64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+const fromBase64 = (value: string) => Uint8Array.from(atob(value), (c) => c.charCodeAt(0));
 
 async function decrypt(payload: Payload, passphrase: string) {
   const enc = new TextEncoder();
@@ -40,30 +39,9 @@ async function decrypt(payload: Payload, passphrase: string) {
 }
 
 export function SimulatorGate() {
-  const [html, setHtml] = useState<string | null>(null);
+  const [grid, setGrid] = useState<ModelGrid | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [height, setHeight] = useState(900);
-  const frame = useRef<HTMLIFrameElement>(null);
-
-  useEffect(() => {
-    if (!html) return;
-    const onMessage = (event: MessageEvent) => {
-      if (event.source !== frame.current?.contentWindow) return;
-      const next = Number(event.data?.fmSimHeight);
-      if (Number.isFinite(next) && next > 200) setHeight(Math.ceil(next));
-      // The simulator asks for a scroll when it changes tab or jumps to a strategy, since
-      // the frame is sized to its content and the page, not the frame, does the scrolling.
-      const to = Number(event.data?.fmSimScrollTo);
-      if (Number.isFinite(to) && frame.current) {
-        const top = frame.current.getBoundingClientRect().top + window.scrollY + to - 130;
-        const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (Math.abs(window.scrollY - top) > 4) window.scrollTo({ top, behavior: smooth ? "smooth" : "auto" });
-      }
-    };
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, [html]);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -75,7 +53,10 @@ export function SimulatorGate() {
       const response = await fetch(PAYLOAD_URL, { cache: "no-store" });
       if (!response.ok) throw new Error("payload");
       const payload = (await response.json()) as Payload;
-      setHtml(await decrypt(payload, passphrase));
+      if (payload.v !== 2) throw new Error("shape");
+      const parsed: unknown = JSON.parse(await decrypt(payload, passphrase));
+      if (!isModelGrid(parsed)) throw new Error("shape");
+      setGrid(parsed);
     } catch (cause) {
       setError(
         cause instanceof Error && cause.message === "payload"
@@ -87,50 +68,49 @@ export function SimulatorGate() {
     }
   }
 
-  if (html) {
-    return (
-      <div className="simulator__frame-wrap">
-        <iframe
-          ref={frame}
-          className="simulator__frame"
-          title={simulatorPage.frameTitle}
-          sandbox="allow-scripts allow-downloads"
-          allow="clipboard-write"
-          srcDoc={html}
-          style={{ height }}
-        />
-      </div>
-    );
-  }
+  if (grid) return <Simulator grid={grid} />;
 
   return (
-    <div className="card simulator__gate">
-      <div className="eyebrow eyebrow--sm">{simulatorPage.gate.eyebrow}</div>
-      <h2 className="simulator__gate-title">{simulatorPage.gate.title}</h2>
-      <p className="body-15">{simulatorPage.gate.body}</p>
-      <form className="simulator__form" onSubmit={onSubmit}>
-        <label className="field">
-          <span className="field__label">{simulatorPage.gate.label}</span>
-          <input
-            id="simulator-passphrase"
-            type="password"
-            name="passphrase"
-            autoComplete="current-password"
-            required
-            autoFocus
-          />
-        </label>
-        <button type="submit" className="btn btn--primary" disabled={busy}>
-          {busy ? simulatorPage.gate.opening : simulatorPage.gate.button}
-          <ArrowIcon className="btn__icon" />
-        </button>
-        {error ? (
-          <p className="contact-form__error" role="alert">
-            {error}
-          </p>
-        ) : null}
-      </form>
-      <p className="simulator__gate-note">{simulatorPage.gate.note}</p>
-    </div>
+    <>
+      <section className="about-hero simulator__hero">
+        <div className="eyebrow">{simulatorPage.eyebrow}</div>
+        <h1 className="h1 h1--about">
+          {simulatorPage.titleLead}
+          <span className="accent">{simulatorPage.titleAccent}</span>
+        </h1>
+        <p className="lead">{simulatorPage.lead}</p>
+      </section>
+      <section className="section--tail simulator">
+        <div className="card simulator__gate">
+          <div className="eyebrow eyebrow--sm">{simulatorPage.gate.eyebrow}</div>
+          <h2 className="simulator__gate-title">{simulatorPage.gate.title}</h2>
+          <p className="body-15">{simulatorPage.gate.body}</p>
+          <form className="simulator__form" onSubmit={onSubmit}>
+            <label className="field">
+              <span className="field__label">{simulatorPage.gate.label}</span>
+              <input
+                id="simulator-passphrase"
+                type="password"
+                name="passphrase"
+                autoComplete="current-password"
+                required
+                autoFocus
+              />
+            </label>
+            <button type="submit" className="btn btn--primary" disabled={busy}>
+              {busy ? simulatorPage.gate.opening : simulatorPage.gate.button}
+              <ArrowIcon className="btn__icon" />
+            </button>
+            {error ? (
+              <p className="contact-form__error" role="alert">
+                {error}
+              </p>
+            ) : null}
+          </form>
+          <p className="simulator__gate-note">{simulatorPage.gate.note}</p>
+        </div>
+        <p className="simulator__legal">{simulatorPage.legal}</p>
+      </section>
+    </>
   );
 }

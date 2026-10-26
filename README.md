@@ -1,7 +1,8 @@
 # Forward Matter
 
-Marketing site for Forward Matter, a Sydney software company building automated
-market-intelligence software for financial services and the pharmaceutical industry.
+Marketing site for Forward Matter, a quantitative, automated trading platform.
+The Matter Engine strategy runs inside a partner's fund or mandate. Results
+shown on the site are modelled. Forward Matter does not run a fund of its own.
 
 Built with Next.js (App Router) and plain CSS, from the design handoff kept in
 `design-handoff/` (see `design-handoff/NOTES.md`).
@@ -39,28 +40,53 @@ browser's preflight passes. Without an endpoint the preview still shows the succ
 state — it is there to show the design — but says the enquiry was not sent, rather
 than letting a real prospect believe it reached you.
 
-## The simulator page
+## The strategy simulator
 
-`/simulator` is for people we have given an access phrase to. The simulator source is
-kept outside this repository (place it at `simulator-src/app.html`, which git ignores)
-and is never served as is: `npm run build:simulator`
-encrypts it (AES-256-GCM, key from the passphrase by PBKDF2) into
-`public/simulator/payload.json`, which is what the page fetches. The access phrase form
-derives the key in the visitor's browser and renders the decrypted simulator in a
-sandboxed frame, so there is no server-side secret and it works on the static
-export as well.
+`/simulator` is for people who have been given an access phrase. The interface is
+source in this repository (`components/simulator`, `lib/simulator`). The model grid
+is not. It stays in `simulator-src/grid.json` (git-ignored). `npm run build:simulator`
+prepares display strings and encrypts the grid (AES-256-GCM, key from the access
+phrase by PBKDF2, 200,000 rounds, SHA-256) into `public/simulator/payload.json`.
+The page fetches that file and decrypts it in the visitor's browser. There is no
+server-side secret, and the same file works on the static export.
 
-The passphrase is never in the repository. To set or change it:
+The access phrase is never stored in the repository. Set it only in the environment
+when regenerating the payload:
 
 ```bash
-SIMULATOR_PASSPHRASE='the passphrase' npm run build:simulator
-git add public/simulator/payload.json && git commit -m "Rotate the simulator passphrase"
+SIMULATOR_PASSPHRASE='…' npm run build:simulator
+git add public/simulator/payload.json && git commit -m "Rotate the simulator access phrase"
 ```
 
-A rotation is a new file, not a revocation: anyone who saved an old
-`payload.json` can still open it with the old passphrase. The page is `noindex`,
-excluded from the sitemap and disallowed in `robots.txt`, but the URL is not a
-secret; the passphrase is.
+`SIMULATOR_GRID` overrides the grid path. It defaults to `simulator-src/grid.json`.
+
+A new payload is not a revocation. Anyone who saved an older `payload.json` can
+still open that file with the phrase it was built with. The page is `noindex`,
+excluded from the sitemap and disallowed in `robots.txt`. The URL is not a secret.
+The access phrase is.
+
+`npm test` checks the target stack (20.2% / 30.1% / 8.8%), log-scale interpolation,
+and, when `simulator-src/grid.json` is on disk, the modelled medians (disciplined
+12.5%, conviction hybrid 16.3%, strategies at scale strong at A$10m 22.6%).
+
+### Before this is merged and deployed
+
+The Next.js build does not need the access phrase. Vercel does not need a new
+environment variable for the simulator. It serves the `payload.json` already in
+the repository.
+
+Before merging, regenerate that file with the access phrase readers already have,
+from a machine that has the grid:
+
+1. Put the model grid at `simulator-src/grid.json` (or point `SIMULATOR_GRID` at it). Do not commit the grid.
+2. Export `SIMULATOR_PASSPHRASE` in the shell. Do not commit it, and do not add it to Vercel.
+3. Run `npm run build:simulator`.
+4. Commit the updated `public/simulator/payload.json` onto this branch.
+5. Merge. Vercel runs `npm run build` as usual. The existing contact variables are unchanged: `RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`, `CONTACT_WEBHOOK_URL`, `CONTACT_ALLOWED_ORIGINS`.
+
+The payload committed with this change will not open with the production access
+phrase until that regeneration has been committed. Deploying without it locks the
+page to a phrase that is not the one readers were given.
 
 ## Layout
 
@@ -68,10 +94,13 @@ secret; the passphrase is.
 |---|---|
 | `app/page.tsx` | Home — hero, intelligence system, catalyst panel, platform, case study, closing block |
 | `app/about/page.tsx` | About us — why we exist, the team, contact CTA |
-| `app/simulator/page.tsx` | Simulator — a password-locked internal page (noindex, not in the sitemap) |
-| `components/SimulatorGate.tsx` | The access phrase form; decrypts and frames the simulator in the browser |
-| `simulator-src/app.html` | The simulator itself, kept outside the repository and ignored by git; never served in the clear |
-| `scripts/build-simulator.mjs` | Encrypts the simulator into `public/simulator/payload.json` |
+| `app/simulator/page.tsx` | Strategy simulator — access phrase, noindex, not in the sitemap |
+| `components/SimulatorGate.tsx` | Access phrase form; decrypts the model grid in the browser |
+| `components/simulator/` | Simulator interface |
+| `lib/simulator/` | Target stack, log interpolation, chart, copy |
+| `simulator-src/grid.json` | Model grid, git-ignored, never served in the clear |
+| `scripts/build-simulator.mjs` | Encrypts the grid into `public/simulator/payload.json` |
+| `scripts/prepare-grid.py` | Display strings and public labels, used by the encrypt script |
 | `app/api/contact/route.ts` | Server-side validation and delivery for the enquiry form |
 | `app/globals.css` | Design tokens and every shared surface, button and section style |
 | `components/` | Shell (header, footer, brand mark) and one component per home section |

@@ -10,5 +10,5 @@ next-env.d.ts
 # Scratch output from screenshot tooling with an unset path
 undefined/
 
-# Unencrypted simulator source: kept outside the repository, encrypted into public/simulator/payload.json
+# Unencrypted model grid. Encrypt with SIMULATOR_PASSPHRASE set, via npm run build:simulator.
 simulator-src/
