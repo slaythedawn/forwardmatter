@@ -19,7 +19,7 @@ export const tourSteps = [
   {
     id: "outcome",
     title: "The modelled result",
-    body: "The page opens on the hybrid at A$1m. The figure is the middle of 2,000 stored paths. Targets are not added to it.",
+    body: "The page opens on the hybrid at A$1m. The figure is the middle of 2,000 modelled paths. Targets are not added to it.",
   },
   {
     id: "scenario",

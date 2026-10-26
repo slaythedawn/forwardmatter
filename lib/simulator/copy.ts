@@ -20,7 +20,7 @@ export const hero = {
     },
     {
       title: "The figure",
-      body: "A target is a hurdle we will measure. A modelled figure is the middle of 2,000 stored paths. Neither is a forecast or a guarantee.",
+      body: "A target is a hurdle we will measure. A modelled figure is the middle of 2,000 modelled paths. Neither is a forecast or a guarantee.",
     },
   ],
   stats: [
@@ -86,7 +86,7 @@ export const sections = {
     n: "01",
     kicker: "Outcome",
     title: "The result for the strategy you picked.",
-    lede: "The number in front of you is the Matter Engine setup you have selected. A healthcare ETF in the same mandate sits beside it as context. A target is a hurdle. A modelled figure is the middle of 2,000 stored paths.",
+    lede: "The number in front of you is the Matter Engine setup you have selected. A healthcare ETF in the same mandate sits beside it as context. A target is a hurdle. A modelled figure is the middle of 2,000 modelled paths.",
   },
   stack: {
     n: "02",
@@ -129,7 +129,7 @@ export const sections = {
     targetNote:
       "Each engine's target is a hurdle. It is measured by running the strategy with and without that engine. It is not added into the modelled headline.",
     modelledNote:
-      "Median net return a year with the engine, minus the same paths without it (points). Interactions mean the rows do not add exactly to the total. A light bar is the target. A solid bar is the stored-path result for this strategy.",
+      "Median net return a year with the engine, minus the same paths without it (points). Interactions mean the rows do not add exactly to the total. A light bar is the target. A solid bar is the modelled result for this strategy.",
     bridge: "Attribution follows the strategy you picked. The next test decides when an engine carries capital.",
   },
   gates: {
@@ -156,11 +156,11 @@ export const chips = {
 export const descriptions: Record<string, { title: string; body: string }> = {
   disc: {
     title: "A · Disciplined.",
-    body: "For a first allocation. 20% Lilly sleeve plus a diversified healthcare core, no leverage, 15% cash reserve, and eight rails plus a human veto. One rail halves exposure after a −25% fall. The FDA Reader trades at 3% a trade and adds about 0.5 points in the stored paths. Nowcaster and the Prescription Reader show their targets until the next test. Free data only (~A$500 a year).",
+    body: "For a first allocation. 20% Lilly sleeve plus a diversified healthcare core, no leverage, 15% cash reserve, and eight rails plus a human veto. One rail halves exposure after a −25% fall. The FDA Reader trades at 3% a trade and adds about 0.5 points in the modelled figure. Nowcaster and the Prescription Reader show their targets until the next test. Free data only (~A$500 a year).",
   },
   hyb: {
     title: "B · Conviction hybrid.",
-    body: "The same book at 1.2×, from A$1m. 20% Lilly sleeve, eight rails plus a human veto, and about 0.5 points from the FDA Reader in the stored paths. The other engines show their targets until the next test. Free data only (~A$500 a year).",
+    body: "The same book at 1.2×, from A$1m. 20% Lilly sleeve, eight rails plus a human veto, and about 0.5 points from the FDA Reader in the modelled figure. The other engines show their targets until the next test. Free data only (~A$500 a year).",
   },
   sc: {
     title: "C · Strategies at scale.",
@@ -200,7 +200,7 @@ export const gates: { name: string; tone: "live" | "built"; status: string; gate
   {
     name: "Prescription Reader",
     tone: "live",
-    status: "Live from A$5m",
+    status: "Unlocks at A$5m",
     gate: "From A$5m, once the Nowcaster's next test is complete, buy the ~A$45k-a-year weekly feed. Then a pre-registered test on that history, plus at least 8 live calls with a positive result.",
     detail: "A weekly script history from 235 public IQVIA relays and a broker tracker is already assembled.",
   },
@@ -268,7 +268,7 @@ export const flow = [
   { id: "rails", title: "Rails", line: "Eight rails plus a human veto." },
 ] as const;
 
-export type EngineChip = "Built · validating" | "Live from A$5m" | "Validated";
+export type EngineChip = "Built · validating" | "Unlocks at A$5m" | "Validated";
 
 /** One line and a status, keyed by engine id so a later pack can edit them here. */
 export const engineFaces: Record<string, { chip: EngineChip; line: string; next: string }> = {
@@ -283,8 +283,8 @@ export const engineFaces: Record<string, { chip: EngineChip; line: string; next:
     next: "The 58% results-day bar, pooled across large pharma, after costs.",
   },
   rx: {
-    chip: "Live from A$5m",
-    line: "235 public script points assembled. The paid feed is live from A$5m.",
+    chip: "Unlocks at A$5m",
+    line: "235 public script points assembled. The paid feed unlocks at A$5m.",
     next: "Buy the weekly feed from A$5m, then the pre-registered test on that history.",
   },
   catalyst: {
@@ -326,7 +326,7 @@ export const plain = {
   better: "1 in 10 better",
   year: "Year by year",
   target: "Target",
-  stored: "Stored paths",
+  stored: "Modelled",
   more: "More",
   showNote: "Show the note",
   showRules: "Show the rules",
@@ -340,9 +340,12 @@ export const plain = {
 export const story = {
   title: "A healthcare book that picks the stocks, then trades the dates.",
   line: "Forward Matter builds it. A partner's mandate runs it. The Foundation is the core.",
-  proof:
-    "New technology, built and in validation: 2,000 paths in every cell, 1,320,000 across the grid, seed 1, horizons of one to five years. Ten further seeds of 1,000 paths keep each median inside half a point. 27 register tests and 6 studies sit behind the cards.",
+  proof: "Built and in validation: 1.32 million simulated paths and 27 registered tests.",
+  tested:
+    "2,000 paths in every cell, across horizons of one to five years. Ten further seeds of 1,000 paths keep each median inside half a point. Six studies sit behind the cards.",
 } as const;
+
+export const targetUntilTest = "Target shown. Counted in the modelled figure once its test passes.";
 
 export const strategyCards = [
   {
@@ -372,19 +375,19 @@ export const steps = [
 ] as const;
 
 export const tips = {
-  view: "Modelled reads the stored paths. Targets are the hurdles, and they are not added to the modelled figure.",
+  view: "Modelled reads the simulated paths. Targets are the hurdles, and they are not added to the modelled figure.",
   capital: "Capital allocated to the strategy. The page opens at A$1m. Chips jump to a stored size. The slider can sit between them.",
   horizon: "How many years the paths and the target are compounded.",
   setting: "Disciplined has no leverage. Conviction hybrid is 1.2×. Strategies at scale adds the trading engines from A$10m.",
   signal: "The assumption used when Strategies at scale turns the trading engines on. It is an assumption, labelled as one.",
   lilly: "Look-through is Lilly in the sleeve plus Lilly inside the core. The 20% sleeve is the modelled book. 15% is the conservative fallback.",
   conviction: "The named sleeve, or a mechanical pick that replaces it. The mechanical pick is the hindsight check.",
-  median: "The middle of 2,000 stored paths. Half the paths finish above this, half below.",
-  loss: "The share of stored paths that finish below the starting amount.",
-  thirty: "The share of stored paths that finish at 30% a year or more.",
-  areit: "The share of stored paths that beat a 6% A-REIT assumption.",
-  credit: "The share of stored paths that beat a 10% private-credit assumption.",
-  fall: "The 1-in-10 worst peak-to-trough fall on the stored paths.",
+  median: "The middle of 2,000 modelled paths. Half the paths finish above this, half below.",
+  loss: "The share of modelled paths that finish below the starting amount.",
+  thirty: "The share of modelled paths that finish at 30% a year or more.",
+  areit: "The share of modelled paths that beat a 6% A-REIT assumption.",
+  credit: "The share of modelled paths that beat a 10% private-credit assumption.",
+  fall: "The 1-in-10 worst peak-to-trough fall on the modelled paths.",
   fee: "The proposed platform fee, percent of assets. It changes the target arithmetic. It does not redraw the paths.",
   market: "The healthcare reference the target stack starts from. It changes the target. It does not redraw the paths.",
   presets: "Base, upside and foundation-only change the target hurdles. The ETF comparison does not become the headline.",
@@ -395,7 +398,7 @@ export const guide = {
   enginesKicker: "How it works",
   enginesTitle: "The Foundation picks the stocks. Four engines trade the dates.",
   enginesLede:
-    "The Foundation is the core. Nowcaster, Prescription Reader, Catalyst and Momentum add trades around dated events. A light bar is the target. A solid bar is what the stored paths credit in the strategy you have open. Targets are not added to the headline.",
+    "The Foundation is the core. Nowcaster, Prescription Reader, Catalyst and Momentum add trades around dated events. A light bar is the target. A solid bar is what this strategy credits in the modelled figure. Targets are not added to the headline.",
   howTitle: "Signals, then a score, then a position, then eight rails plus a human veto.",
   howMore: "How this runs",
   toolKicker: "The simulator",
@@ -450,21 +453,21 @@ export const workspace = {
   arithmetic: "Target arithmetic. Not a simulation.",
   gridLock:
     "Modelled paths are the stored grid: 2,000 paths a cell, seed 1, a 5% fee and an 8% healthcare reference. Moving the fee, the reference or a layer hurdle recalculates the target. It does not draw new paths.",
-  stressNote: "Stress is the 10th percentile of the stored paths, and the 1-in-10 drawdown. It is not a separate simulation.",
+  stressNote: "Stress is the 10th percentile of the modelled paths, and the 1-in-10 drawdown. It is not a separate simulation.",
   exportCopy: "Copy link",
   exportCsv: "Download CSV",
   exportPrint: "Print",
   copied: "Link copied",
   yearTitle: "Year by year",
-  yearLede: "Each column is a percentile of the stored paths at that year-end. The path is monthly inside the fan chart.",
+  yearLede: "Each column is a percentile of the modelled paths at that year-end. The path is monthly inside the fan chart.",
   yearTargetLede: "Compounded from the target rate. No distribution sits behind these figures.",
-  oddsTitle: "Odds on the stored paths",
+  oddsTitle: "Odds on the modelled paths",
   compareTitle: "Three scenarios, same capital and horizon.",
   compareLede: "Each modelled column is a cell in the stored grid. A target column is arithmetic on the hurdles you set, and its probabilities are left blank.",
   backtestsLede:
     "Historical and head-to-head results, labelled as modelled or backtested. None of this is a live track record. Tables that still say 35% Lilly are the earlier run. The scenario on this page uses the 20% sleeve, or the 15% fallback when that is selected.",
   sourcesLede: "Data feeds and the validation register. Status words are the register's own. A completed test is not a live track record.",
-  methodLede: "What the stored paths are, what the target stack is, and what neither of them claims.",
+  methodLede: "What the modelled paths are, what the target stack is, and what neither of them claims.",
 } as const;
 
 export const benches = [
@@ -478,5 +481,5 @@ export const attributionEngines: { key: string; name: string; sub: string }[] = 
   { key: "nowcaster", name: "Nowcaster", sub: "Results-day tilts and option spreads" },
   { key: "rx", name: "Prescription Reader", sub: "Weekly script trades, net of the paid feed" },
   { key: "catalyst", name: "Catalyst", sub: "FDA Reader at 3% a trade. Only post-cut-off FDA meetings count." },
-  { key: "momentum", name: "Momentum", sub: "Designed contribution. The stored paths do not give it a separate row." },
+  { key: "momentum", name: "Momentum", sub: "Target shown. Counted in the modelled figure once its test passes." },
 ];

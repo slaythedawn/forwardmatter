@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { engineFaces, flow, guide, hero, plain, story, strategyCards } from "@/lib/simulator/copy";
+import { engineFaces, flow, guide, hero, plain, story, strategyCards, targetUntilTest } from "@/lib/simulator/copy";
 import type { EngineDossier, Evidence, RegisterRow } from "@/lib/simulator/evidence";
 import { LAYERS, headlineSetup, lookupCell, money, signed, type ModelGrid, type SimState, type Targets } from "@/lib/simulator/model";
 import { UniverseDialog } from "./Universe";
@@ -47,7 +47,11 @@ export function Guide({
             ))}
           </div>
         </div>
-        <p className="sim-note">{story.proof} {hero.takeaway}</p>
+        <p className="sim-note">{story.proof}</p>
+        <details className="sim-more">
+          <summary>How we tested</summary>
+          <p>{story.tested}</p>
+        </details>
       </section>
 
       <section className="sim-block" id="how">
@@ -165,7 +169,7 @@ function EngineCard({
       <div className="sim-engine-card__face">
         <EngineMark id={engine.id} />
         <span className="sim-engine-card__name">{engine.name}</span>
-        <span className={`sim-chip sim-chip--${face.chip.startsWith("Live") || face.chip === "Validated" ? "live" : "built"}`}>
+        <span className={`sim-chip sim-chip--${face.chip === "Validated" ? "live" : "built"}`}>
           {face.chip}
         </span>
         <span className="sim-engine-card__line">{face.line}</span>
@@ -180,7 +184,7 @@ function EngineCard({
           </span>
           <span>
             <b />
-            {plain.stored} {stored == null ? "shows its target until the next test" : signed(stored)}
+            {stored == null ? targetUntilTest : `${plain.stored} ${signed(stored)}`}
           </span>
         </span>
       </div>

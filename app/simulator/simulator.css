@@ -1,5 +1,10 @@
 /* Flat product skin for the simulator only. The marketing site keeps its own panels. */
 
+.sim-page .container {
+  --sim-gutter: clamp(24px, 5vw, 56px);
+  width: min(1240px, calc(100% - (2 * var(--sim-gutter))));
+}
+
 .sim-page .card,
 .sim-page .simulator__gate {
   background: #fff;

@@ -401,7 +401,11 @@ test("public copy uses the v4 sleeve and does not sum the targets", () => {
   assert.match(build, /14\.4 \/ 12\.9 \/ 11\.3%/);
   assert.match(text, /eight rails plus a human veto/i);
   assert.match(text, /Built · validating/);
-  assert.match(text, /Live from A\$5m/);
+  assert.match(text, /Unlocks at A\$5m/);
+  assert.match(text, /Target shown\. Counted in the modelled figure once its test passes\./);
+  assert.match(text, /1\.32 million simulated paths and 27 registered tests/);
+  assert.equal(/Stored paths/.test(text), false);
+  assert.equal(/Live from A\$5m/.test(text), false);
   assert.match(text, /Show targets/);
   assert.match(text, /See the test/);
   assert.match(text, /Compare strategies/);

@@ -73,7 +73,7 @@ export function EnginesPanel({
         <p className="sim-lede">{evidence.brief.question}</p>
         <div className="sim-table-wrap">
           <table className="sim-table">
-            <caption>Chance of 30% or more, stored paths, A$10m, three years</caption>
+            <caption>Chance of 30% or more, modelled, A$10m, three years</caption>
             <thead>
               <tr>
                 <th>Setting</th>
@@ -265,7 +265,7 @@ function EngineBlock({
   const stored =
     engine.id === "momentum" || att == null
       ? "No separate row in the stored attribution."
-      : `${signed(att)} pts in the stored paths at this capital and horizon.`;
+      : `${signed(att)} pts in the modelled figure at this capital and horizon.`;
 
   return (
     <section className="sim-sec sim-engine">

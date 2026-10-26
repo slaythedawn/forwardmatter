@@ -36,7 +36,7 @@ function alignEvidence(evidence) {
     foundation.evidence =
       "F-2 has not been run. The selection rules face a pre-registered point-in-time test on a frozen, survivor-free universe. Until that test is run, the simulator credits only the haircut share of history. Earlier point-in-time tests of simpler selection landed about level with the sector.";
     foundation.contribution =
-      "Settings A and B are foundation outcomes. The FDA Reader's small trades add about 0.5 points in those stored paths. Nowcaster and the Prescription Reader are credited nothing there.";
+      "Settings A and B are foundation outcomes. The FDA Reader's small trades add about 0.5 points in the modelled figure. Nowcaster and the Prescription Reader are credited nothing there.";
   }
   const nowcaster = evidence.engines?.find((engine) => engine.id === "nowcaster");
   if (nowcaster) {
@@ -45,7 +45,7 @@ function alignEvidence(evidence) {
       "A tilt of up to half the sleeve, inside the exposure ceiling. An optional call or put spread is capped at 1.5% of NAV premium per results day.";
   }
   const rx = evidence.engines?.find((engine) => engine.id === "rx");
-  if (rx) rx.status = "Live from A$5m";
+  if (rx) rx.status = "Unlocks at A$5m";
   const catalyst = evidence.engines?.find((engine) => engine.id === "catalyst");
   if (catalyst) {
     catalyst.name = "Catalyst";
@@ -60,7 +60,7 @@ function alignEvidence(evidence) {
     momentum.evidence +=
       " The result is only modestly above chance. Judged after a multiple-testing correction, it misses the 27-test bar.";
     momentum.contribution =
-      "It is built and in validation under pre-registered rules. The stored grid does not give it a separate attribution row, so the card shows its target. In Disciplined and Conviction hybrid the stored paths credit the Foundation and the FDA Reader. Its points appear in the target stack only when the layer is switched on, and that line is arithmetic, not a new set of paths. Eight rails plus a human veto sit over the book.";
+      "It is built and in validation under pre-registered rules. The modelled figure does not give it a separate row, so the card shows its target. Counted in the modelled figure once its test passes. Its points appear in the target stack only when the layer is switched on, and that line is arithmetic, not a new set of paths. Eight rails plus a human veto sit over the book.";
   }
   const holding = evidence.book?.holdings?.[0];
   if (holding) {
@@ -123,6 +123,10 @@ function alignEvidence(evidence) {
 
 function publicPhrase(text) {
   return text
+    .replaceAll("Stored paths", "Modelled")
+    .replaceAll("stored paths", "modelled paths")
+    .replaceAll("Stored path", "Modelled path")
+    .replaceAll("stored path", "modelled path")
     .replaceAll("Event bots", "Event engines")
     .replaceAll("no bots", "no engines")
     .replaceAll("The bots see", "The engines see")

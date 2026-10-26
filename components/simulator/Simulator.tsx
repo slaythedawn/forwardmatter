@@ -31,6 +31,7 @@ import {
   lillyNote,
   plain,
   steps,
+  targetUntilTest,
   tips,
   scaleWarnAbove,
   scaleWarnBelow,
@@ -1036,7 +1037,7 @@ function attributionTarget(targets: ReturnType<typeof computeTargets>, rxOn: boo
       const point = targets.pts.find((item) => item.k === layer.k);
       const on = Boolean(point?.on);
       const designed = layer.base;
-      const sub = on ? "Selected hurdle, gross" : layer.minSize && !rxOn ? "Live from A$5m" : "Designed contribution";
+      const sub = on ? "Selected hurdle, gross" : layer.minSize && !rxOn ? "Unlocks at A$5m" : targetUntilTest;
       const value = on ? point?.v ?? 0 : 0;
       return {
         name: layer.n,
@@ -1058,7 +1059,7 @@ function attributionModelled(cell: Cell, showTargets: boolean): BarRow[] {
     const designed = layer?.base ?? 0;
     return {
       name: engine.name,
-      sub: credited ? engine.sub : "Designed contribution. The stored paths credit the Foundation and the FDA Reader here.",
+      sub: credited ? engine.sub : targetUntilTest,
       value: credited ? raw : 0,
       text: credited ? signed(raw) : `+${designed.toFixed(1)}`,
       color: credited && raw < 0 ? "var(--sim-neg)" : "var(--sim-acc)",
