@@ -28,6 +28,7 @@ import {
   guide,
   hero,
   legal,
+  lillyNote,
   plain,
   scaleWarnAbove,
   scaleWarnBelow,
@@ -43,6 +44,7 @@ import {
   computeTargets,
   disp,
   headlineSetup,
+  isFoundationOnly,
   LAYERS,
   lookupCell,
   money,
@@ -99,8 +101,9 @@ function SectionHead({
   );
 }
 
-export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evidence } }) {
-  const grid = useMemo(() => normalizeGrid(bundle.grid), [bundle.grid]);
+export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evidence; fallback?: ModelGrid | null } }) {
+  const primary = useMemo(() => normalizeGrid(bundle.grid), [bundle.grid]);
+  const fallback = useMemo(() => (bundle.fallback ? normalizeGrid(bundle.fallback) : null), [bundle.fallback]);
   const evidence = bundle.evidence;
   const [state, setState] = useState<SimState>(() =>
     typeof window === "undefined" ? openingState() : applyHash(openingState(), window.location.hash),
@@ -120,8 +123,10 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  const grid = state.sleeve === "15" && fallback ? fallback : primary;
   const targets = computeTargets(state);
   const modelled = state.mode === "modelled";
+  const foundationOnly = isFoundationOnly(state);
   const key = headlineSetup(state);
   const cell = modelled ? lookupCell(grid, key, state.years, state.size) : null;
   const base = lookupCell(grid, "nocredit", state.years, state.size);
@@ -191,7 +196,11 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
     ["sc_strong", "Strategies at scale (strong)"],
   ] as const;
 
-  const setupName = modelled && setup ? setup.label : descriptions[state.setup === "nocredit" ? "hyb" : state.setup].title.replace(/\.$/, "");
+  const setupName = foundationOnly
+    ? shell.foundationOnly
+    : modelled && setup
+      ? setup.label
+      : descriptions[state.setup === "nocredit" ? "hyb" : state.setup].title.replace(/\.$/, "");
 
   return (
     <div className="sim">
@@ -216,6 +225,8 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                 {scaleName} at {money(start)} is {disp(scaleCell, "med", true)}% after the A$45k a year data cost, or {r1(scaleCell.nodata)}% without it.
               </p>
             ) : null}
+            {state.sleeve === "15" && fallback ? <p className="sim-cost">{lillyNote.sleeve15}</p> : null}
+            {foundationOnly ? <p className="sim-cost">Foundation hurdle only. The other engines are not added.</p> : null}
           </div>
           <div className="sim-hero-outcome__side">
             <div className="sim-row">
@@ -330,7 +341,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
               ))}
             </div>
           </div>
-          {modelled ? (
+          {modelled || foundationOnly ? (
             <div className="sim-field">
               <span className="sim-lab">{shell.setting}</span>
               <div className="sim-seg" role="group" aria-label={shell.setting}>
@@ -338,12 +349,19 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                   <button
                     key={item.id}
                     type="button"
-                    aria-pressed={state.setup === item.id}
-                    onClick={() => patch({ setup: item.id as SimState["setup"] })}
+                    aria-pressed={modelled && state.setup === item.id}
+                    onClick={() => patch({ setup: item.id as SimState["setup"], mode: "modelled", stress: false })}
                   >
                     {item.label}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  aria-pressed={foundationOnly}
+                  onClick={() => setState((current) => applyPreset(current, "conservative"))}
+                >
+                  {shell.foundationOnly}
+                </button>
               </div>
             </div>
           ) : null}
@@ -379,6 +397,19 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                     {item.label}
                   </button>
                 ))}
+              </div>
+            </div>
+          ) : null}
+          {fallback ? (
+            <div className="sim-field">
+              <span className="sim-lab">{shell.lilly}</span>
+              <div className="sim-seg" role="group" aria-label={shell.lilly}>
+                <button type="button" aria-pressed={state.sleeve !== "15"} onClick={() => patch({ sleeve: "20" })}>
+                  {shell.lillyDefault}
+                </button>
+                <button type="button" aria-pressed={state.sleeve === "15"} onClick={() => patch({ sleeve: "15" })}>
+                  {shell.lillyFallback}
+                </button>
               </div>
             </div>
           ) : null}
@@ -789,7 +820,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
           <details className="sim-more">
             <summary>{plain.showConviction}</summary>
             <div className="sim-callout sim-callout--amb">
-              <Conviction grid={grid} state={state} />
+              <Conviction grid={grid} state={state} cell={lookupCell(grid, key, state.years, state.size)} />
             </div>
           </details>
         </section>
@@ -953,7 +984,7 @@ function attributionModelled(cell: Cell, state: SimState): BarRow[] {
     };
   });
   rows.push({
-    name: "Momentum into results",
+    name: "Momentum",
     sub: "Not modelled as a separate engine: TARGET only",
     value: 0,
     text: "—",
@@ -962,28 +993,29 @@ function attributionModelled(cell: Cell, state: SimState): BarRow[] {
   return rows;
 }
 
-function Conviction({ grid, state }: { grid: ModelGrid; state: SimState }) {
+function Conviction({ grid, state, cell }: { grid: ModelGrid; state: SimState; cell: Cell }) {
   const pair = (a: string, b: string) => {
     const left = lookupCell(grid, a, state.years, state.size);
     const right = lookupCell(grid, b, state.years, state.size);
-    return `${disp(left, "med", true)}% with LLY → ${disp(right, "med", true)}% with a mechanical pick`;
+    return `${disp(left, "med", true)}% with LLY, ${disp(right, "med", true)}% with a mechanical pick`;
   };
-  const lead = grid.meta.leads?.LLY;
-  const drift = grid.meta.fwd?.LLY;
-  const leadText = typeof lead === "number" ? r1(lead) : "—";
-  const driftText = typeof drift === "number" ? r1(drift) : "—";
+  const sleeve = state.sleeve === "15" ? lillyNote.sleeve15 : lillyNote.sleeve20;
+  const halved = typeof cell.phalf === "number" ? `${r1(cell.phalf)}% of paths` : null;
+  const trimmed = typeof cell.pcap === "number" ? `${r1(cell.pcap)}% of paths` : null;
   return (
     <p>
-      <b>Eli Lilly (LLY) is a disclosed conviction position</b>: about 35% of NAV (about 40% including its core
-      weight), with a loss budget to be agreed with a partner's fund or mandate. Every other name is capped at 7.5%.
-      The modelled settings assume LLY keeps 40% of its {leadText}-point-a-year historical lead over global healthcare
-      (a forward drift of {driftText}% a year in AUD), so they depend on it.{" "}
+      <b>Eli Lilly is the named sleeve.</b> {sleeve} {lillyNote.rails} {state.sleeve === "15" ? "" : lillyNote.nav}{" "}
+      {halved && trimmed ? (
+        <>
+          In this setting the loss budget halves the sleeve on {halved}, and the 30% ceiling trims it on {trimmed}.{" "}
+        </>
+      ) : null}
+      Every other name is capped at 7.5%. {lillyNote.novo}{" "}
       <b>
-        Sensitivity at {money(state.size * 1e6)}, {state.years} yr{state.years > 1 ? "s" : ""}:
+        At {money(state.size * 1e6)}, {state.years} yr{state.years > 1 ? "s" : ""}:
       </b>{" "}
       Disciplined {pair("disc", "disc_pit")}; Conviction hybrid {pair("hyb", "hyb_pit")}; Strategies at scale (
-      {state.sig}) {pair(`sc_${state.sig}`, `sc_${state.sig}_pit`)}. Defined-risk options only on binary events; AUD
-      50% hedged; human veto on every trade.
+      {state.sig}) {pair(`sc_${state.sig}`, `sc_${state.sig}_pit`)}.
     </p>
   );
 }

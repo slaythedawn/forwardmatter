@@ -378,10 +378,10 @@ export const contactCopy = {
 export const simulatorPage = {
   metaTitle: "Strategy simulator",
   eyebrow: "Matter Engine",
-  titleLead: "How to read ",
-  titleAccent: "this.",
+  titleLead: "A modelled core. ",
+  titleAccent: "Targets stay separate.",
   lead:
-    "Forward Matter supplies the platform. The Matter Engine strategy runs inside a partner's fund or mandate. The simulator shows a target or a modelled outcome for that strategy. The healthcare ETF is a comparison, not the result. Open it with the access phrase.",
+    "Forward Matter supplies the platform. The Matter Engine strategy runs inside a partner's fund or mandate. The headline is a modelled outcome for that core. Engine targets are hurdles, and they are not added to it. The healthcare ETF is a comparison, not the result. Open it with the access phrase.",
   frameTitle: "Matter Engine strategy simulator",
   legal:
     "Targets and modelled results. Not a forecast, not a guarantee, and not an offer of financial products.",

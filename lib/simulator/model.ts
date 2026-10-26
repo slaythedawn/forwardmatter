@@ -54,7 +54,7 @@ export const LAYERS: readonly LayerDef[] = [
   },
   {
     k: "catalyst",
-    n: "Catalyst engine",
+    n: "Catalyst",
     d: "FDA advisory-committee reader, trial-registry change detection, defined-risk options, post-crash trades",
     lo: 2,
     hi: 7,
@@ -63,7 +63,7 @@ export const LAYERS: readonly LayerDef[] = [
   },
   {
     k: "momentum",
-    n: "Momentum into results",
+    n: "Momentum",
     d: "Tilts towards strong 20-day momentum into results days",
     lo: 1,
     hi: 3,
@@ -84,6 +84,8 @@ export type SimMode = "targets" | "modelled";
 export type SetupId = "disc" | "hyb" | "sc" | "rec" | "nocredit";
 export type Signal = "weak" | "base" | "strong";
 export type ConvictionPick = "lly" | "pit";
+/** 20% is the default sleeve. 15% is the conservative fallback grid. */
+export type SleeveId = "20" | "15";
 export type PresetId = "base" | "upside" | "conservative" | "nocredit" | "stress" | "custom";
 export type WorkspaceView = "scenario" | "engines" | "compare" | "backtests" | "sources" | "method";
 export type OutcomeKind = "target" | "modelled" | "stress";
@@ -113,6 +115,8 @@ export type SimState = {
   setup: SetupId;
   sig: Signal;
   pick: ConvictionPick;
+  /** Lilly sleeve. "15" selects the fallback grid when the payload includes it. */
+  sleeve: SleeveId;
   on: Record<LayerKey, boolean>;
   val: Record<LayerKey, number>;
   /** Proposed platform fee, percent of assets. Changes target arithmetic only. */
@@ -150,6 +154,10 @@ export type Cell = {
   endmed: number;
   att: Record<string, number>;
   fan: number[][];
+  /** Share of paths where the 7.5% loss budget halved the sleeve. */
+  phalf?: number | null;
+  /** Share of paths where the 30% look-through ceiling trimmed the sleeve. */
+  pcap?: number | null;
   d?: DisplayFields;
   exact: boolean;
 };
@@ -174,6 +182,10 @@ export type ModelMeta = {
   hedge?: number;
   leads?: Record<string, number>;
   fwd?: Record<string, number>;
+  /** Dedicated Lilly sleeve, as a share of the invested book. */
+  lly_w?: number;
+  /** Lilly look-through, including its weight inside the core. */
+  lly_lookthrough?: number;
 };
 
 export type ModelGrid = {
@@ -193,7 +205,7 @@ export type Targets = {
   up: number;
 };
 
-const NUMERIC: (keyof Omit<Cell, "att" | "fan" | "d" | "exact">)[] = [
+const NUMERIC: (keyof Omit<Cell, "att" | "fan" | "d" | "exact" | "phalf" | "pcap">)[] = [
   "med",
   "gross",
   "nodata",
@@ -221,6 +233,7 @@ export function defaultState(): SimState {
     setup: "disc",
     sig: "strong",
     pick: "lly",
+    sleeve: "20",
     on,
     val,
     fee: FEE_RATE,
@@ -300,6 +313,13 @@ export function applyPreset(state: SimState, preset: PresetId): SimState {
     next.market = state.market;
   }
   return next;
+}
+
+/** Foundation hurdle alone. The other engines are off, so nothing is summed into the figure. */
+export function isFoundationOnly(state: Pick<SimState, "mode" | "on" | "val" | "fee" | "market">): boolean {
+  if (state.mode !== "targets" || state.fee !== FEE_RATE || state.market !== MARKET_REFERENCE) return false;
+  if (!state.on.foundation || state.val.foundation !== LAYERS[0].base) return false;
+  return LAYERS.slice(1).every((layer) => !state.on[layer.k]);
 }
 
 export function outcomeKind(state: Pick<SimState, "mode" | "stress">): OutcomeKind {
@@ -455,6 +475,8 @@ export function lookupCell(grid: ModelGrid, key: string, years: number, size: nu
   for (const field of NUMERIC) {
     blended[field] = mix(A[field], B[field]);
   }
+  if (typeof A.phalf === "number" && typeof B.phalf === "number") blended.phalf = mix(A.phalf, B.phalf);
+  if (typeof A.pcap === "number" && typeof B.pcap === "number") blended.pcap = mix(A.pcap, B.pcap);
   return blended;
 }
 
@@ -509,6 +531,7 @@ export function sizeToSlider(size: number): number {
 const SETUPS: readonly SetupId[] = ["disc", "hyb", "sc", "rec", "nocredit"];
 const SIGNALS: readonly Signal[] = ["weak", "base", "strong"];
 const PICKS: readonly ConvictionPick[] = ["lly", "pit"];
+const SLEEVES: readonly SleeveId[] = ["20", "15"];
 const PRESETS: readonly PresetId[] = ["base", "upside", "conservative", "nocredit", "stress", "custom"];
 const VIEWS: readonly WorkspaceView[] = ["scenario", "engines", "compare", "backtests", "sources", "method"];
 
@@ -531,6 +554,8 @@ export function applyHash(base: SimState, hash: string): SimState {
   if (sig && (SIGNALS as readonly string[]).includes(sig)) next.sig = sig as Signal;
   const pick = params.get("pick");
   if (pick && (PICKS as readonly string[]).includes(pick)) next.pick = pick as ConvictionPick;
+  const sleeve = params.get("sleeve");
+  if (sleeve && (SLEEVES as readonly string[]).includes(sleeve)) next.sleeve = sleeve as SleeveId;
   if (params.has("size")) {
     const size = Number(params.get("size"));
     if (Number.isFinite(size)) next.size = Math.min(100, Math.max(1, size));
@@ -583,6 +608,7 @@ export function stateToHash(state: SimState): string {
   params.set("setup", state.setup);
   params.set("sig", state.sig);
   params.set("pick", state.pick);
+  params.set("sleeve", state.sleeve);
   params.set("fee", String(state.fee));
   params.set("mkt", String(state.market));
   params.set("preset", state.preset);

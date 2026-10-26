@@ -11,6 +11,7 @@ import {
   computeTargets,
   defaultState,
   disp,
+  isFoundationOnly,
   feePoints,
   headlineSetup,
   formatHistory,
@@ -161,20 +162,36 @@ test("canonical modelled medians from the local grid", (ctx) => {
   const disc = lookupCell(prepared, "disc", 3, 1.5);
   const hybrid = lookupCell(prepared, "hyb", 3, 1.5);
   const strong = lookupCell(prepared, "sc_strong", 3, 10);
-  assert.equal(disp(disc, "med", true), "12.5");
-  assert.equal(disp(hybrid, "med", true), "16.3");
-  assert.equal(disp(strong, "med", true), "22.6");
+  assert.equal(disp(disc, "med", true), "11.3");
+  assert.equal(disp(hybrid, "med", true), "14.5");
+  assert.equal(disp(strong, "med", true), "18.7");
+  assert.equal(disp(strong, "areit", false), "84");
+  assert.equal(disp(lookupCell(prepared, "disc", 3, 10), "areit", false), "75");
   const atOne = {
     disc: lookupCell(prepared, "disc", 3, 1),
     hyb: lookupCell(prepared, "hyb", 3, 1),
     strong: lookupCell(prepared, "sc_strong", 3, 1),
     base: lookupCell(prepared, "nocredit", 3, 1),
   };
-  assert.equal(disp(atOne.disc, "med", true), "12.5");
-  assert.equal(disp(atOne.hyb, "med", true), "16.3");
-  assert.equal(disp(atOne.strong, "med", true), "18.3");
-  assert.equal(r1(atOne.strong.nodata), "23.1");
+  assert.equal(disp(atOne.disc, "med", true), "11.3");
+  assert.equal(disp(atOne.hyb, "med", true), "14.4");
+  assert.equal(disp(atOne.strong, "med", true), "14.6");
+  assert.equal(r1(atOne.strong.nodata), "19.2");
+  assert.equal(r1(atOne.disc.att.foundation), "7.2");
+  assert.equal(r1(atOne.hyb.att.foundation), "11.2");
+  assert.equal(r1(atOne.hyb.att.catalyst), "0.5");
   assert.equal(disp(atOne.base, "med", true), "3.0");
+  assert.equal(money(1e6 * atOne.hyb.endmed), "A$1.5m");
+  const fallbackPath = join(root, "simulator-src/grid-lly15.json");
+  if (existsSync(fallbackPath)) {
+    const smaller = prepare(fallbackPath);
+    const fallbackHybrid = lookupCell(smaller, "hyb", 3, 1);
+    const fallbackStrong = lookupCell(smaller, "sc_strong", 3, 1);
+    assert.equal(disp(fallbackHybrid, "med", true), "13.9");
+    assert.equal(disp(fallbackStrong, "med", true), "13.8");
+    assert.equal(r1(fallbackStrong.nodata), "18.5");
+    assert.equal(disp(lookupCell(smaller, "sc_strong", 3, 10), "med", true), "18.1");
+  }
   assert.equal(disc.exact && hybrid.exact && strong.exact, true);
   assert.equal(prepared.meta.paths, 2000);
   assert.equal(prepared.meta.seed, 1);
@@ -257,6 +274,10 @@ test("scenario presets keep the canonical targets and do not pretend to re-simul
   assert.equal(r1(computeTargets(conservative).net), "8.8");
   assert.equal(conservative.on.foundation, true);
   assert.equal(conservative.on.nowcaster, false);
+  assert.equal(isFoundationOnly(conservative), true);
+  const atOpening = applyPreset(openingState(), "conservative");
+  assert.equal(r1(computeTargets(atOpening).net), "8.8");
+  assert.equal(isFoundationOnly(atOpening), true);
 
   const nocredit = applyPreset(defaultState(), "nocredit");
   assert.equal(nocredit.mode, "modelled");
@@ -312,6 +333,7 @@ test("the simulator opens at A$1m on a strategy, never the baseline", () => {
   assert.equal(open.size, 1);
   assert.equal(open.setup, "hyb");
   assert.equal(open.mode, "modelled");
+  assert.equal(open.sleeve, "20");
   assert.equal(headlineSetup(open), "hyb");
   assert.equal(headlineSetup({ ...open, setup: "nocredit", sig: "strong", pick: "lly" }), "hyb");
   assert.equal(headlineSetup({ ...open, setup: "sc", sig: "strong", pick: "lly" }), "sc_strong");
@@ -325,6 +347,8 @@ test("the simulator opens at A$1m on a strategy, never the baseline", () => {
   const chip = applyHash(openingState(), "#size=2");
   assert.equal(chip.setup, "hyb");
   assert.equal(chip.size, 2);
+  assert.equal(chip.sleeve, "20");
+  assert.equal(applyHash(openingState(), "#sleeve=15").sleeve, "15");
 });
 
 test("a shared link restores the fee, the workspace and the comparison", () => {
@@ -338,6 +362,22 @@ test("a shared link restores the fee, the workspace and the comparison", () => {
   assert.deepEqual(restored.compare, ["hyb", "nocredit", "target"]);
   assert.equal(restored.val.foundation, 10);
   assert.equal(restored.preset, "upside");
+});
+
+test("public copy uses the v4 sleeve and does not sum the targets", () => {
+  const text = [
+    readFileSync(join(root, "lib/simulator/copy.ts"), "utf8"),
+    ...walk(join(root, "components/simulator")),
+  ].join("\n");
+  assert.equal(/from day one/i.test(text), false);
+  assert.equal(/earning nothing/i.test(text), false);
+  assert.equal(/35% conviction/i.test(text), false);
+  assert.equal(/The figure is the strategy/i.test(text), false);
+  assert.match(text, /20% Lilly sleeve/);
+  assert.match(text, /Lilly 15%, conservative/);
+  assert.match(text, /F-2 not yet run/);
+  assert.match(text, /about 75%/);
+  assert.match(text, /not added/);
 });
 
 test("evidence is rejected when it names a partner or a performance fee", () => {

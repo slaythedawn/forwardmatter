@@ -40,7 +40,7 @@ async function decrypt(payload: Payload, passphrase: string) {
 }
 
 export function SimulatorGate() {
-  const [bundle, setBundle] = useState<{ grid: ModelGrid; evidence: Evidence } | null>(null);
+  const [bundle, setBundle] = useState<{ grid: ModelGrid; evidence: Evidence; fallback?: ModelGrid | null } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,9 +55,17 @@ export function SimulatorGate() {
       if (!response.ok) throw new Error("payload");
       const payload = (await response.json()) as Payload;
       if (payload.v !== 3) throw new Error("shape");
-      const parsed = JSON.parse(await decrypt(payload, passphrase)) as { grid?: unknown; evidence?: unknown };
+      const parsed = JSON.parse(await decrypt(payload, passphrase)) as {
+        grid?: unknown;
+        evidence?: unknown;
+        fallback?: unknown;
+      };
       if (!isModelGrid(parsed.grid) || !isEvidence(parsed.evidence)) throw new Error("shape");
-      setBundle({ grid: parsed.grid, evidence: parsed.evidence });
+      setBundle({
+        grid: parsed.grid,
+        evidence: parsed.evidence,
+        fallback: isModelGrid(parsed.fallback) ? parsed.fallback : null,
+      });
     } catch (cause) {
       setError(
         cause instanceof Error && cause.message === "payload"

@@ -6,9 +6,9 @@
 
 export const hero = {
   kicker: "Matter Engine",
-  title: "The figure is the strategy.",
-  takeaway: "The healthcare ETF is the comparison beside it.",
-  body: "Forward Matter supplies the platform. The Matter Engine strategy runs inside a partner's fund or mandate. A foundation of healthcare stocks aims to beat the market. Four engines trade dates that are known in advance: results days, FDA committee votes and trial readouts. You set a hurdle for each layer. The page then shows a target, or a modelled outcome from stored paths. The healthcare ETF is the comparison beside that figure. It is never the result. No engine carries capital until it passes its gate.",
+  title: "The modelled core stands on its own.",
+  takeaway: "Targets are hurdles to be earned. They are not added to this figure.",
+  body: "Forward Matter supplies the platform. The Matter Engine strategy runs inside a partner's fund or mandate. The figure on this page is the modelled core: the Foundation, with the Lilly sleeve. Each other engine has a target of its own, and that target is not added into the headline. The healthcare ETF is the comparison beside the figure. It is never the result. No engine carries capital until it passes its gate.",
   steps: [
     {
       title: "The platform",
@@ -70,7 +70,11 @@ export const shell = {
     { id: "base", label: "Base" },
     { id: "strong", label: "Strong" },
   ],
-  conviction: "Conviction position",
+  conviction: "Conviction name",
+  lilly: "Lilly sleeve",
+  lillyDefault: "20% sleeve",
+  lillyFallback: "Lilly 15%, conservative",
+  foundationOnly: "Foundation only",
   picks: [
     { id: "lly", label: "LLY (disclosed conviction)" },
     { id: "pit", label: "Mechanical pick (sensitivity)" },
@@ -81,7 +85,7 @@ export const sections = {
   outcome: {
     n: "01",
     kicker: "Outcome",
-    title: "The strategy is the figure. The ETF is the comparison.",
+    title: "The modelled result is the figure. The ETF is the comparison.",
     lede: "The number in front of you is the Matter Engine setup you have selected. The healthcare ETF, held in the same mandate with no engine credit, sits beside it so you can see the gap. A target is a hurdle. A modelled figure is the middle of 2,000 stored paths.",
   },
   stack: {
@@ -94,7 +98,7 @@ export const sections = {
   rulebook: {
     n: "02",
     kicker: "The setting",
-    title: "The rules are fixed before the run.",
+    title: "These rules were fixed before the paths were drawn.",
   },
   range: {
     n: "03",
@@ -121,9 +125,9 @@ export const sections = {
   source: {
     n: "06",
     kicker: "Attribution",
-    title: "See which layer is earning the points.",
+    title: "See what each layer adds in the stored paths.",
     targetNote:
-      "Each engine's target is set as a hurdle and will be measured from day one by running the strategy with and without it, every reporting period.",
+      "Each engine's target is a hurdle. It is measured by running the strategy with and without that engine. It is not added into the modelled headline.",
     modelledNote:
       "Median net return a year with the engine, minus the same paths without it (points). Interactions mean the rows do not add exactly to the total. Negative rows show where an engine costs more than it earns under that assumption.",
     bridge: "Attribution shows what each engine adds. The gates decide whether it trades at all.",
@@ -134,13 +138,13 @@ export const sections = {
     title: "A built engine is not yet a funded engine.",
     lede: "The technology is already built: a point-in-time archive of monthly ClinicalTrials.gov registry snapshots, a survivor-free universe, a readout library and a live, time-stamped call record. The gates decide what it is allowed to trade.",
     asOf: "Status at 26 October 2026 (AEDT)",
-    note: "Every rule is pre-registered before it sees outcomes, tested walk-forward on point-in-time, survivor-free data, corrected for multiple testing (Holm), and run on paper with time-stamped calls before it carries capital. Kill switches, an append-only decision log and with/without attribution apply from day one.",
+    note: "Every rule is pre-registered before it sees outcomes, tested walk-forward on point-in-time, survivor-free data, corrected for multiple testing (Holm), and run on paper with time-stamped calls before it carries capital. Kill switches, an append-only decision log and with/without attribution apply before an engine is funded.",
     bridge: "Inside those rules, one position is sized on conviction rather than by formula, and it is disclosed as such.",
   },
   conviction: {
     n: "08",
     kicker: "One name",
-    title: "One holding is sized on conviction, and it is named.",
+    title: "Lilly is a 20% sleeve, with a ceiling and a loss budget.",
   },
 } as const;
 
@@ -152,11 +156,11 @@ export const chips = {
 export const descriptions: Record<string, { title: string; body: string }> = {
   disc: {
     title: "A · Disciplined.",
-    body: "35% conviction position + 65% diversified healthcare core, no leverage, 15% cash reserve, −25% strategy drawdown rail that halves exposure. The trading engines run on paper and are credited nothing; the FDA Reader trades small (3% a trade). Free data only (~A$500 a year).",
+    body: "20% Lilly sleeve plus a diversified healthcare core, no leverage, 15% cash reserve, and a −25% strategy drawdown rail that halves exposure. The FDA Reader trades at 3% a trade. In the stored paths that adds about 0.5 points; Nowcaster and the Prescription Reader are credited nothing. Free data only (~A$500 a year).",
   },
   hyb: {
     title: "B · Conviction hybrid.",
-    body: "35% conviction position + 65% diversified healthcare core at 1.2× with the −25% rail. The trading engines run on paper and are credited nothing; the FDA Reader trades small. Free data only (~A$500 a year).",
+    body: "20% Lilly sleeve plus a diversified healthcare core at 1.2× with the −25% rail. The FDA Reader trades at 3% a trade and adds about 0.5 points in the stored paths. The other engines are credited nothing. Free data only (~A$500 a year).",
   },
   sc: {
     title: "C · Strategies at scale.",
@@ -180,11 +184,11 @@ export const scaleWarnAbove =
 
 export const gates: { name: string; tone: "live" | "paper" | "gated"; status: string; gate: string; detail: string }[] = [
   {
-    name: "Foundation (stock picker)",
-    tone: "live",
-    status: "Live from first allocation",
-    gate: "Reported every period against IXJ in AUD. Selection rules also go through a point-in-time test on a frozen, survivor-free universe (~996 names incl. 319 delisted).",
-    detail: "Core portfolio inside per-name caps (7.5% for every name except the disclosed conviction position).",
+    name: "Foundation",
+    tone: "paper",
+    status: "F-2 not yet run",
+    gate: "Beat IXJ in AUD after costs, with the same sign in 2017–20 and 2021–26, and a test-window lead of at least 5 points a year.",
+    detail: "The first registered test has not been run. Earlier point-in-time tests of simpler selection landed about level with the sector.",
   },
   {
     name: "Nowcaster",
@@ -203,10 +207,10 @@ export const gates: { name: string; tone: "live" | "paper" | "gated"; status: st
   },
   {
     name: "Catalyst: FDA Reader",
-    tone: "live",
-    status: "Live record starting, 3% a trade",
-    gate: "Live record beats the 68% break-even over ≥20 scored calls, then full size.",
-    detail: "Every call time-stamped before the open; first live meeting scored from 30 October 2026.",
+    tone: "paper",
+    status: "Backtest is an upper bound",
+    gate: "Only meetings after the model's training cut-off count. The live record has to beat the 68% break-even over at least 20 scored calls.",
+    detail: "The 64–67% reading of past documents can recall outcomes. It is not the gate.",
   },
   {
     name: "Catalyst: registry change detector",
@@ -220,14 +224,14 @@ export const gates: { name: string; tone: "live" | "paper" | "gated"; status: st
     tone: "paper",
     status: "Paper",
     gate: "Positive after executable bid/ask (options) or real borrow quotes (shorts) over a 12-month paper record.",
-    detail: "Built on 4,112 readout 8-K filings; options priced at tradable bid/ask. Defined risk only.",
+    detail: "Timing the run-up did not repeat. None of eight readout rules passed on 4,112 events. Defined risk only.",
   },
   {
-    name: "Momentum into results",
+    name: "Momentum",
     tone: "paper",
-    status: "Paper",
-    gate: "Pre-registered paper test over 4–6 quarters (~60 events a year): hit rate ≥55% and positive after costs.",
-    detail: "Strongest of nine free signals tested (53–56%).",
+    status: "Modest, after multiple-testing correction",
+    gate: "Pre-registered paper test over 4–6 quarters (about 60 events a year): hit rate at least 55% and positive after costs.",
+    detail: "Best of nine signals, 56% on 552 results days. Only modestly above chance, and it misses the bar after a multiple-testing correction.",
   },
 ];
 
@@ -269,12 +273,20 @@ export type EngineChip = "Live" | "In testing" | "Gated";
 
 /** One line and a status, keyed by engine id so a later pack can edit them here. */
 export const engineFaces: Record<string, { chip: EngineChip; line: string }> = {
-  foundation: { chip: "Live", line: "Healthcare stocks, measured against the market." },
+  foundation: { chip: "In testing", line: "F-2 not yet run. Measured against the market." },
   nowcaster: { chip: "In testing", line: "Reads the print on results day." },
   rx: { chip: "Gated", line: "Weekly scripts. The paid feed starts at A$5m." },
-  catalyst: { chip: "In testing", line: "FDA days, trial changes, defined-risk options." },
-  momentum: { chip: "In testing", line: "Tilts toward strength into results." },
+  catalyst: { chip: "In testing", line: "Timing tests have not passed. Only post-cut-off FDA meetings count." },
+  momentum: { chip: "In testing", line: "Modest, and short of the multiple-testing bar." },
 };
+
+export const lillyNote = {
+  sleeve20: "A 20% dedicated sleeve, about 25% look-through of the invested book.",
+  sleeve15: "Fallback: a 15% sleeve, about 21% look-through.",
+  rails: "Look-through is trimmed above 30%. A loss of 7.5% of NAV from the sleeve's high halves the position.",
+  nav: "The sleeve is a share of the invested book. At 1.2×, 20% of the book is about 31% of NAV. The ceiling is applied to the book.",
+  novo: "Novo Nordisk fell about 75% from June 2024 to March 2026.",
+} as const;
 
 export const plain = {
   loss: "Chance of a loss",
@@ -304,7 +316,7 @@ export const guide = {
   enginesKicker: "The strategy",
   enginesTitle: "Five engines. Open one.",
   enginesLede:
-    "Five layers. The Foundation picks the stocks. The Nowcaster, the Prescription Reader, the Catalyst engine and Momentum into results trade the dates. Open a card for the rule, what it holds or reads, the target, the evidence, the test and what it contributes.",
+    "Five layers. The Foundation picks the stocks. Nowcaster, Prescription Reader, Catalyst and Momentum trade the dates. Open a card for the rule, what it holds or reads, the target, the evidence, the test and what it contributes.",
   howTitle: "Signals, then a score, then a position, then the rails.",
   howMore: "How this runs",
   toolKicker: "The simulator",
@@ -371,7 +383,7 @@ export const workspace = {
   compareTitle: "Three scenarios, same capital and horizon.",
   compareLede: "Each modelled column is a cell in the stored grid. A target column is arithmetic on the hurdles you set, and its probabilities are left blank.",
   backtestsLede:
-    "Historical and head-to-head results, labelled as modelled or backtested. None of this is a live track record. The head-to-head harness is a separate run from the strategy simulator grid.",
+    "Historical and head-to-head results, labelled as modelled or backtested. None of this is a live track record. Tables that still say 35% Lilly are the earlier run. The scenario on this page uses the 20% sleeve, or the 15% fallback when that is selected.",
   sourcesLede: "Data feeds and the validation register. Status words are the register's own. A completed test is not a live track record.",
   methodLede: "What the stored paths are, what the target stack is, and what neither of them claims.",
 } as const;
@@ -386,5 +398,5 @@ export const attributionEngines: { key: string; name: string; sub: string }[] = 
   { key: "foundation", name: "Foundation (stock selection)", sub: "Selection credit vs an 8% healthcare drift" },
   { key: "nowcaster", name: "Nowcaster", sub: "Results-day tilts and option spreads" },
   { key: "rx", name: "Prescription Reader", sub: "Weekly script trades, net of the paid feed" },
-  { key: "catalyst", name: "Catalyst engine", sub: "FDA Reader (3% a trade) and catalyst timing" },
+  { key: "catalyst", name: "Catalyst", sub: "FDA Reader at 3% a trade, plus timing that has not passed" },
 ];

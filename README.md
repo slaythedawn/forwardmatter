@@ -70,8 +70,10 @@ excluded from the sitemap and disallowed in `robots.txt`. The URL is not a secre
 The access phrase is.
 
 `npm test` checks the target stack (20.2% / 30.1% / 8.8%), log-scale interpolation,
-and, when `simulator-src/grid.json` is on disk, the modelled medians (disciplined
-12.5%, conviction hybrid 16.3%, strategies at scale strong at A$10m 22.6%).
+and, when `simulator-src/grid.json` is on disk, the modelled medians for the 20%
+Lilly sleeve (disciplined 11.3%, conviction hybrid 14.4% at A$1m over three years,
+strategies at scale strong 14.6% at A$1m and 18.7% at A$10m, 19.2% at A$1m before
+the data cost). `simulator-src/grid-lly15.json`, when present, is the 15% fallback.
 
 ### Before this is merged and deployed
 
