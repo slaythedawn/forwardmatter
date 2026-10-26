@@ -380,7 +380,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
           />
           <div className="sim-outcome">
             <div className="sim-outcome__main">
-              <div className="sim-lab">
+              <div className="sim-outcome__kicker">
                 {modelled && setup
                   ? `Modelled · ${setup.label} · middle of 2,000 simulated paths`
                   : `Target · ${descriptions[state.setup === "nocredit" ? "hyb" : state.setup].title.replace(/\.$/, "")} · ${money(start)} over ${yearsWord}`}
