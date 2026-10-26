@@ -498,7 +498,9 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
               {modelled && cell
                 ? `Not a forecast. ${
                     lly
-                      ? "Depends on the disclosed LLY conviction position keeping 40% of its historical lead. "
+                      ? `Depends on the disclosed LLY conviction position keeping 40% of its historical lead. ${
+                          state.size === 1 ? `${lillyNote.haircut} ` : ""
+                        }`
                       : ""
                   }${cell.exact ? "" : "Between grid points, values are interpolated. "}`
                 : `A target is a hurdle, not a forecast.${
@@ -1004,7 +1006,8 @@ function Conviction({ grid, state, cell }: { grid: ModelGrid; state: SimState; c
   const trimmed = typeof cell.pcap === "number" ? `${r1(cell.pcap)}% of paths` : null;
   return (
     <p>
-      <b>Eli Lilly is the named sleeve.</b> {sleeve} {lillyNote.rails} {state.sleeve === "15" ? "" : lillyNote.nav}{" "}
+      <b>Eli Lilly is the named sleeve.</b> {sleeve} {state.sleeve === "15" ? "" : lillyNote.share} {lillyNote.budget}{" "}
+      {lillyNote.ceiling}{" "}
       {halved && trimmed ? (
         <>
           In this setting the loss budget halves the sleeve on {halved}, and the 30% ceiling trims it on {trimmed}.{" "}

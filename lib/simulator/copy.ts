@@ -283,8 +283,14 @@ export const engineFaces: Record<string, { chip: EngineChip; line: string }> = {
 export const lillyNote = {
   sleeve20: "A 20% dedicated sleeve, about 25% look-through of the invested book.",
   sleeve15: "Fallback: a 15% sleeve, about 21% look-through.",
-  rails: "Look-through is trimmed above 30%. A loss of 7.5% of NAV from the sleeve's high halves the position.",
-  nav: "The sleeve is a share of the invested book. At 1.2×, 20% of the book is about 31% of NAV. The ceiling is applied to the book.",
+  share:
+    "As a share of fund capital, Lilly is about 22% in the disciplined setting and about 31% in the leveraged setting.",
+  budget:
+    "The 7.5% loss budget is a share of fund capital. It applies to the dedicated Lilly sleeve only and is checked at month-end. If it is reached, the sleeve is halved and stays at the halved target. Lilly held inside the core does not count toward the budget.",
+  ceiling:
+    "The 30% ceiling counts all Lilly, including the holding inside the core. It is checked at every month-end, and the sleeve is reset to its target at the annual rebalance.",
+  haircut:
+    "At A$1m the haircut line is 11.3 / 10.2 / 9.2% for disciplined and 14.4 / 12.9 / 11.3% for the hybrid.",
   novo: "Novo Nordisk fell about 75% from June 2024 to March 2026.",
 } as const;
 

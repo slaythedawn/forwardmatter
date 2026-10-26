@@ -378,6 +378,26 @@ test("public copy uses the v4 sleeve and does not sum the targets", () => {
   assert.match(text, /F-2 not yet run/);
   assert.match(text, /about 75%/);
   assert.match(text, /not added/);
+  assert.match(text, /checked at month-end/);
+  assert.match(text, /stays at the halved target/);
+  assert.match(text, /does not count toward the budget/);
+  assert.match(text, /about 22%/);
+  assert.match(text, /about 31% in the leveraged setting/);
+  assert.match(text, /fund capital/);
+  assert.equal(/7\.5% of NAV/.test(text), false);
+  assert.equal(/from the sleeve's high/.test(text), false);
+  assert.equal(/from its high/.test(text), false);
+  assert.equal(/\bdaily\b/i.test(text), false);
+  assert.equal(/pre-order/i.test(text), false);
+  const build = readFileSync(join(root, "scripts/build-simulator.mjs"), "utf8");
+  assert.match(build, /Ten fresh seeds of 1,000 paths each/);
+  assert.match(build, /10\.9–11\.6%/);
+  assert.match(build, /13\.9–14\.7%/);
+  assert.match(build, /no seed moving a median more than 0\.5 points/);
+  assert.match(text, /11\.3 \/ 10\.2 \/ 9\.2%/);
+  assert.match(text, /14\.4 \/ 12\.9 \/ 11\.3%/);
+  assert.match(build, /11\.3 \/ 10\.2 \/ 9\.2%/);
+  assert.match(build, /14\.4 \/ 12\.9 \/ 11\.3%/);
 });
 
 test("evidence is rejected when it names a partner or a performance fee", () => {

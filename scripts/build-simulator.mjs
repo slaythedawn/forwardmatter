@@ -28,7 +28,9 @@ function alignEvidence(evidence) {
   if (foundation) {
     foundation.status = "F-2 not yet run";
     foundation.weight =
-      "Setting A: 20% Lilly sleeve and the rest core, 1.0× gross, 15% cash. Setting B: the same mix at up to 1.2×. Look-through is about 25% of the invested book, trimmed above 30%. A loss of 7.5% of NAV halves the sleeve. Per-name cap 7.5%, except this sleeve.";
+      "Setting A: a 20% dedicated Lilly sleeve and the rest core, 1.0× gross, 15% cash. Lilly is about 22% of fund capital. Setting B: the same mix at up to 1.2×, where Lilly is about 31% of fund capital. The 7.5% loss budget is a share of fund capital. It applies to the dedicated sleeve only and is checked at month-end. If it is reached, the sleeve is halved and stays at the halved target. Lilly held inside the core does not count toward the budget. The 30% ceiling counts all Lilly, including the holding inside the core. It is checked at every month-end, and the sleeve is reset to its target at the annual rebalance. Per-name cap 7.5%, except this sleeve.";
+    foundation.rebalance =
+      "Quarterly, and after each dated event in a held name. The Lilly sleeve is reset to its target at the annual rebalance. Its 30% ceiling and its 7.5% loss budget are checked at month-end.";
     foundation.target =
       "+5 to +10 points a year above an 8% global healthcare reference, F-2 not yet run. Base +6.5, upside +10. Foundation only: 14.5% gross, 8.8% net of the 5% fee.";
     foundation.evidence =
@@ -60,14 +62,44 @@ function alignEvidence(evidence) {
   const holding = evidence.book?.holdings?.[0];
   if (holding) {
     holding.weight =
-      "A 20% dedicated sleeve, about 25% look-through of the invested book. Trimmed if look-through goes above 30%. A loss of 7.5% of NAV from its high halves the position. 15% is the conservative fallback. Every other name is capped at 7.5%.";
+      "A 20% dedicated sleeve, about 25% look-through of the invested book. As a share of fund capital, Lilly is about 22% in the disciplined setting and about 31% in the leveraged setting. The 7.5% loss budget is a share of fund capital. It applies to the dedicated sleeve only and is checked at month-end. If it is reached, the sleeve is halved and stays at the halved target. Lilly held inside the core does not count toward the budget. The 30% ceiling counts all Lilly, including the holding inside the core. It is checked at every month-end, and the sleeve is reset to its target at the annual rebalance. 15% is the conservative fallback. Every other name is capped at 7.5%.";
+    if (typeof holding.exits === "string") {
+      holding.exits = holding.exits
+        .replace(
+          "The committee reviews within one business day and the position is cut to the 7.5% cap unless the thesis is re-underwritten. ",
+          "The committee reviews a broken thesis, and the position is cut to the 7.5% cap unless the thesis is re-underwritten. ",
+        )
+        .replace(
+          "Risk: the loss budget, agreed between the parties before the first allocation, or the portfolio drawdown rail, halves the position first.",
+          "Risk: the 7.5% loss budget applies to the dedicated sleeve only and is checked at month-end. If it is reached, the sleeve is halved and stays at the halved target. A separate strategy drawdown rail can also halve exposure.",
+        );
+    }
+  }
+  const g1 = evidence.register?.find((row) => row.id === "G-1");
+  if (g1) {
+    g1.rule = "Ten fresh seeds of 1,000 paths each on the 20% sleeve.";
+    g1.result =
+      "Disciplined 10.9–11.6%, hybrid 13.9–14.7%. No seed moves a median more than 0.5 points.";
+  }
+  const f3 = evidence.register?.find((row) => row.id === "F-3");
+  if (f3) {
+    f3.result = "Disciplined 8.9%, hybrid 11.1% net (modelled)";
+  }
+  const seeds = evidence.studies?.find((study) => study.id === "seeds");
+  if (seeds) {
+    seeds.caveat =
+      "Modelled. The rows above are an earlier harness. The strategy simulator's own seed check, recorded as G-1, is ten fresh seeds of 1,000 paths each on the 20% sleeve: medians of 10.9–11.6% for disciplined and 13.9–14.7% for the hybrid, and no seed moving a median more than 0.5 points.";
   }
   if (evidence.brief?.points) {
-    evidence.brief.points = evidence.brief.points.map((point) =>
-      point.includes("12.5%")
-        ? "A mechanical name, the large-pharma stock with the best 12-to-1 month momentum each November, takes the disciplined median from 11.3% to 8.9% and the conviction hybrid from 14.4% to 11.1%. That gap is the conviction sleeve. It is a judgement, which is why it is named, sized and given its own loss budget."
-        : point,
-    );
+    evidence.brief.points = evidence.brief.points.map((point) => {
+      if (point.includes("12.5%")) {
+        return "A mechanical name, the large-pharma stock with the best 12-to-1 month momentum each November, takes the disciplined median from 11.3% to 8.9% and the conviction hybrid from 14.4% to 11.1%. That gap is the conviction sleeve. It is a judgement, which is why it is named, sized and given its own loss budget.";
+      }
+      if (point.includes("keep 40%")) {
+        return `${point} At A$1m the haircut line is 11.3 / 10.2 / 9.2% for disciplined and 14.4 / 12.9 / 11.3% for the hybrid.`;
+      }
+      return point;
+    });
   }
   const walk = (value) => {
     if (typeof value === "string") return value;
@@ -90,7 +122,15 @@ function publicPhrase(text) {
     .replaceAll("NVO fell about 80%", "Novo Nordisk fell about 75%")
     .replaceAll("from day one", "before it carries capital")
     .replaceAll("Catalyst engine", "Catalyst")
-    .replaceAll("Momentum into results", "Momentum");
+    .replaceAll("Momentum into results", "Momentum")
+    .replaceAll(
+      "These medians are not the strategy simulator's 12.5%, 16.3% and 22.6%.",
+      "These medians are not the strategy simulator's 11.3% disciplined, 14.4% hybrid, or 18.7% strong at A$10m.",
+    )
+    .replaceAll(
+      "It is not the strategy simulator's disciplined 12.5%.",
+      "It is not the strategy simulator's disciplined 11.3%.",
+    );
 }
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
