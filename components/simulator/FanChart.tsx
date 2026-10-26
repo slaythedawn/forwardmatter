@@ -39,6 +39,11 @@ export function FanChart({
         viewBox={`0 0 ${W} ${H}`}
         role="img"
         aria-label={label}
+        onPointerDown={(event) => {
+          event.currentTarget.setPointerCapture(event.pointerId);
+          const rect = event.currentTarget.getBoundingClientRect();
+          move(event.clientX - rect.left, rect.width);
+        }}
         onPointerMove={(event) => {
           const rect = event.currentTarget.getBoundingClientRect();
           move(event.clientX - rect.left, rect.width);

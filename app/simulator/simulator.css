@@ -706,10 +706,360 @@
   }
 }
 
+.sim-engine-card__face {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "mark name chip"
+    "line line line"
+    "pair pair pair"
+    "key key key";
+  gap: 8px 10px;
+  padding: 16px;
+}
+
+.sim-engine-card__face svg { grid-area: mark; }
+.sim-engine-card__face .sim-engine-card__name { grid-area: name; }
+.sim-engine-card__face .sim-chip { grid-area: chip; align-self: center; }
+.sim-engine-card__face .sim-engine-card__line { grid-area: line; }
+.sim-engine-card__face .sim-pair { grid-area: pair; }
+.sim-engine-card__face .sim-pair-key { grid-area: key; }
+
+.sim-engine-card--core { grid-column: 1 / -1; }
+
+.sim-engine-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+
+.sim-engine-card__actions button,
+.sim-legend button,
+.sim-strategy {
+  border: 1px solid var(--hairline);
+  background: #fff;
+  color: #1b2a3d;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sim-engine-card__actions button[aria-pressed="true"],
+.sim-strategy.is-on {
+  background: #1b2a3d;
+  color: #fff;
+  border-color: #1b2a3d;
+}
+
+.sim-chip--built {
+  color: #1b2a3d;
+  background: #fff;
+  border: 1px solid #8fb4dd;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sim-pair i {
+  background: rgba(143, 180, 221, 0.9);
+}
+
+.sim-pair b,
+.sim-pair-key b {
+  background: #1b2a3d;
+}
+
+.sim-bar__ghost {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 3px;
+  background: rgba(143, 180, 221, 0.55);
+  border: 1px dashed #345984;
+  box-sizing: border-box;
+}
+
+.sim-bar__track { position: relative; }
+
+.sim-context {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.sim-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-steps li {
+  padding: 14px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.sim-steps b { display: block; margin-bottom: 4px; }
+.sim-steps span { color: var(--muted); font-size: 14px; line-height: 1.4; }
+
+.sim-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 0 0 16px;
+}
+
+.sim-primary {
+  border: 0;
+  background: #1b2a3d;
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sim-primary:focus-visible,
+.sim-engine-card:focus-within,
+.sim-strategy:focus-visible,
+.sim-info:focus-visible,
+.sim-legend button:focus-visible {
+  outline: 2px solid #345984;
+  outline-offset: 2px;
+}
+
+.sim-strategies {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.sim-strategy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: left;
+}
+
+.sim-strategy b {
+  font-size: 28px;
+  letter-spacing: -0.04em;
+}
+
+.sim-strategy span { font-weight: 500; color: var(--muted); line-height: 1.4; }
+.sim-strategy.is-on span,
+.sim-strategy.is-on .sim-kicker { color: #d5e2f2; }
+
+.sim-stackvis {
+  margin-top: 22px;
+  max-width: 720px;
+}
+
+.sim-stackvis__core,
+.sim-stackvis__row span {
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.sim-stackvis__core {
+  padding: 16px 18px;
+  font-weight: 600;
+  background: #1b2a3d;
+  color: #fff;
+  border-color: #1b2a3d;
+}
+
+.sim-stackvis__row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.sim-stackvis__row span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px;
+  font-size: 13px;
+}
+
+.sim-stackvis__row b { color: #345984; }
+
+.sim-legend button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+}
+
+.sim-legend button i {
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.sim-legend button.is-off { opacity: 0.4; }
+
+.sim-infotip { position: relative; display: inline-flex; margin-left: 6px; vertical-align: middle; }
+
+.sim-info {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid #8fb4dd;
+  border-radius: 50%;
+  background: #fff;
+  color: #345984;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  cursor: pointer;
+}
+
+.sim-info__pop {
+  display: none;
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  top: calc(100% + 6px);
+  width: min(280px, 70vw);
+  padding: 10px 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: #fff;
+  color: #1b2a3d;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.sim-infotip:hover .sim-info__pop,
+.sim-infotip:focus-within .sim-info__pop { display: block; }
+
+.sim-tour {
+  position: fixed;
+  z-index: 40;
+  right: 16px;
+  bottom: 16px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.sim-tour h2 { margin: 4px 0 8px; font-size: 20px; }
+.sim-tour__actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+.sim-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(27, 42, 61, 0.35);
+}
+
+.sim-modal__panel {
+  width: min(980px, 100%);
+  max-height: min(86vh, 900px);
+  overflow: auto;
+  padding: 20px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--hairline);
+}
+
+.sim-modal__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.sim-modal__head h2 {
+  margin: 4px 0 0;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.sim-universe__tools { display: grid; gap: 12px; margin: 16px 0; }
+.sim-universe__tools input {
+  width: min(360px, 100%);
+  margin-top: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.sim-test { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--hairline); }
+.sim-test header { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
+.sim-test p { margin: 0 0 6px; }
+
+.sim-pair-key--legend { margin-top: 14px; }
+
+@media (max-width: 720px) {
+  .sim-steps,
+  .sim-strategies,
+  .sim-stackvis__row { grid-template-columns: 1fr; }
+  .sim-tour { right: 12px; left: 12px; width: auto; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sim-bar__fill,
+  .sim-bar__ghost,
+  .sim-pair i,
+  .sim-pair b {
+    transition: width 420ms ease, left 420ms ease;
+  }
+  .sim-engine-card:hover,
+  .sim-strategy:hover {
+    transform: translateY(-2px);
+  }
+  .sim-kpi__v { animation: sim-in 360ms ease; }
+}
+
+@keyframes sim-in {
+  from { opacity: 0.35; }
+  to { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sim-engine-card,
+  .sim-engine-card:hover,
+  .sim-strategy,
+  .sim-strategy:hover,
   .sim .sim-seg button,
-  .sim .sim-tabs button {
+  .sim .sim-tabs button,
+  .sim-bar__fill,
+  .sim-bar__ghost,
+  .sim-pair i,
+  .sim-pair b,
+  .sim-kpi__v {
     transition: none;
+    transform: none;
+    animation: none;
   }
 }

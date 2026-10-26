@@ -5,6 +5,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { evidenceTextOk, isEvidence } from "../lib/simulator/evidence";
+import { UNIVERSE, ownableNames } from "../lib/simulator/universe";
 import {
   applyHash,
   applyPreset,
@@ -367,7 +368,7 @@ test("a shared link restores the fee, the workspace and the comparison", () => {
 test("public copy uses the v4 sleeve and does not sum the targets", () => {
   const text = [
     readFileSync(join(root, "lib/simulator/copy.ts"), "utf8"),
-    ...walk(join(root, "components/simulator")),
+    ...walk(join(root, "components/simulator")).map((path) => readFileSync(path, "utf8")),
   ].join("\n");
   assert.equal(/from day one/i.test(text), false);
   assert.equal(/earning nothing/i.test(text), false);
@@ -398,6 +399,31 @@ test("public copy uses the v4 sleeve and does not sum the targets", () => {
   assert.match(text, /14\.4 \/ 12\.9 \/ 11\.3%/);
   assert.match(build, /11\.3 \/ 10\.2 \/ 9\.2%/);
   assert.match(build, /14\.4 \/ 12\.9 \/ 11\.3%/);
+  assert.match(text, /eight rails plus a human veto/i);
+  assert.match(text, /Built · validating/);
+  assert.match(text, /Live from A\$5m/);
+  assert.match(text, /Show targets/);
+  assert.match(text, /See the test/);
+  assert.match(text, /Compare strategies/);
+  assert.match(text, /Universe list loading/);
+  assert.equal(/\bpaper\b/i.test(text), false);
+  assert.equal(/\bgated\b/i.test(text), false);
+  assert.equal(/The modelled core stands on its own/.test(text), false);
+  assert.equal(/Five engines\. Open one/.test(text), false);
+});
+
+test("the foundation universe is names only, with the modelled tags", () => {
+  assert.equal(ownableNames().length, 34);
+  assert.equal(UNIVERSE.length, 41);
+  assert.deepEqual(
+    UNIVERSE.filter((row) => row.tag === "Modelled basket").map((row) => row.ticker).sort(),
+    ["AZN", "GPCR", "ISRG"],
+  );
+  assert.equal(UNIVERSE.find((row) => row.ticker === "LLY")?.tag, "In modelled backtest");
+  assert.equal(UNIVERSE.find((row) => row.company === "Lonza")?.ticker, "");
+  assert.equal(UNIVERSE.some((row) => row.sleeve === "Watch list"), true);
+  const src = readFileSync(join(root, "lib/simulator/universe.ts"), "utf8");
+  assert.equal(/launch_weight|weight_pct/.test(src), false);
 });
 
 test("evidence is rejected when it names a partner or a performance fee", () => {

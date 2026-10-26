@@ -26,7 +26,7 @@ import { fileURLToPath } from "node:url";
 function alignEvidence(evidence) {
   const foundation = evidence.engines?.find((engine) => engine.id === "foundation");
   if (foundation) {
-    foundation.status = "F-2 not yet run";
+    foundation.status = "Built · validating. Next test: F-2 not yet run.";
     foundation.weight =
       "Setting A: a 20% dedicated Lilly sleeve and the rest core, 1.0× gross, 15% cash. Lilly is about 22% of fund capital. Setting B: the same mix at up to 1.2×, where Lilly is about 31% of fund capital. The 7.5% loss budget is a share of fund capital. It applies to the dedicated sleeve only and is checked at month-end. If it is reached, the sleeve is halved and stays at the halved target. Lilly held inside the core does not count toward the budget. The 30% ceiling counts all Lilly, including the holding inside the core. It is checked at every month-end, and the sleeve is reset to its target at the annual rebalance. Per-name cap 7.5%, except this sleeve.";
     foundation.rebalance =
@@ -40,24 +40,27 @@ function alignEvidence(evidence) {
   }
   const nowcaster = evidence.engines?.find((engine) => engine.id === "nowcaster");
   if (nowcaster) {
+    nowcaster.status = "Built · validating";
     nowcaster.weight =
       "A tilt of up to half the sleeve, inside the exposure ceiling. An optional call or put spread is capped at 1.5% of NAV premium per results day.";
   }
+  const rx = evidence.engines?.find((engine) => engine.id === "rx");
+  if (rx) rx.status = "Live from A$5m";
   const catalyst = evidence.engines?.find((engine) => engine.id === "catalyst");
   if (catalyst) {
     catalyst.name = "Catalyst";
-    catalyst.status = "Timing tests have not passed. FDA calls after the training cut-off are the gate.";
+    catalyst.status = "Built · validating. Only post-cut-off FDA meetings count.";
     catalyst.evidence +=
       " The 64–67% reading of past documents is an upper bound, because the model may recall outcomes. Only meetings after the training cut-off count toward the gate. Timing the run-up did not repeat. None of eight readout rules passed on 4,112 events.";
   }
   const momentum = evidence.engines?.find((engine) => engine.id === "momentum");
   if (momentum) {
     momentum.name = "Momentum";
-    momentum.status = "Modest, after a multiple-testing correction";
+    momentum.status = "Built · validating";
     momentum.evidence +=
       " The result is only modestly above chance. Judged after a multiple-testing correction, it misses the 27-test bar.";
     momentum.contribution =
-      "It runs on paper under pre-registered rules. The stored grid does not give it a separate attribution row. In settings A and B it is credited nothing. Its points appear in the target stack only when the layer is switched on, and that line is arithmetic, not a new set of paths.";
+      "It is built and in validation under pre-registered rules. The stored grid does not give it a separate attribution row, so the card shows its target. In Disciplined and Conviction hybrid the stored paths credit the Foundation and the FDA Reader. Its points appear in the target stack only when the layer is switched on, and that line is arithmetic, not a new set of paths. Eight rails plus a human veto sit over the book.";
   }
   const holding = evidence.book?.holdings?.[0];
   if (holding) {
@@ -71,7 +74,7 @@ function alignEvidence(evidence) {
         )
         .replace(
           "Risk: the loss budget, agreed between the parties before the first allocation, or the portfolio drawdown rail, halves the position first.",
-          "Risk: the 7.5% loss budget applies to the dedicated sleeve only and is checked at month-end. If it is reached, the sleeve is halved and stays at the halved target. A separate strategy drawdown rail can also halve exposure.",
+          "Risk: the 7.5% loss budget applies to the dedicated sleeve only and is checked at month-end. If it is reached, the sleeve is halved and stays at the halved target. Eight rails plus a human veto can also halve exposure. One rail does that after a −25% fall.",
         );
     }
   }
@@ -102,8 +105,13 @@ function alignEvidence(evidence) {
     });
   }
   const walk = (value) => {
-    if (typeof value === "string") return value;
-    if (Array.isArray(value)) return value.forEach(walk);
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        if (typeof item === "string") value[index] = publicPhrase(item);
+        else walk(item);
+      });
+      return;
+    }
     if (value && typeof value === "object") Object.keys(value).forEach((key) => {
       const next = value[key];
       if (typeof next === "string") value[key] = publicPhrase(next);
@@ -123,6 +131,26 @@ function publicPhrase(text) {
     .replaceAll("from day one", "before it carries capital")
     .replaceAll("Catalyst engine", "Catalyst")
     .replaceAll("Momentum into results", "Momentum")
+    .replaceAll("The rails act on the engines and on strategy exposure.", "Eight rails plus a human veto act on the engines and on strategy exposure.")
+    .replaceAll("inside the per-name caps and the rails.", "inside the per-name caps, with eight rails plus a human veto.")
+    .replaceAll("on paper", "in validation")
+    .replaceAll("paper gate", "next test")
+    .replaceAll("paper record", "validation record")
+    .replaceAll("Paper calls", "Validation calls")
+    .replaceAll("Paper record", "Validation record")
+    .replaceAll("Paper inputs", "Validation inputs")
+    .replaceAll("Paper only", "Validation only")
+    .replaceAll("Paper.", "In validation.")
+    .replaceAll("returns it to paper", "returns it to validation")
+    .replaceAll("returns to paper", "returns to validation")
+    .replaceAll("paper only", "validation only")
+    .replaceAll("paper test", "validation test")
+    .replaceAll("Kept as paper", "Kept in validation")
+    .replaceAll("first paper record", "first validation record")
+    .replaceAll("run on paper", "run in validation")
+    .replaceAll("stay gated", "stay in validation")
+    .replaceAll("stays gated", "stays in validation")
+    .replaceAll("gated", "in validation")
     .replaceAll(
       "These medians are not the strategy simulator's 12.5%, 16.3% and 22.6%.",
       "These medians are not the strategy simulator's 11.3% disciplined, 14.4% hybrid, or 18.7% strong at A$10m.",

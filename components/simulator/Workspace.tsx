@@ -1,6 +1,7 @@
 "use client";
 
-import { plain, workspace } from "@/lib/simulator/copy";
+import { plain, tips, workspace } from "@/lib/simulator/copy";
+import { InfoTip } from "./InfoTip";
 import type { Evidence, Study } from "@/lib/simulator/evidence";
 import {
   COMPARE_KEYS,
@@ -102,7 +103,7 @@ export function Assumptions({
   return (
     <div className="sim-assume">
       <div className="sim-field">
-        <span className="sim-lab">{workspace.scenarioPresets}</span>
+        <span className="sim-lab">{workspace.scenarioPresets}<InfoTip text={tips.presets} /></span>
         <div className="sim-seg" role="group" aria-label={workspace.scenarioPresets}>
           {workspace.presets.map((preset) => (
             <button
@@ -119,6 +120,7 @@ export function Assumptions({
       <label className="sim-field">
         <span className="sim-lab">
           {workspace.fee} · {r1(state.fee)}%
+          <InfoTip text={tips.fee} />
         </span>
         <input
           type="range"
@@ -133,6 +135,7 @@ export function Assumptions({
       <label className="sim-field">
         <span className="sim-lab">
           {workspace.market} · {r1(state.market)}%
+          <InfoTip text={tips.market} />
         </span>
         <input
           type="range"
@@ -394,7 +397,7 @@ function StudyBlock({ study }: { study: Study }) {
   return (
     <article className="sim-study">
       <header className="sim-study__head">
-        <span className={`sim-chip sim-chip--${study.kind === "backtested" ? "paper" : "modelled"}`}>
+        <span className={`sim-chip sim-chip--${study.kind === "backtested" ? "built" : "modelled"}`}>
           {study.kind === "backtested" ? "Backtested" : "Modelled"}
         </span>
         <h3>{study.title}</h3>

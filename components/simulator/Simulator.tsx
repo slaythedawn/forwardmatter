@@ -30,12 +30,16 @@ import {
   legal,
   lillyNote,
   plain,
+  steps,
+  tips,
   scaleWarnAbove,
   scaleWarnBelow,
   sections,
   shell,
 } from "@/lib/simulator/copy";
 import { Guide } from "./Guide";
+import { InfoTip } from "./InfoTip";
+import { Tour, tourSteps } from "./Tour";
 import {
   AREIT_RATE,
   applyHash,
@@ -109,6 +113,9 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
     typeof window === "undefined" ? openingState() : applyHash(openingState(), window.location.hash),
   );
   const [copied, setCopied] = useState(false);
+  const [showTargets, setShowTargets] = useState(true);
+  const [tour, setTour] = useState<number | null>(null);
+  const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
 
   useEffect(() => {
     const next = `#${stateToHash(state)}`;
@@ -122,6 +129,12 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+
+  useEffect(() => {
+    if (tour == null) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById(tourSteps[tour].id)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+  }, [tour]);
 
   const grid = state.sleeve === "15" && fallback ? fallback : primary;
   const targets = computeTargets(state);
@@ -202,11 +215,40 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
       ? setup.label
       : descriptions[state.setup === "nocredit" ? "hyb" : state.setup].title.replace(/\.$/, "");
 
+  function go(id: string) {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById(id)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
+
+  const modelledSeries = modelled && cell
+    ? [
+        { v: cell.fan[4], c: "var(--sim-p2)", short: "1 in 10 better", w: 1.2 },
+        { v: cell.fan[2], c: "var(--sim-acc)", short: "median", w: 2.6 },
+        { v: cell.fan[0], c: "var(--sim-p2)", short: "1 in 10 worse", w: 1.2 },
+        { v: smoothPath(AREIT_RATE, state.years), c: "var(--sim-grey)", short: "A-REITs 6%", dash: "2 3" },
+      ]
+    : [
+        { v: smoothPath(targets.upNet, state.years), c: "var(--sim-p1)", short: "upside", dash: "5 4" },
+        { v: smoothPath(targets.net, state.years), c: "var(--sim-acc)", short: "target", w: 2.6 },
+        { v: smoothPath(targets.foNet, state.years), c: "var(--sim-cmp)", short: "foundation" },
+        { v: smoothPath(AREIT_RATE, state.years), c: "var(--sim-grey)", short: "A-REITs", dash: "2 3" },
+      ];
+
   return (
     <div className="sim">
+      <Guide
+        evidence={evidence}
+        grid={grid}
+        state={state}
+        targets={targets}
+        onPick={(setup) => {
+          patch({ setup, mode: "modelled", stress: false });
+          go("outcome");
+        }}
+      />
       <section className="sim-hero-outcome" id="outcome">
         <p className="sim-take">
-          {hero.title} <span>{hero.takeaway}</span>
+          {sections.outcome.title} <span>{hero.takeaway}</span>
         </p>
         <div className="sim-hero-outcome__grid">
           <div>
@@ -238,16 +280,9 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                 {headlineRate}%
               </div>
             </div>
-            <div className="sim-row sim-row--base">
-              <div>
-                {guide.baseline}
-                <small>{guide.baselineSub}</small>
-              </div>
-              <div className="sim-row__val">
-                {disp(base, "med", true)}%
-                <small>{money(compound(start, base.med, state.years))}</small>
-              </div>
-            </div>
+            <p className="sim-context">
+              {guide.baseline}: {disp(base, "med", true)}%, about {money(compound(start, base.med, state.years))}.
+            </p>
             <div className="sim-mini">
               {gapSetups.map(([id, label]) => (
                 <div key={id}>
@@ -263,18 +298,43 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
           </div>
         </div>
       </section>
-      <Guide
-        evidence={evidence}
-        grid={grid}
-        state={state}
-        targets={targets}
-        onNotes={() => {
-          patch({ view: "engines" });
-          document.getElementById("scenario")?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }}
-      />
 
       <div className="sim-app" id="scenario">
+        <ol className="sim-steps">
+          {steps.map((step) => (
+            <li key={step.n}>
+              <b>
+                {step.n}. {step.title}
+              </b>
+              <span>{step.line}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="sim-actions">
+          <button
+            type="button"
+            className="sim-primary"
+            onClick={() => {
+              patch({ view: "compare" });
+              go("scenario");
+            }}
+          >
+            Compare strategies
+          </button>
+          <button
+            type="button"
+            className="sim-textbtn"
+            onClick={() => {
+              patch({ view: "backtests" });
+              go("scenario");
+            }}
+          >
+            See the backtests
+          </button>
+          <button type="button" className="sim-textbtn" onClick={() => setTour(0)}>
+            Show me around
+          </button>
+        </div>
         <div className="sim-app__bar">
           <div className="sim-brand">
             <span className="sim-brand__dot" aria-hidden="true" />
@@ -297,7 +357,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
 
         <div className="sim-console">
           <div className="sim-field">
-            <span className="sim-lab">{shell.view}</span>
+            <span className="sim-lab">{shell.view}<InfoTip text={tips.view} /></span>
             <div className="sim-seg" role="group" aria-label={shell.view}>
               {(["targets", "modelled"] as const).map((mode) => (
                 <button
@@ -312,7 +372,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
             </div>
           </div>
           <div className="sim-field">
-            <span className="sim-lab">{shell.capital}</span>
+            <span className="sim-lab">{shell.capital}<InfoTip text={tips.capital} /></span>
             <div className="sim-seg" role="group" aria-label={shell.presets}>
               {shell.presetLabels.map((preset) => (
                 <button
@@ -327,7 +387,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
             </div>
           </div>
           <div className="sim-field">
-            <span className="sim-lab">{shell.horizon}</span>
+            <span className="sim-lab">{shell.horizon}<InfoTip text={tips.horizon} /></span>
             <div className="sim-seg" role="group" aria-label={shell.horizon}>
               {shell.years.map((item) => (
                 <button
@@ -343,7 +403,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
           </div>
           {modelled || foundationOnly ? (
             <div className="sim-field">
-              <span className="sim-lab">{shell.setting}</span>
+              <span className="sim-lab">{shell.setting}<InfoTip text={tips.setting} /></span>
               <div className="sim-seg" role="group" aria-label={shell.setting}>
                 {shell.setups.map((item) => (
                   <button
@@ -369,7 +429,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
 
         <div className="sim-sub">
           <div className="sim-field sim-field--size">
-            <span className="sim-lab">{shell.capital}</span>
+            <span className="sim-lab">{shell.capital}<InfoTip text={tips.capital} /></span>
             <div className="sim-size">
               <input
                 type="range"
@@ -385,7 +445,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
           </div>
           {modelled && state.setup === "sc" ? (
             <div className="sim-field">
-              <span className="sim-lab">{shell.signal}</span>
+              <span className="sim-lab">{shell.signal}<InfoTip text={tips.signal} /></span>
               <div className="sim-seg" role="group" aria-label={shell.signal}>
                 {shell.signals.map((item) => (
                   <button
@@ -402,7 +462,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
           ) : null}
           {fallback ? (
             <div className="sim-field">
-              <span className="sim-lab">{shell.lilly}</span>
+              <span className="sim-lab">{shell.lilly}<InfoTip text={tips.lilly} /></span>
               <div className="sim-seg" role="group" aria-label={shell.lilly}>
                 <button type="button" aria-pressed={state.sleeve !== "15"} onClick={() => patch({ sleeve: "20" })}>
                   {shell.lillyDefault}
@@ -415,7 +475,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
           ) : null}
           {modelled ? (
             <div className="sim-field">
-              <span className="sim-lab">{shell.conviction}</span>
+              <span className="sim-lab">{shell.conviction}<InfoTip text={tips.conviction} /></span>
               <div className="sim-seg" role="group" aria-label={shell.conviction}>
                 {shell.picks.map((item) => (
                   <button
@@ -644,57 +704,37 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
             kicker={sections.range.kicker}
             title={sections.range.title}
           />
-          {modelled && cell ? (
-            <FanChart
-              years={state.years}
-              start={start}
-              label={`Modelled paths of value over ${yearsWord}`}
-              series={[
-                { v: cell.fan[4], c: "var(--sim-p2)", short: "1 in 10 better", w: 1.2 },
-                { v: cell.fan[2], c: "var(--sim-acc)", short: "median", w: 2.6 },
-                { v: cell.fan[0], c: "var(--sim-p2)", short: "1 in 10 worse", w: 1.2 },
-                {
-                  v: smoothPath(AREIT_RATE, state.years),
-                  c: "var(--sim-grey)",
-                  short: "A-REITs 6%",
-                  dash: "2 3",
-                },
-              ]}
-              bands={[
-                { lo: cell.fan[0], hi: cell.fan[4], c: "rgba(143,180,221,0.28)" },
-                { lo: cell.fan[1], hi: cell.fan[3], c: "rgba(47,85,128,0.18)" },
-              ]}
-            />
-          ) : (
-            <FanChart
-              years={state.years}
-              start={start}
-              label={`Target paths of value over ${yearsWord}`}
-              series={[
-                { v: smoothPath(targets.upNet, state.years), c: "var(--sim-p1)", short: "upside", dash: "5 4" },
-                { v: smoothPath(targets.net, state.years), c: "var(--sim-acc)", short: "target", w: 2.6 },
-                { v: smoothPath(targets.foNet, state.years), c: "var(--sim-cmp)", short: "foundation" },
-                { v: smoothPath(AREIT_RATE, state.years), c: "var(--sim-grey)", short: "A-REITs", dash: "2 3" },
-              ]}
-              bands={[]}
-            />
-          )}
+          <FanChart
+            years={state.years}
+            start={start}
+            label={modelled ? `Modelled paths of value over ${yearsWord}` : `Target paths of value over ${yearsWord}`}
+            series={modelledSeries.filter((item) => !hiddenSeries.includes(item.short))}
+            bands={
+              modelled && cell
+                ? [
+                    { lo: cell.fan[0], hi: cell.fan[4], c: "rgba(143,180,221,0.28)" },
+                    { lo: cell.fan[1], hi: cell.fan[3], c: "rgba(47,85,128,0.18)" },
+                  ]
+                : []
+            }
+          />
           <div className="sim-legend">
-            {modelled ? (
-              <>
-                <span><i style={{ background: "var(--sim-acc)" }} />Median path</span>
-                <span><i style={{ background: "rgba(47,85,128,0.45)" }} />Middle half of paths</span>
-                <span><i style={{ background: "rgba(143,180,221,0.7)" }} />8 in 10 paths</span>
-                <span><i style={{ background: "var(--sim-grey)" }} />A-REITs 6% assumption</span>
-              </>
-            ) : (
-              <>
-                <span><i style={{ background: "var(--sim-acc)" }} />Your stacked target</span>
-                <span><i style={{ background: "var(--sim-cmp)" }} />Foundation only</span>
-                <span><i style={{ background: "var(--sim-p1)" }} />Upside ambition</span>
-                <span><i style={{ background: "var(--sim-grey)" }} />A-REITs 6% assumption</span>
-              </>
-            )}
+            {modelledSeries.map((item) => (
+              <button
+                key={item.short}
+                type="button"
+                className={hiddenSeries.includes(item.short) ? "is-off" : ""}
+                aria-pressed={!hiddenSeries.includes(item.short)}
+                onClick={() =>
+                  setHiddenSeries((current) =>
+                    current.includes(item.short) ? current.filter((name) => name !== item.short) : [...current, item.short],
+                  )
+                }
+              >
+                <i style={{ background: item.c }} />
+                {item.short}
+              </button>
+            ))}
           </div>
           <YearTable kind={kind} cell={cell} targets={targets} years={state.years} start={start} />
           {cell && modelled ? <OddsTable cell={cell} /> : null}
@@ -773,9 +813,29 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
             title={sections.source.title}
             aside={<Chip kind={modelled ? "modelled" : "target"}>{modelled ? chips.modelled : chips.target}</Chip>}
           />
+          <p className="sim-note">
+            {modelled && setup
+              ? `${setup.label} · ${money(start)} · ${yearsWord}. Targets are hurdles. They are not added to this figure.`
+              : "Target stack for the hurdles you have set. They are not added into a modelled headline."}
+          </p>
+          <div className="sim-actions">
+            <button type="button" className="sim-textbtn" aria-pressed={showTargets} onClick={() => setShowTargets((current) => !current)}>
+              Show targets
+            </button>
+            <span className="sim-pair-key">
+              <span>
+                <i />
+                Target
+              </span>
+              <span>
+                <b />
+                {modelled ? "Modelled" : "Selected hurdle"}
+              </span>
+            </span>
+          </div>
           <MetricBars
             label="Where the return comes from"
-            rows={modelled && cell ? attributionModelled(cell, state) : attributionTarget(targets, rxOn)}
+            rows={modelled && cell ? attributionModelled(cell, showTargets) : attributionTarget(targets, rxOn, showTargets)}
           />
           <details className="sim-more">
             <summary>{plain.more}</summary>
@@ -801,7 +861,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                 {gate.status.toLowerCase() !== gate.tone ? <div className="sim-gate__status">{gate.status}</div> : null}
                 <h3>{gate.name}</h3>
                 <p>
-                  <b>Gate:</b> {gate.gate}
+                  <b>Next test:</b> {gate.gate}
                 </p>
                 <p>{gate.detail}</p>
               </article>
@@ -841,6 +901,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
           {runDate ? <p>{runDate}.</p> : null}
         </section>
       </details>
+      {tour != null ? <Tour step={tour} onStep={setTour} onClose={() => setTour(null)} /> : null}
     </div>
   );
 }
@@ -873,12 +934,27 @@ function OutcomeRows({
 }
 
 function Kpis({ items }: { items: [string, string, string, string][] }) {
+  const tipFor = (label: string) => {
+    if (label === "Median net a year" || label === "Net a year") return tips.median;
+    if (label === plain.loss) return tips.loss;
+    if (label === plain.thirty) return tips.thirty;
+    if (label === plain.areit) return tips.areit;
+    if (label === plain.credit) return tips.credit;
+    if (label === plain.fall) return tips.fall;
+    if (label === "Ending value") return tips.horizon;
+    return tips.median;
+  };
   return (
     <div className="sim-kpis">
       {items.map(([label, value, tone, note]) => (
         <div className="sim-kpi" key={label}>
-          <div className="sim-lab">{label}</div>
-          <div className={`sim-kpi__v${tone ? ` is-${tone}` : ""}`}>{value}</div>
+          <div className="sim-lab">
+            {label}
+            <InfoTip text={tipFor(label)} />
+          </div>
+          <div className={`sim-kpi__v${tone ? ` is-${tone}` : ""}`} key={value}>
+            {value}
+          </div>
           {note ? <small>{note}</small> : <small>&nbsp;</small>}
         </div>
       ))}
@@ -952,47 +1028,44 @@ function feeRowsModelled(cell: Cell, dataCost: number): BarRow[] {
   ];
 }
 
-function attributionTarget(targets: ReturnType<typeof computeTargets>, rxOn: boolean): BarRow[] {
+function attributionTarget(targets: ReturnType<typeof computeTargets>, rxOn: boolean, showTargets: boolean): BarRow[] {
   const market = targets.gross - targets.pts.reduce((sum, layer) => sum + layer.v, 0);
   return [
     { name: "Market reference", sub: "Global healthcare, your setting. Target arithmetic.", value: market, text: `+${r1(market)}`, color: "var(--sim-cmp)" },
     ...LAYERS.map((layer) => {
       const point = targets.pts.find((item) => item.k === layer.k);
       const on = Boolean(point?.on);
-      const sub = on ? "Target contribution, gross" : layer.minSize && !rxOn ? "Unlocks at A$5m" : "Switched off";
+      const designed = layer.base;
+      const sub = on ? "Selected hurdle, gross" : layer.minSize && !rxOn ? "Live from A$5m" : "Designed contribution";
+      const value = on ? point?.v ?? 0 : 0;
       return {
         name: layer.n,
         sub,
-        value: point?.v ?? 0,
-        text: on ? `+${(point?.v ?? 0).toFixed(1)}` : "off",
+        value,
+        text: on ? `+${(point?.v ?? 0).toFixed(1)}` : `+${designed.toFixed(1)}`,
         color: on ? "var(--sim-acc)" : "var(--sim-grey)",
+        target: showTargets ? designed : undefined,
       };
     }),
   ];
 }
 
-function attributionModelled(cell: Cell, state: SimState): BarRow[] {
-  const rows: BarRow[] = attributionEngines.map((engine) => {
-    const value = cell.att[engine.key] || 0;
-    const off = Math.abs(value) < 0.005;
-    const paper = off && (engine.key === "nowcaster" || engine.key === "rx") && state.setup !== "nocredit";
+function attributionModelled(cell: Cell, showTargets: boolean): BarRow[] {
+  return attributionEngines.map((engine) => {
+    const raw = cell.att[engine.key];
+    const credited = typeof raw === "number" && Math.abs(raw) >= 0.05;
+    const layer = LAYERS.find((item) => item.k === engine.key);
+    const designed = layer?.base ?? 0;
     return {
       name: engine.name,
-      sub: paper ? "On paper in this setting: credited 0" : engine.sub,
-      value,
-      text: off ? "0.0" : signed(value),
-      color: value >= 0 ? "var(--sim-acc)" : "var(--sim-neg)",
-      textColor: value < 0 ? "var(--sim-neg)" : undefined,
+      sub: credited ? engine.sub : "Designed contribution. The stored paths credit the Foundation and the FDA Reader here.",
+      value: credited ? raw : 0,
+      text: credited ? signed(raw) : `+${designed.toFixed(1)}`,
+      color: credited && raw < 0 ? "var(--sim-neg)" : "var(--sim-acc)",
+      textColor: credited && raw < 0 ? "var(--sim-neg)" : undefined,
+      target: showTargets ? designed : undefined,
     };
   });
-  rows.push({
-    name: "Momentum",
-    sub: "Not modelled as a separate engine: TARGET only",
-    value: 0,
-    text: "—",
-    color: "var(--sim-grey)",
-  });
-  return rows;
 }
 
 function Conviction({ grid, state, cell }: { grid: ModelGrid; state: SimState; cell: Cell }) {

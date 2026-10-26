@@ -6,10 +6,12 @@ export type BarRow = {
   color?: string;
   textColor?: string;
   base?: number;
+  /** Designed contribution, drawn as a light bar beside the solid modelled bar. */
+  target?: number;
 };
 
 export function MetricBars({ rows, label }: { rows: BarRow[]; label: string }) {
-  const vals = rows.map((row) => row.value).concat([0]);
+  const vals = rows.flatMap((row) => [row.value, row.target ?? 0]).concat([0]);
   const min = Math.min(...vals, 0);
   const max = Math.max(...vals, 0);
   const span = max - min || 1;
@@ -29,6 +31,15 @@ export function MetricBars({ rows, label }: { rows: BarRow[]; label: string }) {
               {row.sub ? <small>{row.sub}</small> : null}
             </div>
             <div className="sim-bar__track">
+              {row.target != null ? (
+                <div
+                  className="sim-bar__ghost"
+                  style={{
+                    left: `${pos(Math.min(0, row.target))}%`,
+                    width: `${Math.max(Math.abs(pos(row.target) - pos(0)), 0.8)}%`,
+                  }}
+                />
+              ) : null}
               <div
                 className="sim-bar__fill"
                 style={{

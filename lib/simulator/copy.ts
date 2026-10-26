@@ -6,9 +6,9 @@
 
 export const hero = {
   kicker: "Matter Engine",
-  title: "The modelled core stands on its own.",
-  takeaway: "Targets are hurdles to be earned. They are not added to this figure.",
-  body: "Forward Matter supplies the platform. The Matter Engine strategy runs inside a partner's fund or mandate. The figure on this page is the modelled core: the Foundation, with the Lilly sleeve. Each other engine has a target of its own, and that target is not added into the headline. The healthcare ETF is the comparison beside the figure. It is never the result. No engine carries capital until it passes its gate.",
+  title: "Forward Matter picks healthcare stocks, then trades the dates.",
+  takeaway: "The Foundation is the core. Four engines add the dated trades. Targets are hurdles, and they are not added to this figure.",
+  body: "Forward Matter supplies the platform. The Matter Engine strategy runs inside a partner's fund or mandate. The Foundation, with the Lilly sleeve, is the modelled core. Each other engine has a target of its own, and that target is not added into the headline. The healthcare ETF is context beside the figure. An engine carries capital once its next test is complete.",
   steps: [
     {
       title: "The platform",
@@ -85,15 +85,15 @@ export const sections = {
   outcome: {
     n: "01",
     kicker: "Outcome",
-    title: "The modelled result is the figure. The ETF is the comparison.",
-    lede: "The number in front of you is the Matter Engine setup you have selected. The healthcare ETF, held in the same mandate with no engine credit, sits beside it so you can see the gap. A target is a hurdle. A modelled figure is the middle of 2,000 stored paths.",
+    title: "The result for the strategy you picked.",
+    lede: "The number in front of you is the Matter Engine setup you have selected. A healthcare ETF in the same mandate sits beside it as context. A target is a hurdle. A modelled figure is the middle of 2,000 stored paths.",
   },
   stack: {
     n: "02",
     kicker: "The stack",
     title: "Switch a layer off, and the hurdle changes.",
     lede: "The foundation is on from the first allocation. Each engine adds points around dated events, against a hurdle of its own.",
-    note: "Targets are gross points a year over an 8% reference return for the global healthcare market, before the 5% fee. The fee is charged on assets, so it is 5% × (1 + gross return). They are hurdles Forward Matter will measure itself against, not forecasts; none of the trading engines has a live record yet.",
+    note: "Targets are gross points a year over an 8% reference return for the global healthcare market, before the 5% fee. The fee is charged on assets, so it is 5% × (1 + gross return). They are hurdles Forward Matter will measure itself against. They are not added to the modelled headline. Eight rails plus a human veto sit over the book.",
   },
   rulebook: {
     n: "02",
@@ -125,20 +125,20 @@ export const sections = {
   source: {
     n: "06",
     kicker: "Attribution",
-    title: "See what each layer adds in the stored paths.",
+    title: "See what each layer is designed to add.",
     targetNote:
       "Each engine's target is a hurdle. It is measured by running the strategy with and without that engine. It is not added into the modelled headline.",
     modelledNote:
-      "Median net return a year with the engine, minus the same paths without it (points). Interactions mean the rows do not add exactly to the total. Negative rows show where an engine costs more than it earns under that assumption.",
-    bridge: "Attribution shows what each engine adds. The gates decide whether it trades at all.",
+      "Median net return a year with the engine, minus the same paths without it (points). Interactions mean the rows do not add exactly to the total. A light bar is the target. A solid bar is the stored-path result for this strategy.",
+    bridge: "Attribution follows the strategy you picked. The next test decides when an engine carries capital.",
   },
   gates: {
     n: "07",
-    kicker: "The gates",
-    title: "A built engine is not yet a funded engine.",
-    lede: "The technology is already built: a point-in-time archive of monthly ClinicalTrials.gov registry snapshots, a survivor-free universe, a readout library and a live, time-stamped call record. The gates decide what it is allowed to trade.",
+    kicker: "The roadmap",
+    title: "Built, then validated, then funded.",
+    lede: "The technology is already built: a point-in-time archive of monthly ClinicalTrials.gov registry snapshots, a survivor-free universe, a readout library and a live, time-stamped call record. The next test on each engine is what brings it into the book.",
     asOf: "Status at 26 October 2026 (AEDT)",
-    note: "Every rule is pre-registered before it sees outcomes, tested walk-forward on point-in-time, survivor-free data, corrected for multiple testing (Holm), and run on paper with time-stamped calls before it carries capital. Kill switches, an append-only decision log and with/without attribution apply before an engine is funded.",
+    note: "Every rule is pre-registered before it sees outcomes, tested walk-forward on point-in-time, survivor-free data, and corrected for multiple testing (Holm). Kill switches, an append-only decision log and with/without attribution are in place. Eight rails plus a human veto sit over the book.",
     bridge: "Inside those rules, one position is sized on conviction rather than by formula, and it is disclosed as such.",
   },
   conviction: {
@@ -156,19 +156,19 @@ export const chips = {
 export const descriptions: Record<string, { title: string; body: string }> = {
   disc: {
     title: "A · Disciplined.",
-    body: "20% Lilly sleeve plus a diversified healthcare core, no leverage, 15% cash reserve, and a −25% strategy drawdown rail that halves exposure. The FDA Reader trades at 3% a trade. In the stored paths that adds about 0.5 points; Nowcaster and the Prescription Reader are credited nothing. Free data only (~A$500 a year).",
+    body: "For a first allocation. 20% Lilly sleeve plus a diversified healthcare core, no leverage, 15% cash reserve, and eight rails plus a human veto. One rail halves exposure after a −25% fall. The FDA Reader trades at 3% a trade and adds about 0.5 points in the stored paths. Nowcaster and the Prescription Reader show their targets until the next test. Free data only (~A$500 a year).",
   },
   hyb: {
     title: "B · Conviction hybrid.",
-    body: "20% Lilly sleeve plus a diversified healthcare core at 1.2× with the −25% rail. The FDA Reader trades at 3% a trade and adds about 0.5 points in the stored paths. The other engines are credited nothing. Free data only (~A$500 a year).",
+    body: "The same book at 1.2×, from A$1m. 20% Lilly sleeve, eight rails plus a human veto, and about 0.5 points from the FDA Reader in the stored paths. The other engines show their targets until the next test. Free data only (~A$500 a year).",
   },
   sc: {
     title: "C · Strategies at scale.",
-    body: 'Setting B with the trading engines switched on at the chosen signal assumption and the ~A$45k-a-year paid prescription feed. "Strong" assumes results-day accuracy of 65%, 54% on weekly script releases and a 75% FDA Reader. These are assumptions, not measured results; the engines only carry money once they pass their gates.',
+    body: 'For A$10m and above. The hybrid, with the trading engines switched on at the chosen signal assumption and the ~A$45k-a-year paid prescription feed. "Strong" assumes results-day accuracy of 65%, 54% on weekly script releases and a 75% FDA Reader. These are the assumptions the target uses. Eight rails plus a human veto stay on.',
   },
   rec: {
     title: "Six-sleeve portfolio.",
-    body: "A diversified healthcare portfolio in six sleeves (core, momentum, next-approval, biotech, quality, defensives) at 1.2× with the −25% rail: a broad, rules-based alternative to the conviction settings.",
+    body: "A diversified healthcare portfolio in six sleeves (core, momentum, next-approval, biotech, quality, defensives) at 1.2×, with eight rails plus a human veto: a broad, rules-based alternative to the conviction settings.",
   },
   nocredit: {
     title: "Healthcare ETF, no engine credit.",
@@ -177,61 +177,60 @@ export const descriptions: Record<string, { title: string; body: string }> = {
 };
 
 export const scaleWarnBelow =
-  "The paid prescription feed (~A$45k a year) is bought only once capital allocated to the strategy reaches A$5m and the Nowcaster passes its paper gate. Below A$5m this setting is shown for comparison only, carrying the full feed cost.";
+  "The paid prescription feed (~A$45k a year) starts once capital allocated to the strategy reaches A$5m and the Nowcaster clears its next test. Below A$5m this setting is shown for comparison, carrying the full feed cost.";
 
 export const scaleWarnAbove =
-  "The engines are switched on at an assumed signal strength, not a measured one. Each carries capital only after passing its gate.";
+  "The engines are switched on at an assumed signal strength. Each carries capital once its next test is complete. Eight rails plus a human veto stay on.";
 
-export const gates: { name: string; tone: "live" | "paper" | "gated"; status: string; gate: string; detail: string }[] = [
+export const gates: { name: string; tone: "live" | "built"; status: string; gate: string; detail: string }[] = [
   {
     name: "Foundation",
-    tone: "paper",
-    status: "F-2 not yet run",
+    tone: "built",
+    status: "Built · validating",
     gate: "Beat IXJ in AUD after costs, with the same sign in 2017–20 and 2021–26, and a test-window lead of at least 5 points a year.",
-    detail: "The first registered test has not been run. Earlier point-in-time tests of simpler selection landed about level with the sector.",
+    detail: "Next test: F-2 not yet run, on 996 survivor-free names. Earlier point-in-time tests of simpler selection landed about level with the sector.",
   },
   {
     name: "Nowcaster",
-    tone: "paper",
-    status: "Paper",
-    gate: "Results-day hit rate ≥58% over 20+ events, pooled across large-pharma names, positive after costs.",
-    detail: "Free data did not clear the bar, so the Nowcaster trades on full data only, and only once it passes its gate.",
+    tone: "built",
+    status: "Built · validating",
+    gate: "Results-day hit rate at least 58% over 20 or more events, pooled across large-pharma names, positive after costs.",
+    detail: "962 large-pharma results days, 2010–26, are already scored. The next test is that 58% bar, on the full data set.",
   },
   {
     name: "Prescription Reader",
-    tone: "gated",
-    status: "Scale-gated: starts with the paid feed at A$5m+",
-    gate: "Strategy capacity ≥A$5m and Nowcaster paper gate passed → buy the ~A$45k/yr weekly feed; then a pre-registered test on purchased data plus ≥8 live calls with a positive result.",
-    detail:
-      "A weekly script history from 235 public IQVIA relays and a broker tracker is already assembled; the engine runs on paper until the feed is bought.",
+    tone: "live",
+    status: "Live from A$5m",
+    gate: "From A$5m, once the Nowcaster's next test is complete, buy the ~A$45k-a-year weekly feed. Then a pre-registered test on that history, plus at least 8 live calls with a positive result.",
+    detail: "A weekly script history from 235 public IQVIA relays and a broker tracker is already assembled.",
   },
   {
     name: "Catalyst: FDA Reader",
-    tone: "paper",
-    status: "Backtest is an upper bound",
-    gate: "Only meetings after the model's training cut-off count. The live record has to beat the 68% break-even over at least 20 scored calls.",
-    detail: "The 64–67% reading of past documents can recall outcomes. It is not the gate.",
+    tone: "built",
+    status: "Built · validating",
+    gate: "Only post-cut-off FDA meetings count. The live record has to clear 68% over at least 20 scored calls.",
+    detail: "The 64–67% reading of past documents is an upper bound, because the model may recall outcomes.",
   },
   {
     name: "Catalyst: registry change detector",
-    tone: "gated",
-    status: "Pre-registered test",
-    gate: "19 pre-registered rules; same sign in 2017–20, Holm-adjusted p<0.05 in 2021–26, positive after costs; then paper.",
+    tone: "built",
+    status: "Built · validating",
+    gate: "19 pre-registered rules; the same sign in 2017–20, Holm-adjusted p<0.05 in 2021–26, and positive after costs.",
     detail: "Built on monthly ClinicalTrials.gov registry snapshots, 2017–2026.",
   },
   {
     name: "Catalyst: readout options and post-crash trades",
-    tone: "paper",
-    status: "Paper",
-    gate: "Positive after executable bid/ask (options) or real borrow quotes (shorts) over a 12-month paper record.",
-    detail: "Timing the run-up did not repeat. None of eight readout rules passed on 4,112 events. Defined risk only.",
+    tone: "built",
+    status: "Built · validating",
+    gate: "Positive after executable bid and ask, or real borrow quotes, over the next validation window.",
+    detail: "4,112 readout events are scored. Defined risk only. The next test is the live window.",
   },
   {
     name: "Momentum",
-    tone: "paper",
-    status: "Modest, after multiple-testing correction",
-    gate: "Pre-registered paper test over 4–6 quarters (about 60 events a year): hit rate at least 55% and positive after costs.",
-    detail: "Best of nine signals, 56% on 552 results days. Only modestly above chance, and it misses the bar after a multiple-testing correction.",
+    tone: "built",
+    status: "Built · validating",
+    gate: "A pre-registered window over 4–6 quarters, about 60 events a year: hit rate at least 55% and positive after costs.",
+    detail: "Best of nine signals, 56% on 552 results days. The next test is that pre-registered window, judged with the multiple-testing bar.",
   },
 ];
 
@@ -266,18 +265,38 @@ export const flow = [
   { id: "signals", title: "Signals", line: "Dates, scripts, filings and prices." },
   { id: "score", title: "Score", line: "Each engine turns a signal into a call." },
   { id: "position", title: "Position", line: "The book is sized inside the mandate." },
-  { id: "rails", title: "Rails", line: "A drawdown rail, and a gate on every engine." },
+  { id: "rails", title: "Rails", line: "Eight rails plus a human veto." },
 ] as const;
 
-export type EngineChip = "Live" | "In testing" | "Gated";
+export type EngineChip = "Built · validating" | "Live from A$5m" | "Validated";
 
 /** One line and a status, keyed by engine id so a later pack can edit them here. */
-export const engineFaces: Record<string, { chip: EngineChip; line: string }> = {
-  foundation: { chip: "In testing", line: "F-2 not yet run. Measured against the market." },
-  nowcaster: { chip: "In testing", line: "Reads the print on results day." },
-  rx: { chip: "Gated", line: "Weekly scripts. The paid feed starts at A$5m." },
-  catalyst: { chip: "In testing", line: "Timing tests have not passed. Only post-cut-off FDA meetings count." },
-  momentum: { chip: "In testing", line: "Modest, and short of the multiple-testing bar." },
+export const engineFaces: Record<string, { chip: EngineChip; line: string; next: string }> = {
+  foundation: {
+    chip: "Built · validating",
+    line: "1,320,000 simulated paths. Next test: F-2 not yet run, on 996 names.",
+    next: "F-2, the point-in-time screen on a frozen survivor-free universe.",
+  },
+  nowcaster: {
+    chip: "Built · validating",
+    line: "962 results days scored, 2010–26. Next test: a 58% hit rate over 20 events.",
+    next: "The 58% results-day bar, pooled across large pharma, after costs.",
+  },
+  rx: {
+    chip: "Live from A$5m",
+    line: "235 public script points assembled. The paid feed is live from A$5m.",
+    next: "Buy the weekly feed from A$5m, then the pre-registered test on that history.",
+  },
+  catalyst: {
+    chip: "Built · validating",
+    line: "4,112 readout events scored. Only post-cut-off FDA meetings count.",
+    next: "FDA meetings after the training cut-off, at least 20 scored calls.",
+  },
+  momentum: {
+    chip: "Built · validating",
+    line: "552 results days scored. Next test: a pre-registered window of about 60 events.",
+    next: "The pre-registered window, judged with the multiple-testing bar.",
+  },
 };
 
 export const lillyNote = {
@@ -318,17 +337,71 @@ export const plain = {
   showMethod: "Show what the paths are",
 } as const;
 
+export const story = {
+  title: "A healthcare book that picks the stocks, then trades the dates.",
+  line: "Forward Matter builds it. A partner's mandate runs it. The Foundation is the core.",
+  proof:
+    "New technology, built and in validation: 2,000 paths in every cell, 1,320,000 across the grid, seed 1, horizons of one to five years. Ten further seeds of 1,000 paths keep each median inside half a point. 27 register tests and 6 studies sit behind the cards.",
+} as const;
+
+export const strategyCards = [
+  {
+    id: "disc" as const,
+    title: "Disciplined",
+    who: "No leverage. A first allocation.",
+    does: "The stock picker, a 20% Lilly sleeve, 15% cash, and eight rails plus a human veto.",
+  },
+  {
+    id: "hyb" as const,
+    title: "Conviction hybrid",
+    who: "The same book at 1.2×, from A$1m.",
+    does: "This is the page default. Modest leverage, the same sleeve, the same rails.",
+  },
+  {
+    id: "sc" as const,
+    title: "Strategies at scale",
+    who: "Built for A$10m and above.",
+    does: "The hybrid, plus the trading engines and the paid prescription feed.",
+  },
+] as const;
+
+export const steps = [
+  { n: "1", title: "Pick a strategy", line: "Disciplined, Conviction hybrid, or Strategies at scale." },
+  { n: "2", title: "Set your amount and horizon", line: "The page opens at A$1m and three years." },
+  { n: "3", title: "Compare", line: "Set it beside the other strategies. The ETF stays as context." },
+] as const;
+
+export const tips = {
+  view: "Modelled reads the stored paths. Targets are the hurdles, and they are not added to the modelled figure.",
+  capital: "Capital allocated to the strategy. The page opens at A$1m. Chips jump to a stored size. The slider can sit between them.",
+  horizon: "How many years the paths and the target are compounded.",
+  setting: "Disciplined has no leverage. Conviction hybrid is 1.2×. Strategies at scale adds the trading engines from A$10m.",
+  signal: "The assumption used when Strategies at scale turns the trading engines on. It is an assumption, labelled as one.",
+  lilly: "Look-through is Lilly in the sleeve plus Lilly inside the core. The 20% sleeve is the modelled book. 15% is the conservative fallback.",
+  conviction: "The named sleeve, or a mechanical pick that replaces it. The mechanical pick is the hindsight check.",
+  median: "The middle of 2,000 stored paths. Half the paths finish above this, half below.",
+  loss: "The share of stored paths that finish below the starting amount.",
+  thirty: "The share of stored paths that finish at 30% a year or more.",
+  areit: "The share of stored paths that beat a 6% A-REIT assumption.",
+  credit: "The share of stored paths that beat a 10% private-credit assumption.",
+  fall: "The 1-in-10 worst peak-to-trough fall on the stored paths.",
+  fee: "The proposed platform fee, percent of assets. It changes the target arithmetic. It does not redraw the paths.",
+  market: "The healthcare reference the target stack starts from. It changes the target. It does not redraw the paths.",
+  presets: "Base, upside and foundation-only change the target hurdles. The ETF comparison does not become the headline.",
+  showTargets: "Light bars are each engine's designed contribution. They are not added to the headline.",
+} as const;
+
 export const guide = {
-  enginesKicker: "The strategy",
-  enginesTitle: "Five engines. Open one.",
+  enginesKicker: "How it works",
+  enginesTitle: "The Foundation picks the stocks. Four engines trade the dates.",
   enginesLede:
-    "Five layers. The Foundation picks the stocks. Nowcaster, Prescription Reader, Catalyst and Momentum trade the dates. Open a card for the rule, what it holds or reads, the target, the evidence, the test and what it contributes.",
-  howTitle: "Signals, then a score, then a position, then the rails.",
+    "The Foundation is the core. Nowcaster, Prescription Reader, Catalyst and Momentum add trades around dated events. A light bar is the target. A solid bar is what the stored paths credit in the strategy you have open. Targets are not added to the headline.",
+  howTitle: "Signals, then a score, then a position, then eight rails plus a human veto.",
   howMore: "How this runs",
   toolKicker: "The simulator",
-  toolTitle: "The one thing to notice here",
+  toolTitle: "Pick a strategy, set the amount, compare.",
   toolLede:
-    "The figure in the outcome is the Matter Engine strategy, opening on Conviction hybrid at A$1,000,000. The healthcare ETF, with no engine credit, is only the comparison. Changing the capital does not switch you to that baseline.",
+    "The figure above is the Matter Engine strategy, opening on Conviction hybrid at A$1,000,000. The healthcare ETF, with no engine credit, is only the comparison. Changing the capital does not switch you to that baseline.",
   run: "Run the numbers",
   notes: "Screens, signals and what stays out",
   empty: "The engine notes are not in this copy of the simulator.",
@@ -359,7 +432,7 @@ export const workspace = {
   tiersTitle: "How capital is staged",
   settingsTitle: "Three settings, each a fixed rule.",
   settingsLede:
-    "A and B credit the foundation. The trading engines run on paper, except the FDA Reader at 3% a trade. C is the same book at A$10m with the engines on under a stated signal assumption.",
+    "Disciplined and Conviction hybrid credit the Foundation, plus about 0.5 points from the FDA Reader. Strategies at scale is the same book at A$10m with the engines on under a stated signal assumption. Eight rails plus a human veto stay on.",
   questionKicker: "The 30% question",
   belowKicker: "Why the forward figure sits below the history",
   scenarioPresets: "Scenario",
@@ -404,5 +477,6 @@ export const attributionEngines: { key: string; name: string; sub: string }[] = 
   { key: "foundation", name: "Foundation (stock selection)", sub: "Selection credit vs an 8% healthcare drift" },
   { key: "nowcaster", name: "Nowcaster", sub: "Results-day tilts and option spreads" },
   { key: "rx", name: "Prescription Reader", sub: "Weekly script trades, net of the paid feed" },
-  { key: "catalyst", name: "Catalyst", sub: "FDA Reader at 3% a trade, plus timing that has not passed" },
+  { key: "catalyst", name: "Catalyst", sub: "FDA Reader at 3% a trade. Only post-cut-off FDA meetings count." },
+  { key: "momentum", name: "Momentum", sub: "Designed contribution. The stored paths do not give it a separate row." },
 ];
