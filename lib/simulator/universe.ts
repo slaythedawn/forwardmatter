@@ -71,7 +71,7 @@ const REFERENCE: Omit<UniverseName, "tag">[] = [
   { ticker: "VKTX", company: "Viking", exchange: "NASDAQ", subSector: "Biotech (obesity)", sleeve: "Next-wave" },
   { ticker: "ALNY", company: "Alnylam", exchange: "NASDAQ", subSector: "Biotech (RNAi)", sleeve: "Next-wave" },
   { ticker: "RYTM", company: "Rhythm", exchange: "NASDAQ", subSector: "Biotech (rare obesity)", sleeve: "Next-wave" },
-  { ticker: "XLV", company: "Health Care Select Sector SPDR", exchange: "NYSE Arca", subSector: "Healthcare ETF, event-sleeve parking", sleeve: "Event" },
+  { ticker: "XLV", company: "Health Care Select Sector SPDR (parking)", exchange: "NYSE Arca", subSector: "Healthcare ETF (event-sleeve parking, not a stock)", sleeve: "Event" },
   { ticker: "MCK", company: "McKesson", exchange: "NYSE", subSector: "Drug distribution", sleeve: "Quality" },
   { ticker: "MEDP", company: "Medpace", exchange: "NASDAQ", subSector: "CRO", sleeve: "Quality" },
   { ticker: "PME.AX", company: "Pro Medicus", exchange: "ASX", subSector: "Health IT (imaging software)", sleeve: "Quality" },
@@ -84,7 +84,7 @@ const REFERENCE: Omit<UniverseName, "tag">[] = [
   { ticker: "", company: "Bachem", exchange: "", subSector: "Peptide API manufacturing", sleeve: "Watch list" },
   { ticker: "", company: "Novo Nordisk", exchange: "", subSector: "Large pharma (obesity)", sleeve: "Watch list" },
   { ticker: "", company: "Pfizer", exchange: "", subSector: "Large pharma", sleeve: "Watch list" },
-  { ticker: "", company: "CSL", exchange: "", subSector: "Plasma and biotech", sleeve: "Watch list" },
+  { ticker: "", company: "CSL", exchange: "", subSector: "Plasma/biotech", sleeve: "Watch list" },
   { ticker: "", company: "UnitedHealth", exchange: "", subSector: "Managed care", sleeve: "Watch list" },
 ];
 
