@@ -9,6 +9,7 @@
  *   SIMULATOR_PASSPHRASE='...' npm run build:simulator
  *
  * Optional: SIMULATOR_GRID=/path/to/grid.json
+ * Optional: SIMULATOR_EVIDENCE=/path/to/evidence.json
  *
  * Commit the new public/simulator/payload.json. Anyone who kept an older
  * payload can still open it with the phrase it was built with. A new file
@@ -46,12 +47,36 @@ if (prepared.status !== 0) {
   process.exit(prepared.status || 1);
 }
 
-const plain = prepared.stdout;
-const parsed = JSON.parse(plain.toString("utf8"));
-if (parsed?.meta?.paths !== 2000 || parsed?.meta?.seed !== 1 || !parsed?.setups?.disc) {
+const preparedGrid = JSON.parse(prepared.stdout.toString("utf8"));
+if (preparedGrid?.meta?.paths !== 2000 || preparedGrid?.meta?.seed !== 1 || !preparedGrid?.setups?.disc) {
   console.error("The grid does not look like the Matter Engine model (paths, seed, setups).");
   process.exit(1);
 }
+
+const evidencePath = resolve(root, process.env.SIMULATOR_EVIDENCE || "simulator-src/evidence.json");
+let evidence;
+try {
+  evidence = JSON.parse(readFileSync(evidencePath, "utf8"));
+} catch {
+  console.error(`Could not read the evidence file at ${evidencePath}.`);
+  console.error("Place it there (it is git-ignored) or set SIMULATOR_EVIDENCE.");
+  process.exit(1);
+}
+const evidenceText = JSON.stringify(evidence);
+if (!evidence?.studies || !evidence?.register || !evidence?.method?.points) {
+  console.error("The evidence file is missing studies, the register or the method.");
+  process.exit(1);
+}
+if (!Array.isArray(evidence.engines) || evidence.engines.length < 5 || !evidence.book?.holdings?.length) {
+  console.error("The evidence file is missing the engine dossiers or the foundation book.");
+  process.exit(1);
+}
+if (/greenlink|performance fee|your firm|\bthe fund\b|\bAFSL\b|\bHMC\b/i.test(evidenceText)) {
+  console.error("Refusing to encrypt evidence that breaks the public copy rules.");
+  process.exit(1);
+}
+
+const plain = Buffer.from(JSON.stringify({ grid: preparedGrid, evidence }));
 
 const ITER = 200_000;
 const salt = crypto.randomBytes(16);
@@ -61,7 +86,7 @@ const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
 const data = Buffer.concat([cipher.update(plain), cipher.final(), cipher.getAuthTag()]);
 
 const payload = {
-  v: 2,
+  v: 3,
   iter: ITER,
   salt: salt.toString("base64"),
   iv: iv.toString("base64"),
@@ -71,9 +96,9 @@ const payload = {
 const out = resolve(root, "public/simulator/payload.json");
 mkdirSync(dirname(out), { recursive: true });
 const body = JSON.stringify(payload);
-if (/"setups"|"sc_strong"|2017-12\.\.2026-09/.test(body)) {
+if (/"setups"|"sc_strong"|2017-12\.\.2026-09|greenlink|performance fee/i.test(body)) {
   console.error("Refusing to write a payload that still contains plaintext model markers.");
   process.exit(1);
 }
 writeFileSync(out, body);
-console.log(`Encrypted ${plain.length} bytes of model grid into public/simulator/payload.json`);
+console.log(`Encrypted ${plain.length} bytes of model grid and evidence into public/simulator/payload.json`);

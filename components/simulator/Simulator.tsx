@@ -1,8 +1,24 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { EnginesPanel } from "./Engines";
 import { FanChart } from "./FanChart";
 import { MetricBars, type BarRow } from "./MetricBars";
+import {
+  Assumptions,
+  BacktestsPanel,
+  ComparePanel,
+  MethodPanel,
+  OddsTable,
+  RunStrip,
+  SourcesPanel,
+  ViewTabs,
+  YearTable,
+  compareCsv,
+  scenarioCsv,
+} from "./Workspace";
+import type { Evidence } from "@/lib/simulator/evidence";
+import { workspace } from "@/lib/simulator/copy";
 import {
   attributionEngines,
   benches,
@@ -20,6 +36,7 @@ import {
 import {
   AREIT_RATE,
   applyHash,
+  applyPreset,
   compound,
   computeTargets,
   defaultState,
@@ -28,6 +45,7 @@ import {
   LAYERS,
   lookupCell,
   money,
+  neg,
   normalizeGrid,
   r1,
   rxAvailable,
@@ -37,10 +55,14 @@ import {
   sliderToSize,
   smoothPath,
   stateToHash,
+  outcomeKind,
   type Cell,
+  type CompareKey,
   type LayerKey,
   type ModelGrid,
+  type PresetId,
   type SimState,
+  type WorkspaceView,
 } from "@/lib/simulator/model";
 
 function Chip({ kind, children }: { kind: "target" | "modelled"; children: string }) {
@@ -74,11 +96,13 @@ function SectionHead({
   );
 }
 
-export function Simulator({ grid: raw }: { grid: ModelGrid }) {
-  const grid = useMemo(() => normalizeGrid(raw), [raw]);
+export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evidence } }) {
+  const grid = useMemo(() => normalizeGrid(bundle.grid), [bundle.grid]);
+  const evidence = bundle.evidence;
   const [state, setState] = useState<SimState>(() =>
     typeof window === "undefined" ? defaultState() : applyHash(defaultState(), window.location.hash),
   );
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const next = `#${stateToHash(state)}`;
@@ -111,15 +135,22 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
   }
 
   function setLayer(layer: LayerKey, on: boolean) {
-    setState((current) => ({ ...current, on: { ...current.on, [layer]: on } }));
+    setState((current) => ({ ...current, preset: "custom", stress: false, on: { ...current.on, [layer]: on } }));
   }
 
   function setValue(layer: LayerKey, value: number) {
-    setState((current) => ({ ...current, val: { ...current.val, [layer]: value } }));
+    setState((current) => ({ ...current, preset: "custom", stress: false, val: { ...current.val, [layer]: value } }));
   }
 
-  const end = modelled && cell ? start * cell.endmed : compound(start, targets.net, state.years);
-  const headlineRate = modelled && cell ? disp(cell, "med", true) : r1(targets.net);
+  const kind = outcomeKind(state);
+  const end =
+    kind === "stress" && cell
+      ? compound(start, cell.p10, state.years)
+      : modelled && cell
+        ? start * cell.endmed
+        : compound(start, targets.net, state.years);
+  const headlineRate = kind === "stress" && cell ? neg(r1(cell.p10)) : modelled && cell ? disp(cell, "med", true) : r1(targets.net);
+  const canonicalFee = state.fee === 5 && state.market === 8;
   const grossRate = modelled && cell ? disp(cell, "gross", true) : r1(targets.gross);
 
   let warn = "";
@@ -128,18 +159,34 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
 
   const runDate = grid.meta.generated ? `Simulation run ${grid.meta.generated.slice(0, 10)}` : "";
 
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  function downloadCsv() {
+    const body = state.view === "compare" ? compareCsv(grid, state, targets) : scenarioCsv(state, targets, cell);
+    const url = URL.createObjectURL(new Blob([body], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "matter-engine-scenario.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="sim">
       <section className="sim-hero">
-        <div>
-          <div className="sim-pills">
-            {hero.pills.map((pill, index) => (
-              <span className={index === 1 ? "sim-pill sim-pill--dark" : "sim-pill"} key={pill}>
-                {pill}
-              </span>
-            ))}
-          </div>
-          <div className="eyebrow eyebrow--accent">{hero.kicker}</div>
+        <div className="sim-hero__meta">
+          <span>{hero.kicker}</span>
+          <span>{hero.pills.join(" · ")}</span>
+        </div>
+        <div className="sim-hero__copy">
           <h1 className="sim-h1">
             {hero.titleBefore} <span className="accent">{hero.titleAccent}</span>
           </h1>
@@ -162,6 +209,7 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
       </section>
 
       <div className="sim-app">
+        <div className="sim-console">
         <div className="sim-app__bar">
           <div className="sim-brand">
             <span className="sim-brand__dot" aria-hidden="true" />
@@ -169,6 +217,17 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
             <span>{shell.name}</span>
           </div>
           <p className="sim-notice">{shell.notice}</p>
+          <div className="sim-export">
+            <button type="button" className="sim-textbtn" onClick={() => void copyLink()}>
+              {copied ? workspace.copied : workspace.exportCopy}
+            </button>
+            <button type="button" className="sim-textbtn" onClick={downloadCsv}>
+              {workspace.exportCsv}
+            </button>
+            <button type="button" className="sim-textbtn" onClick={() => window.print()}>
+              {workspace.exportPrint}
+            </button>
+          </div>
         </div>
 
         <div className="sim-controls">
@@ -287,7 +346,40 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
             {warn ? <p className="sim-warn">{warn}</p> : null}
           </div>
         ) : null}
+        </div>
 
+        <RunStrip grid={grid} />
+        <ViewTabs view={state.view} onChange={(view: WorkspaceView) => patch({ view })} />
+        <Assumptions
+          state={state}
+          onPreset={(preset: PresetId) => setState((current) => applyPreset(current, preset))}
+          onFee={(fee) => patch({ fee, preset: "custom", stress: false })}
+          onMarket={(market) => patch({ market, preset: "custom", stress: false })}
+        />
+
+        {state.view === "engines" ? (
+          <EnginesPanel evidence={evidence} grid={grid} state={state} targets={targets} />
+        ) : null}
+        {state.view === "compare" ? (
+          <ComparePanel
+            grid={grid}
+            state={state}
+            targets={targets}
+            onChange={(index, key: CompareKey) =>
+              setState((current) => {
+                const compare = [...current.compare] as SimState["compare"];
+                compare[index] = key;
+                return { ...current, compare };
+              })
+            }
+          />
+        ) : null}
+        {state.view === "backtests" ? <BacktestsPanel evidence={evidence} /> : null}
+        {state.view === "sources" ? <SourcesPanel evidence={evidence} /> : null}
+        {state.view === "method" ? <MethodPanel grid={grid} evidence={evidence} /> : null}
+
+        {state.view === "scenario" ? (
+        <>
         <section className="sim-sec">
           <SectionHead
             n={sections.outcome.n}
@@ -310,9 +402,13 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
               </p>
               <p className="sim-outcome__ann">
                 <b>{headlineRate}%</b>
-                {modelled
-                  ? ` a year median, net of the 5% fee · AUD 50% hedged · ${grossRate}% before fees`
-                  : ` a year TARGET, net of the 5% fee · ${grossRate}% gross`}
+                {kind === "stress"
+                  ? " a year, 10th percentile of 2,000 stored paths, net of the 5% fee used in the run"
+                  : modelled
+                    ? ` a year median, net of the 5% fee · AUD 50% hedged · ${grossRate}% before fees`
+                    : canonicalFee
+                      ? ` a year TARGET, net of the 5% fee · ${grossRate}% gross`
+                      : ` a year TARGET, net of the ${r1(state.fee)}% fee · ${grossRate}% gross. Target arithmetic, not a simulation.`}
               </p>
             </div>
             <div className="sim-outcome__side">
@@ -344,22 +440,22 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
             <Kpis
               items={[
                 ["Median net a year", `${disp(cell, "med", true)}%`, cell.med >= 0 ? "pos" : "neg", "Middle of 2,000 paths"],
-                ["Ending value", money(end), "", "Median path"],
+                ["Chance of a loss", `${disp(cell, "ploss", false)}%`, "", "Ending below the start"],
                 ["Chance of 30%+", `${disp(cell, "p30", false)}%`, "", "Net a year over the horizon"],
                 ["Chance of beating A-REITs", `${disp(cell, "areit", false)}%`, "", "vs 6% a year assumption"],
+                ["Chance of beating credit", `${disp(cell, "credit", false)}%`, "", "vs 10% a year assumption"],
                 ["1-in-10 worst fall", `${disp(cell, "dd10", false)}%`, "neg", "Peak to trough, worst 10% of paths"],
-                ["Chance of a loss", `${disp(cell, "ploss", false)}%`, "", "Ending below the start"],
               ]}
             />
           ) : (
             <Kpis
               items={[
-                ["Net a year", `${r1(targets.net)}%`, "pos", "Target, net of 5% fee"],
+                ["Net a year", `${r1(targets.net)}%`, "pos", canonicalFee ? "Target, net of the 5% fee" : "Target arithmetic, not a simulation"],
                 ["Ending value", money(end), "", `${money(start)} after ${state.years} yr${state.years > 1 ? "s" : ""}`],
-                ["Chance of 30%+", "—", "na", "Targets carry no probabilities; switch to Modelled"],
-                ["Chance of beating A-REITs", "—", "na", ""],
-                ["1-in-10 worst fall", "—", "na", ""],
-                ["Chance of a loss", "—", "na", ""],
+                ["Chance of 30%+", "—", "na", "Targets carry no probabilities"],
+                ["Chance of beating A-REITs", "—", "na", "Not simulated"],
+                ["Chance of beating credit", "—", "na", "Not simulated"],
+                ["1-in-10 worst fall", "—", "na", "Not simulated"],
               ]}
             />
           )}
@@ -420,12 +516,12 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
                   <tr>
                     <td>
                       Global healthcare market
-                      <small>Reference assumption (IXJ)</small>
+                      <small>Reference assumption (IXJ). Moves with the control above. Target arithmetic.</small>
                     </td>
                     <td>—</td>
-                    <td className="num">8</td>
-                    <td className="num">fixed</td>
-                    <td className="num">8.0</td>
+                    <td className="num">0–15</td>
+                    <td className="num">{r1(state.market)}</td>
+                    <td className="num">{r1(state.market)}</td>
                   </tr>
                   {targets.pts.map((layer) => {
                     const locked = Boolean(layer.minSize && !rxOn);
@@ -526,8 +622,8 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
                 },
               ]}
               bands={[
-                { lo: cell.fan[0], hi: cell.fan[4], c: "rgba(127,166,211,.16)" },
-                { lo: cell.fan[1], hi: cell.fan[3], c: "rgba(52,89,132,.18)" },
+                { lo: cell.fan[0], hi: cell.fan[4], c: "rgba(143,180,221,0.28)" },
+                { lo: cell.fan[1], hi: cell.fan[3], c: "rgba(47,85,128,0.18)" },
               ]}
             />
           ) : (
@@ -548,8 +644,8 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
             {modelled ? (
               <>
                 <span><i style={{ background: "var(--sim-acc)" }} />Median path</span>
-                <span><i style={{ background: "rgba(52,89,132,.35)" }} />Middle half of paths</span>
-                <span><i style={{ background: "rgba(127,166,211,.45)" }} />8 in 10 paths</span>
+                <span><i style={{ background: "rgba(47,85,128,0.45)" }} />Middle half of paths</span>
+                <span><i style={{ background: "rgba(143,180,221,0.7)" }} />8 in 10 paths</span>
                 <span><i style={{ background: "var(--sim-grey)" }} />A-REITs 6% assumption</span>
               </>
             ) : (
@@ -561,6 +657,8 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
               </>
             )}
           </div>
+          <YearTable kind={kind} cell={cell} targets={targets} years={state.years} start={start} />
+          {cell && modelled ? <OddsTable cell={cell} /> : null}
         </section>
 
         <div className="sim-split">
@@ -674,6 +772,8 @@ export function Simulator({ grid: raw }: { grid: ModelGrid }) {
             <Conviction grid={grid} state={state} />
           </div>
         </section>
+        </>
+        ) : null}
       </div>
 
       <section className="sim-legal">
@@ -735,9 +835,9 @@ function Kpis({ items }: { items: [string, string, string, string][] }) {
 
 function feeRowsTarget(targets: ReturnType<typeof computeTargets>): BarRow[] {
   const rows: BarRow[] = [
-    { name: "Global healthcare market", sub: "Reference assumption", value: HEALTHCARE_ETF_RATE, base: 0, text: "+8.0", color: "var(--sim-cmp)" },
+    { name: "Global healthcare market", sub: "Reference assumption", value: targets.gross === 0 ? 0 : targets.pts.length ? targets.gross - targets.pts.reduce((sum, layer) => sum + layer.v, 0) : 0, base: 0, text: `+${r1(targets.gross - targets.pts.reduce((sum, layer) => sum + (layer.on ? layer.v : 0), 0))}`, color: "var(--sim-cmp)" },
   ];
-  let base = HEALTHCARE_ETF_RATE;
+  let base = targets.gross - targets.pts.reduce((sum, layer) => sum + layer.v, 0);
   for (const layer of targets.pts) {
     if (!layer.on) continue;
     rows.push({ name: layer.n, sub: "Target", value: layer.v, base, text: `+${layer.v.toFixed(1)}` });
@@ -745,8 +845,8 @@ function feeRowsTarget(targets: ReturnType<typeof computeTargets>): BarRow[] {
   }
   rows.push({ name: "Gross target", value: targets.gross, base: 0, text: r1(targets.gross), color: "var(--sim-navy)" });
   rows.push({
-    name: "Less 5% fee on assets",
-    sub: "Platform and strategy fee, proposed",
+    name: `Less ${r1(targets.fee)} pt fee on assets`,
+    sub: "Platform and strategy fee, proposed. Target arithmetic.",
     value: -targets.fee,
     base: targets.gross,
     text: `−${r1(targets.fee)}`,
@@ -800,8 +900,9 @@ function feeRowsModelled(cell: Cell, dataCost: number): BarRow[] {
 }
 
 function attributionTarget(targets: ReturnType<typeof computeTargets>, rxOn: boolean): BarRow[] {
+  const market = targets.gross - targets.pts.reduce((sum, layer) => sum + layer.v, 0);
   return [
-    { name: "Market reference", sub: "Global healthcare, 8%", value: HEALTHCARE_ETF_RATE, text: "+8.0", color: "var(--sim-cmp)" },
+    { name: "Market reference", sub: "Global healthcare, your setting. Target arithmetic.", value: market, text: `+${r1(market)}`, color: "var(--sim-cmp)" },
     ...LAYERS.map((layer) => {
       const point = targets.pts.find((item) => item.k === layer.k);
       const on = Boolean(point?.on);

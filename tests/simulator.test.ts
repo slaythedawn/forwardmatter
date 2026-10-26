@@ -4,21 +4,29 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
+import { evidenceTextOk, isEvidence } from "../lib/simulator/evidence";
 import {
   applyHash,
+  applyPreset,
   computeTargets,
   defaultState,
   disp,
   feePoints,
+  formatHistory,
+  isCanonicalBase,
   isModelGrid,
   lookupCell,
   money,
   normalizeGrid,
   normalizeLabel,
+  outcomeKind,
   r1,
+  runAccounting,
   setupKey,
   sliderToSize,
   sizeToSlider,
+  stateToHash,
+  yearEnds,
   type Cell,
   type ModelGrid,
 } from "../lib/simulator/model";
@@ -177,13 +185,15 @@ test("the shipped payload is ciphertext and the grid file is not tracked", () =>
     iv: string;
     data: string;
   };
-  assert.equal(payload.v, 2);
+  assert.equal(payload.v, 3);
   assert.equal(payload.iter, 200_000);
   assert.ok(payload.salt.length > 8 && payload.iv.length > 8 && payload.data.length > 1000);
   const raw = readFileSync(join(root, "public/simulator/payload.json"), "utf8");
-  assert.doesNotMatch(raw, /"setups"|"sc_strong"|2017-12\.\.2026-09/);
+  assert.doesNotMatch(raw, /"setups"|"sc_strong"|2017-12\.\.2026-09|greenlink|performance fee/i);
   const ignore = spawnSync("git", ["check-ignore", "-q", "simulator-src/grid.json"], { cwd: root });
   assert.equal(ignore.status, 0);
+  const evidenceIgnore = spawnSync("git", ["check-ignore", "-q", "simulator-src/evidence.json"], { cwd: root });
+  assert.equal(evidenceIgnore.status, 0);
 });
 
 test("simulator and site copy do not describe Forward Matter as a fund", () => {
@@ -217,6 +227,98 @@ test("simulator and site copy do not describe Forward Matter as a fund", () => {
       assert.equal(pattern.test(text), false, `${file} matches ${pattern}`);
     }
   }
+});
+
+test("scenario presets keep the canonical targets and do not pretend to re-simulate", () => {
+  const base = applyPreset(defaultState(), "base");
+  assert.equal(r1(computeTargets(base).net), "20.2");
+  assert.equal(r1(computeTargets(base).upNet), "30.1");
+  assert.equal(outcomeKind(base), "target");
+  assert.equal(isCanonicalBase(base), true);
+
+  const upside = applyPreset(defaultState(), "upside");
+  assert.equal(r1(computeTargets(upside).net), "30.1");
+  assert.equal(outcomeKind(upside), "target");
+
+  const conservative = applyPreset(defaultState(), "conservative");
+  assert.equal(r1(computeTargets(conservative).net), "8.8");
+  assert.equal(conservative.on.foundation, true);
+  assert.equal(conservative.on.nowcaster, false);
+
+  const nocredit = applyPreset(defaultState(), "nocredit");
+  assert.equal(nocredit.mode, "modelled");
+  assert.equal(setupKey(nocredit), "nocredit");
+  assert.equal(outcomeKind(nocredit), "modelled");
+
+  const stress = applyPreset(defaultState(), "stress");
+  assert.equal(outcomeKind(stress), "stress");
+  assert.equal(stress.mode, "modelled");
+
+  const custom = { ...defaultState(), fee: 0, market: 8 };
+  const moved = computeTargets(custom);
+  assert.equal(r1(moved.gross), "26.5");
+  assert.equal(r1(moved.fee), "0.0");
+  assert.equal(r1(moved.net), "26.5");
+  assert.equal(outcomeKind(custom), "target");
+  assert.equal(isCanonicalBase(custom), false);
+});
+
+test("the stored grid accounts for 1,320,000 paths and log interpolation is not a new run", () => {
+  const account = runAccounting(
+    { paths: 2000, seed: 1, sizes: [1, 1.5, 2, 3, 5, 7.5, 10, 15, 25, 50, 100], years: [1, 2, 3, 4, 5], history: "2017-12..2026-09", block: 6 },
+    12,
+  );
+  assert.equal(account.total, 1_320_000);
+  assert.equal(account.paths, 2000);
+  assert.equal(account.seed, 1);
+  assert.equal(formatHistory(account.history), "Dec 2017 – Sep 2026");
+
+  const fan = [
+    Array.from({ length: 24 }, (_, i) => 1 + i / 100),
+    Array.from({ length: 24 }, (_, i) => 1.1 + i / 100),
+    Array.from({ length: 24 }, (_, i) => 1.2 + i / 100),
+    Array.from({ length: 24 }, (_, i) => 1.3 + i / 100),
+    Array.from({ length: 24 }, (_, i) => 1.4 + i / 100),
+  ];
+  const ends = yearEnds(fan, 2);
+  assert.equal(ends.length, 2);
+  assert.equal(ends[0].year, 1);
+  assert.equal(ends[0].p10, fan[0][11]);
+  assert.equal(ends[1].p50, fan[2][23]);
+  assert.equal(yearEnds(fan, 3).length, 2);
+});
+
+test("a shared link restores the fee, the workspace and the comparison", () => {
+  const state = applyPreset(defaultState(), "upside");
+  state.view = "engines";
+  state.compare = ["hyb", "nocredit", "target"];
+  state.fee = 4;
+  const restored = applyHash(defaultState(), `#${stateToHash(state)}`);
+  assert.equal(restored.view, "engines");
+  assert.equal(restored.fee, 4);
+  assert.deepEqual(restored.compare, ["hyb", "nocredit", "target"]);
+  assert.equal(restored.val.foundation, 10);
+  assert.equal(restored.preset, "upside");
+});
+
+test("evidence is rejected when it names a partner or a performance fee", () => {
+  assert.equal(evidenceTextOk({ note: "Greenlink" }), false);
+  assert.equal(evidenceTextOk({ note: "no performance fee" }), false);
+  assert.equal(evidenceTextOk({ note: "a partner's fund or mandate" }), true);
+  const evidencePath = join(root, "simulator-src/evidence.json");
+  if (!existsSync(evidencePath)) return;
+  const evidence = JSON.parse(readFileSync(evidencePath, "utf8"));
+  assert.equal(isEvidence(evidence), true);
+  const kinds = new Set(evidence.studies.map((study: { kind: string }) => study.kind));
+  assert.equal(kinds.has("modelled") && kinds.has("backtested"), true);
+  const book = evidence.book as { holdings: { name: string }[]; screen: unknown[] };
+  assert.equal(book.holdings.length, 1);
+  assert.match(book.holdings[0].name, /Lilly/);
+  const engines = evidence.engines as { id: string }[];
+  assert.deepEqual(
+    engines.map((engine) => engine.id),
+    ["foundation", "nowcaster", "rx", "catalyst", "momentum"],
+  );
 });
 
 function sampleCell(med: number, exact: boolean): Cell {

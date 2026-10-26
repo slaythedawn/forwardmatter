@@ -84,6 +84,27 @@ export type SimMode = "targets" | "modelled";
 export type SetupId = "disc" | "hyb" | "sc" | "rec" | "nocredit";
 export type Signal = "weak" | "base" | "strong";
 export type ConvictionPick = "lly" | "pit";
+export type PresetId = "base" | "upside" | "conservative" | "nocredit" | "stress" | "custom";
+export type WorkspaceView = "scenario" | "engines" | "compare" | "backtests" | "sources" | "method";
+export type OutcomeKind = "target" | "modelled" | "stress";
+
+export const COMPARE_KEYS = [
+  "disc",
+  "disc_pit",
+  "hyb",
+  "hyb_pit",
+  "sc_weak",
+  "sc_base",
+  "sc_strong",
+  "sc_weak_pit",
+  "sc_base_pit",
+  "sc_strong_pit",
+  "rec",
+  "nocredit",
+  "target",
+] as const;
+
+export type CompareKey = (typeof COMPARE_KEYS)[number];
 
 export type SimState = {
   mode: SimMode;
@@ -94,6 +115,15 @@ export type SimState = {
   pick: ConvictionPick;
   on: Record<LayerKey, boolean>;
   val: Record<LayerKey, number>;
+  /** Proposed platform fee, percent of assets. Changes target arithmetic only. */
+  fee: number;
+  /** Healthcare reference return, percent a year. Changes target arithmetic only. */
+  market: number;
+  preset: PresetId;
+  /** When true, the headline is the 10th percentile of the stored paths. */
+  stress: boolean;
+  view: WorkspaceView;
+  compare: [CompareKey, CompareKey, CompareKey];
 };
 
 export type DisplayFields = {
@@ -138,7 +168,10 @@ export type ModelMeta = {
   seed: number;
   sizes: number[];
   years: number[];
+  history?: string;
+  block?: number;
   fee?: number;
+  hedge?: number;
   leads?: Record<string, number>;
   fwd?: Record<string, number>;
 };
@@ -190,6 +223,12 @@ export function defaultState(): SimState {
     pick: "lly",
     on,
     val,
+    fee: FEE_RATE,
+    market: MARKET_REFERENCE,
+    preset: "base",
+    stress: false,
+    view: "scenario",
+    compare: ["disc", "hyb", "sc_strong"],
   };
 }
 
@@ -197,30 +236,151 @@ export function rxAvailable(size: number): boolean {
   return size >= 5;
 }
 
-/** Points of fee on a gross annual return, matching the reference rounding. */
-export function feePoints(gross: number): number {
-  return Math.round(FEE_RATE * (1 + gross / 100) * 10 + 1e-9) / 10;
+/** Points of fee on a gross annual return. Default rate matches the approved simulator. */
+export function feePoints(gross: number, rate: number = FEE_RATE): number {
+  return Math.round(rate * (1 + gross / 100) * 10 + 1e-9) / 10;
 }
 
-export function computeTargets(state: Pick<SimState, "size" | "on" | "val">): Targets {
+export function computeTargets(state: Pick<SimState, "size" | "on" | "val" | "fee" | "market">): Targets {
+  const market = state.market;
+  const rate = state.fee;
   const pts: TargetPoint[] = [];
-  let gross = MARKET_REFERENCE;
+  let gross = market;
   for (const layer of LAYERS) {
     const on = state.on[layer.k] && (!layer.minSize || rxAvailable(state.size));
     const v = on ? state.val[layer.k] : 0;
     pts.push({ ...layer, on, v });
     if (on) gross += state.val[layer.k];
   }
-  const fee = feePoints(gross);
-  const net = gross - fee;
-  const fo = MARKET_REFERENCE + (state.on.foundation ? state.val.foundation : 0);
-  const foNet = fo - feePoints(fo);
-  let up = MARKET_REFERENCE;
+  const fee = feePoints(gross, rate);
+  const net = Math.round((gross - fee) * 10 + 1e-9) / 10;
+  const fo = market + (state.on.foundation ? state.val.foundation : 0);
+  const foNet = Math.round((fo - feePoints(fo, rate)) * 10 + 1e-9) / 10;
+  let up = market;
   for (const layer of LAYERS) {
     if (!layer.minSize || rxAvailable(state.size)) up += layer.up;
   }
-  const upNet = up - feePoints(up);
+  const upNet = Math.round((up - feePoints(up, rate)) * 10 + 1e-9) / 10;
   return { pts, gross, fee, net, foNet, upNet, up };
+}
+
+/**
+ * Scenario presets change the target hurdles, or point at a stored modelled setup.
+ * They never invent a new Monte Carlo run.
+ */
+export function applyPreset(state: SimState, preset: PresetId): SimState {
+  const next: SimState = {
+    ...state,
+    on: { ...state.on },
+    val: { ...state.val },
+    preset,
+    stress: false,
+    fee: FEE_RATE,
+    market: MARKET_REFERENCE,
+  };
+  if (preset === "base" || preset === "upside" || preset === "conservative") {
+    next.mode = "targets";
+    for (const layer of LAYERS) {
+      next.on[layer.k] = preset !== "conservative" || layer.k === "foundation";
+      next.val[layer.k] = preset === "upside" ? layer.up : layer.base;
+    }
+  } else if (preset === "nocredit") {
+    next.mode = "modelled";
+    next.setup = "nocredit";
+    for (const layer of LAYERS) next.on[layer.k] = false;
+  } else if (preset === "stress") {
+    next.mode = "modelled";
+    next.stress = true;
+    next.fee = state.fee;
+    next.market = state.market;
+  }
+  return next;
+}
+
+export function outcomeKind(state: Pick<SimState, "mode" | "stress">): OutcomeKind {
+  if (state.mode === "modelled" && state.stress) return "stress";
+  if (state.mode === "modelled") return "modelled";
+  return "target";
+}
+
+/** True when the target stack is the canonical base case the tests lock. */
+export function isCanonicalBase(state: Pick<SimState, "size" | "on" | "val" | "fee" | "market">): boolean {
+  if (state.fee !== FEE_RATE || state.market !== MARKET_REFERENCE || state.size < 5) return false;
+  return LAYERS.every((layer) => state.on[layer.k] && state.val[layer.k] === layer.base);
+}
+
+export type RunAccount = {
+  paths: number;
+  seed: number;
+  setups: number;
+  sizes: number;
+  horizons: number;
+  total: number;
+  history: string;
+  block: number | null;
+  generated: string;
+  fee: number;
+};
+
+export function runAccounting(meta: ModelMeta, setupCount: number): RunAccount {
+  const sizes = meta.sizes.length;
+  const horizons = meta.years.length;
+  return {
+    paths: meta.paths,
+    seed: meta.seed,
+    setups: setupCount,
+    sizes,
+    horizons,
+    total: meta.paths * setupCount * sizes * horizons,
+    history: meta.history ?? "",
+    block: meta.block ?? null,
+    generated: meta.generated ?? "",
+    fee: meta.fee ?? FEE_RATE / 100,
+  };
+}
+
+export function formatHistory(history: string | undefined): string {
+  if (!history) return "";
+  const match = history.match(/^(\d{4})-(\d{2})\.\.(\d{4})-(\d{2})$/);
+  if (!match) return history;
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${months[Number(match[2]) - 1]} ${match[1]} – ${months[Number(match[4]) - 1]} ${match[3]}`;
+}
+
+export function formatCount(value: number): string {
+  return Math.round(value).toLocaleString("en-AU");
+}
+
+export type YearEnd = { year: number; p10: number; p25: number; p50: number; p75: number; p90: number };
+
+/** Year-end multiples from a stored fan. Rows are p10, p25, p50, p75, p90. */
+export function yearEnds(fan: number[][], years: number): YearEnd[] {
+  const rows: YearEnd[] = [];
+  for (let year = 1; year <= years; year += 1) {
+    const index = year * 12 - 1;
+    if (fan.length < 5 || fan.some((row) => row.length <= index)) break;
+    rows.push({
+      year,
+      p10: fan[0][index],
+      p25: fan[1][index],
+      p50: fan[2][index],
+      p75: fan[3][index],
+      p90: fan[4][index],
+    });
+  }
+  return rows;
+}
+
+export function targetYearEnds(net: number, foundation: number, upside: number, years: number, start: number) {
+  return Array.from({ length: years }, (_, index) => {
+    const year = index + 1;
+    return {
+      year,
+      foundation: compound(start, foundation, year),
+      target: compound(start, net, year),
+      upside: compound(start, upside, year),
+    };
+  });
 }
 
 export function setupKey(state: Pick<SimState, "setup" | "sig" | "pick">): string {
@@ -338,10 +498,20 @@ export function sizeToSlider(size: number): number {
 const SETUPS: readonly SetupId[] = ["disc", "hyb", "sc", "rec", "nocredit"];
 const SIGNALS: readonly Signal[] = ["weak", "base", "strong"];
 const PICKS: readonly ConvictionPick[] = ["lly", "pit"];
+const PRESETS: readonly PresetId[] = ["base", "upside", "conservative", "nocredit", "stress", "custom"];
+const VIEWS: readonly WorkspaceView[] = ["scenario", "engines", "compare", "backtests", "sources", "method"];
+
+function isCompareKey(value: string): value is CompareKey {
+  return (COMPARE_KEYS as readonly string[]).includes(value);
+}
 
 export function applyHash(base: SimState, hash: string): SimState {
   const params = new URLSearchParams(hash.replace(/^#/, ""));
-  const next: SimState = { ...base, on: { ...base.on }, val: { ...base.val } };
+  let next: SimState = { ...base, on: { ...base.on }, val: { ...base.val }, compare: [...base.compare] };
+  const preset = params.get("preset");
+  if (preset && (PRESETS as readonly string[]).includes(preset)) {
+    next = applyPreset(next, preset as PresetId);
+  }
   const mode = params.get("mode");
   if (mode === "targets" || mode === "modelled") next.mode = mode;
   const setup = params.get("setup");
@@ -358,6 +528,38 @@ export function applyHash(base: SimState, hash: string): SimState {
     const years = Number(params.get("years"));
     if (Number.isFinite(years)) next.years = Math.min(5, Math.max(1, Math.round(years)));
   }
+  if (params.has("fee")) {
+    const fee = Number(params.get("fee"));
+    if (Number.isFinite(fee)) next.fee = Math.min(10, Math.max(0, fee));
+  }
+  if (params.has("mkt")) {
+    const market = Number(params.get("mkt"));
+    if (Number.isFinite(market)) next.market = Math.min(15, Math.max(0, market));
+  }
+  if (params.get("stress") === "1") next.stress = true;
+  if (params.get("stress") === "0") next.stress = false;
+  const view = params.get("view");
+  if (view && (VIEWS as readonly string[]).includes(view)) next.view = view as WorkspaceView;
+  const on = params.get("on");
+  if (on && on.length === LAYERS.length && /^[01]+$/.test(on)) {
+    LAYERS.forEach((layer, index) => {
+      next.on[layer.k] = on[index] === "1";
+    });
+  }
+  const levels = params.get("lv");
+  if (levels) {
+    const values = levels.split(",").map(Number);
+    if (values.length === LAYERS.length && values.every((value) => Number.isFinite(value))) {
+      LAYERS.forEach((layer, index) => {
+        next.val[layer.k] = values[index];
+      });
+    }
+  }
+  const compare = params.get("cmp");
+  if (compare) {
+    const keys = compare.split(",");
+    if (keys.length === 3 && keys.every(isCompareKey)) next.compare = [keys[0], keys[1], keys[2]];
+  }
   return next;
 }
 
@@ -369,6 +571,14 @@ export function stateToHash(state: SimState): string {
   params.set("setup", state.setup);
   params.set("sig", state.sig);
   params.set("pick", state.pick);
+  params.set("fee", String(state.fee));
+  params.set("mkt", String(state.market));
+  params.set("preset", state.preset);
+  params.set("stress", state.stress ? "1" : "0");
+  params.set("view", state.view);
+  params.set("on", LAYERS.map((layer) => (state.on[layer.k] ? "1" : "0")).join(""));
+  params.set("lv", LAYERS.map((layer) => state.val[layer.k]).join(","));
+  params.set("cmp", state.compare.join(","));
   return params.toString();
 }
 

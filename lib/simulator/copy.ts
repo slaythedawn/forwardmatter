@@ -249,6 +249,64 @@ export const docFooter = {
   code: "Matter Engine simulator · FM-SIM-002",
 } as const;
 
+export const workspace = {
+  label: "Workspace",
+  views: [
+    { id: "scenario", label: "Scenario" },
+    { id: "engines", label: "Engines" },
+    { id: "compare", label: "Compare" },
+    { id: "backtests", label: "Backtests" },
+    { id: "sources", label: "Sources" },
+    { id: "method", label: "Method" },
+  ],
+  enginesTitle: "The foundation, and the four engines on it.",
+  enginesLede:
+    "Each layer as it is written now: what it holds or reads, the rule, the hurdle, the evidence, and what the stored paths credit. Holdings are listed only where the current specification names them.",
+  published: "Published figures",
+  publishedNote:
+    "A$10m over three years, net of the 5% fee used in the stored run. The controls above change the working scenario. They do not replace these figures.",
+  bookTitle: "What is in the book",
+  screenTitle: "How a name earns its place",
+  signalsTitle: "Readers and data signals",
+  avoidTitle: "What stays out",
+  tiersTitle: "How capital is staged",
+  settingsTitle: "Three settings, each a fixed rule.",
+  settingsLede:
+    "A and B credit the foundation. The trading engines run on paper, except the FDA Reader at 3% a trade. C is the same book at A$10m with the engines on under a stated signal assumption.",
+  questionKicker: "The 30% question",
+  belowKicker: "Why the forward figure sits below the history",
+  scenarioPresets: "Scenario",
+  presets: [
+    { id: "base", label: "Base" },
+    { id: "upside", label: "Upside" },
+    { id: "conservative", label: "Conservative" },
+    { id: "nocredit", label: "No engine credit" },
+    { id: "stress", label: "Stress" },
+  ],
+  fee: "Platform fee, proposed",
+  feeAria: "Proposed platform fee, percent of assets. Changes the target only.",
+  market: "Market reference",
+  marketAria: "Healthcare market reference, percent a year. Changes the target only.",
+  arithmetic: "Target arithmetic. Not a simulation.",
+  gridLock:
+    "Modelled paths are the stored grid: 2,000 paths a cell, seed 1, a 5% fee and an 8% healthcare reference. Moving the fee, the reference or a layer hurdle recalculates the target. It does not draw new paths.",
+  stressNote: "Stress is the 10th percentile of the stored paths, and the 1-in-10 drawdown. It is not a separate simulation.",
+  exportCopy: "Copy link",
+  exportCsv: "Download CSV",
+  exportPrint: "Print",
+  copied: "Link copied",
+  yearTitle: "Year by year",
+  yearLede: "Each column is a percentile of the stored paths at that year-end. The path is monthly inside the fan chart.",
+  yearTargetLede: "Compounded from the target rate. No distribution sits behind these figures.",
+  oddsTitle: "Odds on the stored paths",
+  compareTitle: "Three scenarios, same capital and horizon.",
+  compareLede: "Each modelled column is a cell in the stored grid. A target column is arithmetic on the hurdles you set, and its probabilities are left blank.",
+  backtestsLede:
+    "Historical and head-to-head results, labelled as modelled or backtested. None of this is a live track record. The head-to-head harness is a separate run from the strategy simulator grid.",
+  sourcesLede: "Data feeds and the validation register. Status words are the register's own. A completed test is not a live track record.",
+  methodLede: "What the stored paths are, what the target stack is, and what neither of them claims.",
+} as const;
+
 export const benches = [
   { name: "A-REITs", sub: "S&P/ASX 200 A-REIT, assumption", value: 6, color: "var(--sim-grey)" },
   { name: "Global healthcare ETF", sub: "IXJ, 8% reference, held directly", value: 8, color: "var(--sim-cmp)" },

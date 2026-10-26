@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Simulator } from "./simulator/Simulator";
 import { ArrowIcon } from "./ArrowIcon";
 import { simulatorPage } from "@/content/site";
+import { isEvidence, type Evidence } from "@/lib/simulator/evidence";
 import { isModelGrid, type ModelGrid } from "@/lib/simulator/model";
 
 /* The model grid is served encrypted (see scripts/build-simulator.mjs). The key
@@ -39,7 +40,7 @@ async function decrypt(payload: Payload, passphrase: string) {
 }
 
 export function SimulatorGate() {
-  const [grid, setGrid] = useState<ModelGrid | null>(null);
+  const [bundle, setBundle] = useState<{ grid: ModelGrid; evidence: Evidence } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,10 +54,10 @@ export function SimulatorGate() {
       const response = await fetch(PAYLOAD_URL, { cache: "no-store" });
       if (!response.ok) throw new Error("payload");
       const payload = (await response.json()) as Payload;
-      if (payload.v !== 2) throw new Error("shape");
-      const parsed: unknown = JSON.parse(await decrypt(payload, passphrase));
-      if (!isModelGrid(parsed)) throw new Error("shape");
-      setGrid(parsed);
+      if (payload.v !== 3) throw new Error("shape");
+      const parsed = JSON.parse(await decrypt(payload, passphrase)) as { grid?: unknown; evidence?: unknown };
+      if (!isModelGrid(parsed.grid) || !isEvidence(parsed.evidence)) throw new Error("shape");
+      setBundle({ grid: parsed.grid, evidence: parsed.evidence });
     } catch (cause) {
       setError(
         cause instanceof Error && cause.message === "payload"
@@ -68,7 +69,7 @@ export function SimulatorGate() {
     }
   }
 
-  if (grid) return <Simulator grid={grid} />;
+  if (bundle) return <Simulator bundle={bundle} />;
 
   return (
     <>

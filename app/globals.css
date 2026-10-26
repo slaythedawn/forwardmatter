@@ -1719,7 +1719,7 @@ textarea {
   --sim-navy: #1b2a3d;
   --sim-pos: #1e7f55;
   --sim-neg: #a33b32;
-  --sim-amb: #8a5a12;
+  --sim-amb: #45525f;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   padding-bottom: 12px;
 }
@@ -2325,6 +2325,146 @@ textarea {
   cursor: not-allowed;
 }
 
+.sim-run {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.sim-run div {
+  padding: 12px 12px 10px;
+  border-radius: 14px;
+  background: var(--surface-well);
+  border: 1px solid var(--border-well);
+  box-shadow: var(--shadow-well);
+  min-width: 0;
+}
+
+.sim-run dt {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sim-run dd {
+  margin: 6px 0 0;
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.sim-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.sim-tabs button {
+  border: 1px solid var(--border-card);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-card);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sim-tabs button[aria-selected="true"] {
+  color: var(--dark-ink);
+  background: var(--dark-panel);
+  border-color: #1b232d;
+}
+
+.sim-assume {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 22px;
+  align-items: flex-end;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+  border: 1px solid var(--border-well);
+}
+
+.sim-assume .sim-note {
+  flex: 1 1 280px;
+  margin: 0;
+}
+
+.sim-export {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sim-textbtn {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  padding: 6px 2px;
+}
+
+.sim-compare-picks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.sim-compare-picks select,
+.sim-field select {
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-well);
+  background: #fff;
+  color: var(--ink);
+}
+
+.sim-study {
+  margin-top: 22px;
+  padding-top: 8px;
+}
+
+.sim-study h3,
+.sim-sec > h3 {
+  font-size: 18px;
+  margin: 18px 0 8px;
+}
+
+.sim-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+.sim-list li + li {
+  margin-top: 6px;
+}
+
+.sim-table caption {
+  text-align: left;
+  margin-bottom: 8px;
+}
+
 .sim-chart {
   overflow-x: auto;
 }
@@ -2525,8 +2665,13 @@ textarea {
     border-bottom: 1px solid var(--hairline);
   }
 
-  .sim-kpis {
+  .sim-kpis,
+  .sim-run {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sim-compare-picks {
+    grid-template-columns: 1fr;
   }
 
   .sim-aside {
@@ -2555,7 +2700,8 @@ textarea {
     border-radius: 16px;
   }
 
-  .sim-kpis {
+  .sim-kpis,
+  .sim-run {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

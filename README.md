@@ -59,6 +59,10 @@ git add public/simulator/payload.json && git commit -m "Rotate the simulator acc
 ```
 
 `SIMULATOR_GRID` overrides the grid path. It defaults to `simulator-src/grid.json`.
+`SIMULATOR_EVIDENCE` overrides the backtest, source and engine file. It defaults to
+`simulator-src/evidence.json`, which is git-ignored with the grid. That file holds
+the studies, the register, the foundation book and the engine dossiers. The build
+refuses to write a payload if it is missing, if the dossiers are absent, or if it breaks the copy rules.
 
 A new payload is not a revocation. Anyone who saved an older `payload.json` can
 still open that file with the phrase it was built with. The page is `noindex`,
@@ -78,7 +82,7 @@ the repository.
 Before merging, regenerate that file with the access phrase readers already have,
 from a machine that has the grid:
 
-1. Put the model grid at `simulator-src/grid.json` (or point `SIMULATOR_GRID` at it). Do not commit the grid.
+1. Put the model grid at `simulator-src/grid.json` and the evidence file at `simulator-src/evidence.json` (or point `SIMULATOR_GRID` and `SIMULATOR_EVIDENCE` at them). Do not commit either file.
 2. Export `SIMULATOR_PASSPHRASE` in the shell. Do not commit it, and do not add it to Vercel.
 3. Run `npm run build:simulator`.
 4. Commit the updated `public/simulator/payload.json` onto this branch.

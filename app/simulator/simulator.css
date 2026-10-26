@@ -1,0 +1,703 @@
+/* Simulator page. Palette, type and panels follow the partnership document.
+   The marketing site outside .fm-doc is unchanged. */
+
+body:has(.fm-doc) {
+  background: #f5f4ef;
+}
+
+.fm-doc {
+  --fm-ink: #0e151e;
+  --fm-slate: #45525f;
+  --fm-muted: #6b7684;
+  --fm-line: #e2dfd6;
+  --fm-paper: #fbfaf7;
+  --fm-ground: #f5f4ef;
+  --fm-navy: #1b2838;
+  --fm-navy-2: #0f1822;
+  --fm-panel: #16212e;
+  --fm-panel-2: #1f2c3c;
+  --fm-blue: #8fb4dd;
+  --fm-blue-2: #5b82b4;
+  --fm-blue-deep: #2f5580;
+  --fm-mist: #9fb3c8;
+  --fm-mist-2: #c2d2e2;
+  --fm-pos: #3f6b52;
+  --fm-neg: #8e2f39;
+  background: var(--fm-ground);
+  color: var(--fm-ink);
+  font-family: var(--fm-sans), Figtree, "Segoe UI", sans-serif;
+}
+
+.fm-doc .sim {
+  --sim-acc: var(--fm-blue-deep);
+  --sim-p1: var(--fm-blue);
+  --sim-p2: var(--fm-blue-2);
+  --sim-cmp: var(--fm-blue-2);
+  --sim-grey: var(--fm-muted);
+  --sim-navy: var(--fm-navy);
+  --sim-pos: var(--fm-pos);
+  --sim-neg: var(--fm-neg);
+  --sim-amb: var(--fm-slate);
+  color: var(--fm-ink);
+  font-family: inherit;
+}
+
+.fm-doc .h1,
+.fm-doc .sim-h1,
+.fm-doc .sim-h2,
+.fm-doc .sim-h3,
+.fm-doc .sim-outcome__big,
+.fm-doc .sim-card__fig,
+.fm-doc .sim-holding h3,
+.fm-doc .simulator__gate-title {
+  font-family: var(--fm-serif), "Source Serif 4", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-shadow: none;
+}
+
+.fm-doc .eyebrow,
+.fm-doc .sim-kicker,
+.fm-doc .sim-lab,
+.fm-doc .sim-table th,
+.fm-doc .sim-gate__status,
+.fm-doc .sim-doc,
+.fm-doc .sim-hero__meta,
+.fm-doc .field__label {
+  font-family: var(--fm-mono), "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+
+.fm-doc .simulator__hero {
+  margin: 8px 0 28px;
+  padding: 56px 48px 40px;
+  background:
+    radial-gradient(50% 40% at 92% 0%, rgba(91, 130, 180, 0.28), transparent 62%),
+    linear-gradient(162deg, #273b53 0%, #1b2838 48%, #0f1822 100%);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.fm-doc .simulator__hero::after {
+  content: "";
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  width: 180px;
+  height: 140px;
+  background-image: radial-gradient(circle, rgba(143, 180, 221, 0.9) 1.35px, transparent 1.5px);
+  background-size: 14px 14px;
+  mask-image: radial-gradient(circle at 60% 40%, #000 10%, transparent 70%);
+  pointer-events: none;
+}
+
+.fm-doc .simulator__hero .h1,
+.fm-doc .simulator__hero .lead,
+.fm-doc .simulator__hero .eyebrow {
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.fm-doc .simulator__hero .lead {
+  color: var(--fm-mist-2);
+  max-width: 58ch;
+}
+
+.fm-doc .simulator__hero .accent {
+  color: var(--fm-blue);
+}
+
+.fm-doc .card,
+.fm-doc .simulator__gate {
+  background: var(--fm-paper);
+  border: 1px solid var(--fm-line);
+  border-bottom-width: 1px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.fm-doc .simulator__gate-title {
+  font-size: 32px;
+}
+
+.fm-doc .field input {
+  border-radius: 0;
+  border: 1px solid #d9d6cc;
+  background: #fff;
+  box-shadow: none;
+  font-family: inherit;
+}
+
+.fm-doc .field input:focus {
+  border-color: var(--fm-blue-deep);
+  box-shadow: 0 0 0 3px rgba(143, 180, 221, 0.35);
+}
+
+.fm-doc .btn--primary {
+  border-radius: 0;
+  border: 0;
+  background: var(--fm-navy);
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.fm-doc .btn--primary:hover {
+  background: #273b53;
+  color: #fff;
+}
+
+.fm-doc .simulator__legal {
+  color: var(--fm-muted);
+}
+
+.fm-doc .sim-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin: 8px 0 22px;
+  padding: 36px 40px 32px;
+  align-items: stretch;
+  background:
+    radial-gradient(42% 48% at 96% 8%, rgba(91, 130, 180, 0.32), transparent 64%),
+    linear-gradient(162deg, #273b53 0%, #1b2838 46%, #0f1822 100%);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.fm-doc .sim-hero::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  width: 210px;
+  height: 150px;
+  background-image: radial-gradient(circle, rgba(143, 180, 221, 0.92) 1.4px, transparent 1.55px);
+  background-size: 13px 13px;
+  mask-image: radial-gradient(circle at 70% 45%, #000 12%, transparent 72%);
+  pointer-events: none;
+}
+
+.fm-doc .sim-hero__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(143, 180, 221, 0.3);
+  color: var(--fm-blue);
+  font-size: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.fm-doc .sim-hero__meta span:last-child {
+  color: var(--fm-mist);
+  text-align: right;
+}
+
+.fm-doc .sim-h1 {
+  max-width: 16em;
+  margin: 0;
+  font-size: clamp(36px, 4.4vw, 52px);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.fm-doc .sim-hero .accent {
+  color: var(--fm-blue);
+}
+
+.fm-doc .sim-hero__body {
+  margin: 16px 0 0;
+  max-width: 64ch;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--fm-mist-2);
+}
+
+.fm-doc .sim-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  position: relative;
+  z-index: 1;
+  padding-top: 8px;
+  border-top: 1px solid rgba(143, 180, 221, 0.3);
+}
+
+.fm-doc .sim-stats div {
+  padding: 8px 0 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.fm-doc .sim-stats b {
+  font-family: var(--fm-serif), "Source Serif 4", Georgia, serif;
+  font-size: clamp(32px, 3vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: #fff;
+  text-shadow: none;
+}
+
+.fm-doc .sim-stats span {
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fm-mist);
+  line-height: 1.45;
+}
+
+.fm-doc .sim-console {
+  background: var(--fm-panel);
+  color: var(--fm-mist-2);
+  padding: 22px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.fm-doc .sim-console .sim-app__bar,
+.fm-doc .sim-console .sim-controls,
+.fm-doc .sim-console .sim-sub {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  color: inherit;
+}
+
+.fm-doc .sim-console .sim-brand,
+.fm-doc .sim-console .sim-notice,
+.fm-doc .sim-console .sim-lab {
+  color: var(--fm-blue);
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+}
+
+.fm-doc .sim-console .sim-brand b {
+  color: #fff;
+}
+
+.fm-doc .sim-console .sim-textbtn {
+  color: var(--fm-blue);
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fm-doc .sim-console .sim-seg {
+  background: var(--fm-panel-2);
+  border: 1px solid rgba(143, 180, 221, 0.22);
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.fm-doc .sim-console .sim-seg button {
+  color: var(--fm-mist-2);
+  border-radius: 0;
+  font-family: var(--fm-sans), Figtree, sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.fm-doc .sim-console .sim-seg button[aria-pressed="true"] {
+  background: #273b53;
+  color: #fff;
+  box-shadow: inset 3px 0 0 var(--fm-blue);
+}
+
+.fm-doc .sim-console .sim-size__val {
+  color: #fff;
+  font-family: var(--fm-serif), "Source Serif 4", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.fm-doc .sim-console .sim-size input[type="range"] {
+  accent-color: var(--fm-blue);
+}
+
+.fm-doc .sim-warn {
+  margin: 0;
+  color: var(--fm-mist-2);
+  background: var(--fm-panel-2);
+  border-radius: 0;
+  border-left: 3px solid var(--fm-blue);
+  box-shadow: none;
+}
+
+.fm-doc .sim-app {
+  gap: 22px;
+}
+
+.fm-doc .sim-run {
+  gap: 0;
+  border-top: 1px solid var(--fm-line);
+  border-bottom: 1px solid var(--fm-line);
+}
+
+.fm-doc .sim-run--five {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.fm-doc .sim-run div {
+  padding: 16px 16px 14px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.fm-doc .sim-run dt {
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fm-muted);
+}
+
+.fm-doc .sim-run dd {
+  font-family: var(--fm-serif), "Source Serif 4", Georgia, serif;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--fm-ink);
+}
+
+.fm-doc .sim-tabs {
+  gap: 0;
+  border-bottom: 1px solid var(--fm-line);
+  padding-bottom: 0;
+}
+
+.fm-doc .sim-tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--fm-muted);
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  padding: 12px 16px;
+}
+
+.fm-doc .sim-tabs button[aria-selected="true"] {
+  color: var(--fm-ink);
+  background: transparent;
+  border-bottom-color: var(--fm-navy);
+}
+
+.fm-doc .sim-assume,
+.fm-doc .sim-sec {
+  background: var(--fm-paper);
+  border: 1px solid var(--fm-line);
+  border-bottom-width: 1px;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 28px 28px 24px;
+}
+
+.fm-doc .sim-kicker {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--fm-blue-deep);
+}
+
+.fm-doc .sim-h2 {
+  margin: 0 0 10px;
+  font-size: clamp(28px, 3vw, 36px);
+  line-height: 1.12;
+  color: var(--fm-ink);
+  max-width: 20em;
+}
+
+.fm-doc .sim-h3 {
+  margin: 22px 0 10px;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.fm-doc .sim-lede,
+.fm-doc .sim-note,
+.fm-doc .sim-engine p,
+.fm-doc .sim-holding p,
+.fm-doc .sim-card p {
+  color: #24303f;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.fm-doc .sim-note,
+.fm-doc .sim-lede {
+  max-width: 72ch;
+}
+
+.fm-doc .sim-outcome,
+.fm-doc .sim-kpi,
+.fm-doc .sim-gate {
+  background: transparent;
+  border: 1px solid var(--fm-line);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.fm-doc .sim-outcome__big {
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.15;
+}
+
+.fm-doc .sim-num {
+  font-family: var(--fm-serif), "Source Serif 4", Georgia, serif;
+}
+
+.fm-doc .sim-table th {
+  color: var(--fm-muted);
+  border-bottom: 1px solid var(--fm-navy);
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.fm-doc .sim-table td {
+  border-bottom: 1px solid #e3e9ee;
+  vertical-align: top;
+}
+
+.fm-doc .sim-table tr.is-total td {
+  background: #f4f2ec;
+}
+
+.fm-doc .sim-table caption {
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--fm-muted);
+  margin-bottom: 8px;
+}
+
+.fm-doc .sim-chip {
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+  letter-spacing: 0.12em;
+}
+
+.fm-doc .sim-chip--target,
+.fm-doc .sim-chip--gated {
+  color: var(--fm-blue-deep);
+  background: #e9f0f8;
+}
+
+.fm-doc .sim-chip--modelled,
+.fm-doc .sim-chip--paper {
+  color: var(--fm-navy);
+  background: #e6eef7;
+}
+
+.fm-doc .sim-chip--live {
+  color: var(--fm-pos);
+  background: #e7f3ec;
+}
+
+.fm-doc .sim-callout,
+.fm-doc .sim-callout--amb {
+  background: var(--fm-panel);
+  color: var(--fm-mist-2);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 16px 18px;
+}
+
+.fm-doc .sim-callout strong,
+.fm-doc .sim-callout b {
+  color: #fff;
+}
+
+.fm-doc .sim-sw span {
+  border-radius: 0;
+  background: #d9d6cc;
+  box-shadow: none;
+}
+
+.fm-doc .sim-sw span::before {
+  border-radius: 0;
+}
+
+.fm-doc .sim-sw input:checked + span {
+  background: var(--fm-blue-deep);
+}
+
+.fm-doc .sim-bar__track {
+  border-radius: 0;
+  background: #e6eef7;
+  box-shadow: none;
+}
+
+.fm-doc .sim-bar__fill {
+  border-radius: 0;
+}
+
+.fm-doc .sim-chart text {
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+  fill: var(--fm-muted);
+}
+
+.fm-doc .sim-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.fm-doc .sim-card {
+  border: 1px solid var(--fm-line);
+  background: #fff;
+  padding: 18px 18px 16px;
+  min-width: 0;
+}
+
+.fm-doc .sim-card h3 {
+  font-family: var(--fm-serif), "Source Serif 4", Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  letter-spacing: -0.02em;
+}
+
+.fm-doc .sim-card__fig {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.fm-doc .sim-card__cap {
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fm-muted);
+}
+
+.fm-doc .sim-holding {
+  border-top: 1px solid var(--fm-line);
+  padding-top: 16px;
+  margin-top: 8px;
+}
+
+.fm-doc .sim-holding h3 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.fm-doc .sim-spec {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 8px 0 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--fm-line);
+  border-bottom: 1px solid var(--fm-line);
+}
+
+.fm-doc .sim-spec dt {
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fm-muted);
+  margin-bottom: 6px;
+}
+
+.fm-doc .sim-spec dd {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.fm-doc .sim-avoid {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: avoid;
+}
+
+.fm-doc .sim-avoid li {
+  counter-increment: avoid;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--fm-line);
+  line-height: 1.5;
+}
+
+.fm-doc .sim-avoid li::before {
+  content: counter(avoid, decimal-leading-zero);
+  font-family: var(--fm-mono), "IBM Plex Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--fm-blue-deep);
+  padding-top: 3px;
+}
+
+.fm-doc .sim-list {
+  color: #24303f;
+}
+
+.fm-doc .sim-unlock {
+  color: var(--fm-blue-deep);
+}
+
+@media (max-width: 980px) {
+  .fm-doc .sim-cards,
+  .fm-doc .sim-spec,
+  .fm-doc .sim-stats,
+  .fm-doc .sim-run--five {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fm-doc .simulator__hero,
+  .fm-doc .sim-hero {
+    padding: 28px 22px 24px;
+  }
+}
+
+@media (max-width: 720px) {
+  .fm-doc .sim-hero__meta {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .fm-doc .sim-hero__meta span:last-child {
+    text-align: left;
+  }
+
+  .fm-doc .sim-stats,
+  .fm-doc .sim-run,
+  .fm-doc .sim-run--five,
+  .fm-doc .sim-cards,
+  .fm-doc .sim-spec {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-doc .sim-console {
+    padding: 16px;
+  }
+}

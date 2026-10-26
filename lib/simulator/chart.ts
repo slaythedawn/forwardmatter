@@ -38,14 +38,14 @@ export function buildFanSvg(series: FanSeries[], bands: FanBand[], years: number
   const step = [1, 2, 2.5, 5, 10].map((x) => x * mag).find((x) => x >= rawStep) ?? rawStep;
   for (let amount = Math.ceil((lo * start) / step) * step; amount <= hi * start + 1e-6; amount += step) {
     const v = amount / start;
-    svg += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e3e8ee"/>`;
+    svg += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#E4E1D8"/>`;
     svg += `<text x="${L - 8}" y="${Y(v) + 3.5}" text-anchor="end">${money(amount)}</text>`;
   }
   for (let year = 0; year <= years; year += 1) {
     svg += `<text x="${X(year * 12)}" y="${H - 10}" text-anchor="middle">${year === 0 ? "Today" : `Year ${year}`}</text>`;
-    svg += `<line x1="${X(year * 12)}" x2="${X(year * 12)}" y1="${T}" y2="${H - B}" stroke="#eef1f5"/>`;
+    svg += `<line x1="${X(year * 12)}" x2="${X(year * 12)}" y1="${T}" y2="${H - B}" stroke="#EDEBE5"/>`;
   }
-  svg += `<line x1="${L}" x2="${W - R}" y1="${Y(1)}" y2="${Y(1)}" stroke="#a3abb5" stroke-dasharray="2 3"/>`;
+  svg += `<line x1="${L}" x2="${W - R}" y1="${Y(1)}" y2="${Y(1)}" stroke="#6B7684" stroke-dasharray="2 3"/>`;
   for (const band of bands) {
     const up = band.hi.map((v, i) => `${X(i + 1)},${Y(v)}`);
     const dn = band.lo.map((v, i) => `${X(i + 1)},${Y(v)}`).reverse();
