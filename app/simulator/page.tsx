@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function SimulatorPage() {
   return (
-    <div className="page">
+    <div className="page sim-page">
       <div className="container">
         <SiteHeader page="simulator" />
 

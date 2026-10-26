@@ -6,7 +6,8 @@
 
 export const hero = {
   kicker: "Matter Engine",
-  title: "How to read this",
+  title: "The figure is the strategy.",
+  takeaway: "The healthcare ETF is the comparison beside it.",
   body: "Forward Matter supplies the platform. The Matter Engine strategy runs inside a partner's fund or mandate. A foundation of healthcare stocks aims to beat the market. Four engines trade dates that are known in advance: results days, FDA committee votes and trial readouts. You set a hurdle for each layer. The page then shows a target, or a modelled outcome from stored paths. The healthcare ETF is the comparison beside that figure. It is never the result. No engine carries capital until it passes its gate.",
   steps: [
     {
@@ -34,7 +35,7 @@ export const hero = {
 export const shell = {
   product: "Matter Engine",
   name: "Simulator",
-  notice: "General information only · Not a forecast · Figures labelled TARGET or MODELLED",
+  notice: "Targets and modelled results. Not a forecast.",
   view: "View",
   targets: "Targets",
   modelled: "Modelled",
@@ -43,7 +44,7 @@ export const shell = {
   presets: "Presets",
   presetLabels: [
     { size: 1, label: "A$1m" },
-    { size: 1.5, label: "First allocation A$1.5m" },
+    { size: 1.5, label: "A$1.5m" },
     { size: 2, label: "A$2m" },
     { size: 10, label: "A$10m" },
     { size: 25, label: "A$25m" },
@@ -257,11 +258,55 @@ export const legal: { title: string; body: string }[] = [
   },
 ];
 
+export const flow = [
+  { id: "signals", title: "Signals", line: "Dates, scripts, filings and prices." },
+  { id: "score", title: "Score", line: "Each engine turns a signal into a call." },
+  { id: "position", title: "Position", line: "The book is sized inside the mandate." },
+  { id: "rails", title: "Rails", line: "A drawdown rail, and a gate on every engine." },
+] as const;
+
+export type EngineChip = "Live" | "In testing" | "Gated";
+
+/** One line and a status, keyed by engine id so a later pack can edit them here. */
+export const engineFaces: Record<string, { chip: EngineChip; line: string }> = {
+  foundation: { chip: "Live", line: "Healthcare stocks, measured against the market." },
+  nowcaster: { chip: "In testing", line: "Reads the print on results day." },
+  rx: { chip: "Gated", line: "Weekly scripts. The paid feed starts at A$5m." },
+  catalyst: { chip: "In testing", line: "FDA days, trial changes, defined-risk options." },
+  momentum: { chip: "In testing", line: "Tilts toward strength into results." },
+};
+
+export const plain = {
+  loss: "Chance of a loss",
+  thirty: "Chance of 30% or more",
+  areit: "Chance of beating A-REITs",
+  credit: "Chance of beating credit",
+  fall: "1-in-10 worst fall",
+  worse: "1 in 10 worse",
+  lower: "Lower half",
+  middle: "Middle",
+  upper: "Upper half",
+  better: "1 in 10 better",
+  year: "Year by year",
+  target: "Target",
+  stored: "Stored paths",
+  more: "More",
+  showNote: "Show the note",
+  showRules: "Show the rules",
+  showGates: "Show the gates",
+  showConviction: "Show the named holding",
+  showNotices: "Important notices",
+  showRun: "Paths and seed",
+  showMethod: "Show what the paths are",
+} as const;
+
 export const guide = {
   enginesKicker: "The strategy",
-  enginesTitle: "What to take from this",
+  enginesTitle: "Five engines. Open one.",
   enginesLede:
     "Five layers. The Foundation picks the stocks. The Nowcaster, the Prescription Reader, the Catalyst engine and Momentum into results trade the dates. Open a card for the rule, what it holds or reads, the target, the evidence, the test and what it contributes.",
+  howTitle: "Signals, then a score, then a position, then the rails.",
+  howMore: "How this runs",
   toolKicker: "The simulator",
   toolTitle: "The one thing to notice here",
   toolLede:

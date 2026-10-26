@@ -1,6 +1,6 @@
 "use client";
 
-import { workspace } from "@/lib/simulator/copy";
+import { plain, workspace } from "@/lib/simulator/copy";
 import type { Evidence, Study } from "@/lib/simulator/evidence";
 import {
   COMPARE_KEYS,
@@ -144,8 +144,11 @@ export function Assumptions({
           onChange={(event) => onMarket(Number(event.target.value))}
         />
       </label>
-      <p className="sim-note">{moved ? workspace.arithmetic + " " : ""}{workspace.gridLock}</p>
-      {state.stress ? <p className="sim-note">{workspace.stressNote}</p> : null}
+      <details className="sim-more">
+        <summary>{plain.showMethod}</summary>
+        <p>{moved ? `${workspace.arithmetic} ` : ""}{workspace.gridLock}</p>
+        {state.stress ? <p>{workspace.stressNote}</p> : null}
+      </details>
     </div>
   );
 }
@@ -168,15 +171,15 @@ export function YearTable({
     return (
       <div className="sim-table-wrap">
         <table className="sim-table">
-          <caption className="sim-lab">{workspace.yearTitle}</caption>
+          <caption>{plain.year}</caption>
           <thead>
             <tr>
               <th>Year</th>
-              <th className="num">p10</th>
-              <th className="num">p25</th>
-              <th className="num">p50</th>
-              <th className="num">p75</th>
-              <th className="num">p90</th>
+              <th className="num">{plain.worse}</th>
+              <th className="num">{plain.lower}</th>
+              <th className="num">{plain.middle}</th>
+              <th className="num">{plain.upper}</th>
+              <th className="num">{plain.better}</th>
             </tr>
           </thead>
           <tbody>
@@ -192,7 +195,6 @@ export function YearTable({
             ))}
           </tbody>
         </table>
-        <p className="sim-note">{workspace.yearLede}</p>
       </div>
     );
   }
@@ -221,20 +223,19 @@ export function YearTable({
             </tr>
           ))}
         </tbody>
-      </table>
-      <p className="sim-note">{workspace.yearTargetLede}</p>
+        </table>
     </div>
   );
 }
 
 export function OddsTable({ cell }: { cell: Cell }) {
   const items: [string, string][] = [
-    ["p10 net", `${neg(r1(cell.p10))}%`],
-    ["p50 net", `${disp(cell, "med", true)}%`],
-    ["p90 net", `${neg(r1(cell.p90))}%`],
-    ["P(loss)", `${disp(cell, "ploss", false)}%`],
-    ["P(beat A-REITs)", `${disp(cell, "areit", false)}%`],
-    ["P(beat credit)", `${disp(cell, "credit", false)}%`],
+    [plain.worse, `${neg(r1(cell.p10))}%`],
+    [plain.middle, `${disp(cell, "med", true)}%`],
+    [plain.better, `${neg(r1(cell.p90))}%`],
+    [plain.loss, `${disp(cell, "ploss", false)}%`],
+    [plain.areit, `${disp(cell, "areit", false)}%`],
+    [plain.credit, `${disp(cell, "credit", false)}%`],
     ["1-in-10 drawdown", `${disp(cell, "dd10", false)}%`],
   ];
   return (
@@ -294,7 +295,7 @@ export function ComparePanel({
       arithmetic: columns.map((column) => column.kind === "target"),
     },
     {
-      label: "p10 / p90",
+      label: `${plain.worse} / ${plain.better}`,
       values: columns.map((column) =>
         column.kind === "target" || !column.cell ? "—" : `${neg(r1(column.cell.p10))}% / ${neg(r1(column.cell.p90))}%`,
       ),
@@ -310,17 +311,17 @@ export function ComparePanel({
       arithmetic: columns.map((column) => column.kind === "target"),
     },
     {
-      label: "P(loss)",
+      label: plain.loss,
       values: columns.map((column) => (column.kind === "modelled" && column.cell ? `${disp(column.cell, "ploss", false)}%` : "—")),
       arithmetic: columns.map((column) => column.kind === "target"),
     },
     {
-      label: "P(beat A-REITs)",
+      label: plain.areit,
       values: columns.map((column) => (column.kind === "modelled" && column.cell ? `${disp(column.cell, "areit", false)}%` : "—")),
       arithmetic: columns.map((column) => column.kind === "target"),
     },
     {
-      label: "P(beat credit)",
+      label: plain.credit,
       values: columns.map((column) => (column.kind === "modelled" && column.cell ? `${disp(column.cell, "credit", false)}%` : "—")),
       arithmetic: columns.map((column) => column.kind === "target"),
     },

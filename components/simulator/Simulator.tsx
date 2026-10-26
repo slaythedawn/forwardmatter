@@ -26,7 +26,9 @@ import {
   descriptions,
   gates,
   guide,
+  hero,
   legal,
+  plain,
   scaleWarnAbove,
   scaleWarnBelow,
   sections,
@@ -85,7 +87,12 @@ function SectionHead({
       <div>
         <div className="eyebrow eyebrow--accent">{kicker}</div>
         <h2 className="sim-h2">{title}</h2>
-        {lede ? <p className="sim-lede">{lede}</p> : null}
+        {lede ? (
+          <details className="sim-more">
+            <summary>{plain.more}</summary>
+            <p>{lede}</p>
+          </details>
+        ) : null}
       </div>
       {aside}
     </div>
@@ -184,14 +191,72 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
     ["sc_strong", "Strategies at scale (strong)"],
   ] as const;
 
+  const setupName = modelled && setup ? setup.label : descriptions[state.setup === "nocredit" ? "hyb" : state.setup].title.replace(/\.$/, "");
+
   return (
     <div className="sim">
+      <section className="sim-hero-outcome" id="outcome">
+        <p className="sim-take">
+          {hero.title} <span>{hero.takeaway}</span>
+        </p>
+        <div className="sim-hero-outcome__grid">
+          <div>
+            <p className="sim-outcome__kicker">
+              {modelled ? "Modelled" : "Target"} · {setupName} · {money(start)} · {yearsWord}
+            </p>
+            <p className="sim-hero-outcome__big">
+              {money(start)} <span>becomes</span> {money(end)}
+            </p>
+            <p className="sim-hero-outcome__rate">
+              <b>{headlineRate}%</b>
+              {modelled ? " a year, middle of 2,000 paths" : " a year, target"}
+            </p>
+            {scaleCell ? (
+              <p className="sim-cost">
+                {scaleName} at {money(start)} is {disp(scaleCell, "med", true)}% after the A$45k a year data cost, or {r1(scaleCell.nodata)}% without it.
+              </p>
+            ) : null}
+          </div>
+          <div className="sim-hero-outcome__side">
+            <div className="sim-row">
+              <div>
+                {setupName}
+                <small>{modelled ? "Selected strategy" : "Selected setup, target"}</small>
+              </div>
+              <div className="sim-row__val">
+                {headlineRate}%
+              </div>
+            </div>
+            <div className="sim-row sim-row--base">
+              <div>
+                {guide.baseline}
+                <small>{guide.baselineSub}</small>
+              </div>
+              <div className="sim-row__val">
+                {disp(base, "med", true)}%
+                <small>{money(compound(start, base.med, state.years))}</small>
+              </div>
+            </div>
+            <div className="sim-mini">
+              {gapSetups.map(([id, label]) => (
+                <div key={id}>
+                  <b>{disp(lookupCell(grid, id, state.years, state.size), "med", true)}%</b>
+                  <span>{label}</span>
+                </div>
+              ))}
+              <div className="is-base">
+                <b>{disp(base, "med", true)}%</b>
+                <span>ETF, no engine credit</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       <Guide
         evidence={evidence}
         grid={grid}
         state={state}
         targets={targets}
-        onRun={() => document.getElementById("scenario")?.scrollIntoView({ behavior: "smooth", block: "start" })}
         onNotes={() => {
           patch({ view: "engines" });
           document.getElementById("scenario")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -199,7 +264,6 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
       />
 
       <div className="sim-app" id="scenario">
-        <div className="sim-console">
         <div className="sim-app__bar">
           <div className="sim-brand">
             <span className="sim-brand__dot" aria-hidden="true" />
@@ -220,7 +284,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
           </div>
         </div>
 
-        <div className="sim-controls">
+        <div className="sim-console">
           <div className="sim-field">
             <span className="sim-lab">{shell.view}</span>
             <div className="sim-seg" role="group" aria-label={shell.view}>
@@ -236,23 +300,8 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
               ))}
             </div>
           </div>
-          <div className="sim-field sim-field--size">
-            <span className="sim-lab">{shell.capital}</span>
-            <div className="sim-size">
-              <input
-                type="range"
-                min={0}
-                max={1000}
-                step={1}
-                value={sizeToSlider(state.size)}
-                aria-label={shell.capitalAria}
-                onChange={(event) => patch({ size: sliderToSize(Number(event.target.value)) })}
-              />
-              <span className="sim-size__val">{money(start)}</span>
-            </div>
-          </div>
           <div className="sim-field">
-            <span className="sim-lab">{shell.presets}</span>
+            <span className="sim-lab">{shell.capital}</span>
             <div className="sim-seg" role="group" aria-label={shell.presets}>
               {shell.presetLabels.map((preset) => (
                 <button
@@ -281,10 +330,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
               ))}
             </div>
           </div>
-        </div>
-
-        {modelled ? (
-          <div className="sim-sub">
+          {modelled ? (
             <div className="sim-field">
               <span className="sim-lab">{shell.setting}</span>
               <div className="sim-seg" role="group" aria-label={shell.setting}>
@@ -300,23 +346,43 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                 ))}
               </div>
             </div>
-            {state.setup === "sc" ? (
-              <div className="sim-field">
-                <span className="sim-lab">{shell.signal}</span>
-                <div className="sim-seg" role="group" aria-label={shell.signal}>
-                  {shell.signals.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      aria-pressed={state.sig === item.id}
-                      onClick={() => patch({ sig: item.id as SimState["sig"] })}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
+          ) : null}
+        </div>
+
+        <div className="sim-sub">
+          <div className="sim-field sim-field--size">
+            <span className="sim-lab">{shell.capital}</span>
+            <div className="sim-size">
+              <input
+                type="range"
+                min={0}
+                max={1000}
+                step={1}
+                value={sizeToSlider(state.size)}
+                aria-label={shell.capitalAria}
+                onChange={(event) => patch({ size: sliderToSize(Number(event.target.value)) })}
+              />
+              <span className="sim-size__val">{money(start)}</span>
+            </div>
+          </div>
+          {modelled && state.setup === "sc" ? (
+            <div className="sim-field">
+              <span className="sim-lab">{shell.signal}</span>
+              <div className="sim-seg" role="group" aria-label={shell.signal}>
+                {shell.signals.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-pressed={state.sig === item.id}
+                    onClick={() => patch({ sig: item.id as SimState["sig"] })}
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
-            ) : null}
+            </div>
+          ) : null}
+          {modelled ? (
             <div className="sim-field">
               <span className="sim-lab">{shell.conviction}</span>
               <div className="sim-seg" role="group" aria-label={shell.conviction}>
@@ -333,12 +399,14 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                 ))}
               </div>
             </div>
-            {warn ? <p className="sim-warn">{warn}</p> : null}
-          </div>
-        ) : null}
+          ) : null}
+          {warn ? <p className="sim-warn">{warn}</p> : null}
         </div>
 
-        <RunStrip grid={grid} />
+        <details className="sim-more sim-run-fold">
+          <summary>{plain.showRun}</summary>
+          <RunStrip grid={grid} />
+        </details>
         <ViewTabs view={state.view} onChange={(view: WorkspaceView) => patch({ view })} />
         <Assumptions
           state={state}
@@ -370,85 +438,15 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
 
         {state.view === "scenario" ? (
         <>
-        <section className="sim-sec">
-          <SectionHead
-            n={sections.outcome.n}
-            kicker={sections.outcome.kicker}
-            title={sections.outcome.title}
-            lede={sections.outcome.lede}
-            aside={<Chip kind={modelled ? "modelled" : "target"}>{modelled ? chips.modelled : chips.target}</Chip>}
-          />
-          <div className="sim-outcome">
-            <div className="sim-outcome__main">
-              <div className="sim-outcome__kicker">
-                {modelled && setup
-                  ? `Modelled · ${setup.label} · middle of 2,000 simulated paths`
-                  : `Target · ${descriptions[state.setup === "nocredit" ? "hyb" : state.setup].title.replace(/\.$/, "")} · ${money(start)} over ${yearsWord}`}
-              </div>
-              <p className="sim-outcome__big">
-                <span className="sim-num">{money(start)}</span> becomes
-                <br />
-                <span className="sim-num sim-num--accent">{money(end)}</span> in {yearsWord}
-              </p>
-              <p className="sim-outcome__ann">
-                <b>{headlineRate}%</b>
-                {kind === "stress"
-                  ? " a year, 10th percentile of 2,000 stored paths, net of the 5% fee used in the run"
-                  : modelled
-                    ? ` a year median, net of the 5% fee · AUD 50% hedged · ${grossRate}% before fees`
-                    : canonicalFee
-                      ? ` a year TARGET, net of the 5% fee · ${grossRate}% gross`
-                      : ` a year TARGET, net of the ${r1(state.fee)}% fee · ${grossRate}% gross. Target arithmetic, not a simulation.`}
-              </p>
-            </div>
-            <div className="sim-outcome__side">
-              {modelled && cell && base ? (
-                <OutcomeRows
-                  rows={[
-                    ["Good outcome (1 in 10 better)", "90th percentile path, net", cell.p90],
-                    ["Middle outcome", "Median path, net", cell.med],
-                    ["Poor outcome (1 in 10 worse)", "10th percentile path, net", cell.p10],
-                    [guide.baseline, guide.baselineSub, base.med],
-                  ]}
-                  start={start}
-                  years={state.years}
-                />
-              ) : (
-                <OutcomeRows
-                  rows={[
-                    ["Foundation only", "Market reference + stock-picking target, net", targets.foNet],
-                    ["Your stacked target", "Layers switched on, net", targets.net],
-                    ["Upside ambition", "Every layer at the top of its range, net · not promised", targets.upNet],
-                    [guide.baseline, `${guide.baselineSub} Modelled median, not a target.`, base.med],
-                  ]}
-                  start={start}
-                  years={state.years}
-                />
-              )}
-            </div>
-          </div>
-          <p className="sim-gap">
-            At {money(start)} over {yearsWord}, modelled medians:{" "}
-            {gapSetups
-              .map(([id, label]) => `${label} ${disp(lookupCell(grid, id, state.years, state.size), "med", true)}%`)
-              .join(", ")}
-            . {guide.baseline}: {disp(base, "med", true)}%.
-          </p>
-          {scaleCell ? (
-            <p className="sim-cost">
-              {scaleName} at {money(start)} is {disp(scaleCell, "med", true)}% after the A$45k a year data cost, or{" "}
-              {r1(scaleCell.nodata)}% without it. Both figures are modelled.
-            </p>
-          ) : null}
           {modelled && cell ? (
             <Kpis
               items={[
                 ["Median net a year", `${disp(cell, "med", true)}%`, cell.med >= 0 ? "pos" : "neg", "Middle of 2,000 paths"],
-                ["Chance of a loss", `${disp(cell, "ploss", false)}%`, "", "Ending below the start"],
-                ["Chance of 30%+", `${disp(cell, "p30", false)}%`, "", "Net a year over the horizon"],
-                ["Chance of beating A-REITs", `${disp(cell, "areit", false)}%`, "", "vs 6% a year assumption"],
-                ["Chance of beating credit", `${disp(cell, "credit", false)}%`, "", "vs 10% a year assumption"],
-                ["1-in-10 worst fall", `${disp(cell, "dd10", false)}%`, "neg", "Peak to trough, worst 10% of paths"],
+                [plain.loss, `${disp(cell, "ploss", false)}%`, "", "Ending below the start"],
+                [plain.thirty, `${disp(cell, "p30", false)}%`, "", "Over the horizon"],
+                [plain.areit, `${disp(cell, "areit", false)}%`, "", "Against a 6% assumption"],
+                [plain.credit, `${disp(cell, "credit", false)}%`, "", "Against a 10% assumption"],
+                [plain.fall, `${disp(cell, "dd10", false)}%`, "neg", "Peak to trough"],
               ]}
             />
           ) : (
@@ -456,28 +454,27 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
               items={[
                 ["Net a year", `${r1(targets.net)}%`, "pos", canonicalFee ? "Target, net of the 5% fee" : "Target arithmetic, not a simulation"],
                 ["Ending value", money(end), "", `${money(start)} after ${state.years} yr${state.years > 1 ? "s" : ""}`],
-                ["Chance of 30%+", "—", "na", "Targets carry no probabilities"],
-                ["Chance of beating A-REITs", "—", "na", "Not simulated"],
-                ["Chance of beating credit", "—", "na", "Not simulated"],
-                ["1-in-10 worst fall", "—", "na", "Not simulated"],
+                [plain.thirty, "—", "na", "Targets carry no probabilities"],
+                [plain.areit, "—", "na", "Not simulated"],
+                [plain.credit, "—", "na", "Not simulated"],
+                [plain.fall, "—", "na", "Not simulated"],
               ]}
             />
           )}
-          <p className="sim-note">
-            <Chip kind={modelled ? "modelled" : "target"}>{modelled ? chips.modelled : chips.target}</Chip>{" "}
-            {modelled && cell
-              ? `Not a forecast. ${
-                  lly
-                    ? "Depends on the disclosed LLY conviction position keeping 40% of its historical lead; switch to “Mechanical pick” to see the result without it. "
-                    : ""
-                }${cell.exact ? "" : "Allocation between grid points: values interpolated from the neighbouring simulated sizes. "}`
-              : `Objectives, not forecasts or guarantees. Assumes every switched-on engine passes its gate and performs to target, which none has yet shown live.${
-                  rxOn
-                    ? ""
-                    : " The Prescription Reader layer starts only at A$5m+, when the paid feed is bought; at A$5m+ with every layer at base, the target is 20.2% net."
-                }`}
-          </p>
-        </section>
+          <details className="sim-more">
+            <summary>{plain.showNote}</summary>
+            <p>
+              {modelled && cell
+                ? `Not a forecast. ${
+                    lly
+                      ? "Depends on the disclosed LLY conviction position keeping 40% of its historical lead. "
+                      : ""
+                  }${cell.exact ? "" : "Between grid points, values are interpolated. "}`
+                : `A target is a hurdle, not a forecast.${
+                    rxOn ? "" : " The Prescription Reader starts at A$5m. With every layer at base, the target is 20.2% net."
+                  }`}
+            </p>
+          </details>
 
         {modelled ? (
           <section className="sim-sec">
@@ -487,14 +484,17 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
               title={sections.rulebook.title}
               aside={<Chip kind="modelled">{chips.modelled}</Chip>}
             />
-            <div className="sim-callout">
+            <details className="sim-more">
+              <summary>{plain.showRules}</summary>
+              <div className="sim-callout">
               <strong>{descriptions[state.setup].title}</strong> {descriptions[state.setup].body}
               {lly
                 ? " Conviction position: Eli Lilly (LLY)."
                 : pickLocked
                   ? ""
                   : " Conviction position replaced by a mechanical pick: each November, the large pharma name with the best 12-1 momentum, held for a year (no hindsight)."}
-            </div>
+              </div>
+            </details>
           </section>
         ) : (
           <section className="sim-sec">
@@ -598,7 +598,10 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                 </tbody>
               </table>
             </div>
-            <p className="sim-note">{sections.stack.note}</p>
+            <details className="sim-more">
+              <summary>{plain.more}</summary>
+              <p>{sections.stack.note}</p>
+            </details>
           </section>
         )}
 
@@ -607,7 +610,6 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
             n={sections.range.n}
             kicker={sections.range.kicker}
             title={sections.range.title}
-            aside={<span className="sim-aside">{modelled ? sections.range.modelledNote : sections.range.targetNote}</span>}
           />
           {modelled && cell ? (
             <FanChart
@@ -711,7 +713,10 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
                     ]
               }
             />
-            <p className="sim-note">{sections.beside.note}</p>
+            <details className="sim-more">
+              <summary>{plain.more}</summary>
+              <p>{sections.beside.note}</p>
+            </details>
           </section>
           <section className="sim-sec">
             <SectionHead
@@ -721,7 +726,10 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
               aside={<Chip kind={modelled ? "modelled" : "target"}>{modelled ? chips.modelled : chips.target}</Chip>}
             />
             <MetricBars label="Gross to net" rows={modelled && cell && setup ? feeRowsModelled(cell, setup.data ?? 0) : feeRowsTarget(targets)} />
-            <p className="sim-note">{modelled ? sections.bridge.modelledNote : sections.bridge.targetNote}</p>
+            <details className="sim-more">
+              <summary>{plain.more}</summary>
+              <p>{modelled ? sections.bridge.modelledNote : sections.bridge.targetNote}</p>
+            </details>
           </section>
         </div>
 
@@ -736,8 +744,11 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
             label="Where the return comes from"
             rows={modelled && cell ? attributionModelled(cell, state) : attributionTarget(targets, rxOn)}
           />
-          <p className="sim-note">{modelled ? sections.source.modelledNote : sections.source.targetNote}</p>
-          <p className="sim-bridge">{sections.source.bridge}</p>
+          <details className="sim-more">
+            <summary>{plain.more}</summary>
+            <p>{modelled ? sections.source.modelledNote : sections.source.targetNote}</p>
+            <p>{sections.source.bridge}</p>
+          </details>
         </section>
 
         <section className="sim-sec">
@@ -748,6 +759,8 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
             lede={sections.gates.lede}
             aside={<span className="sim-aside">{sections.gates.asOf}</span>}
           />
+          <details className="sim-more">
+            <summary>{plain.showGates}</summary>
           <div className="sim-gates">
             {gates.map((gate) => (
               <article className="sim-gate" key={gate.name}>
@@ -763,6 +776,7 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
           </div>
           <p className="sim-note">{sections.gates.note}</p>
           <p className="sim-bridge">{sections.gates.bridge}</p>
+          </details>
         </section>
 
         <section className="sim-sec">
@@ -772,22 +786,28 @@ export function Simulator({ bundle }: { bundle: { grid: ModelGrid; evidence: Evi
             title={sections.conviction.title}
             aside={<Chip kind="modelled">{chips.modelled}</Chip>}
           />
-          <div className="sim-callout sim-callout--amb">
-            <Conviction grid={grid} state={state} />
-          </div>
+          <details className="sim-more">
+            <summary>{plain.showConviction}</summary>
+            <div className="sim-callout sim-callout--amb">
+              <Conviction grid={grid} state={state} />
+            </div>
+          </details>
         </section>
         </>
         ) : null}
       </div>
 
-      <section className="sim-legal">
-        {legal.map((item) => (
-          <p key={item.title}>
-            <b>{item.title}</b> {item.body}
-          </p>
-        ))}
-        {runDate ? <p>{runDate}. Paths and seed are in the strip above the scenario.</p> : null}
-      </section>
+      <details className="sim-more sim-legal-fold">
+        <summary>{plain.showNotices}</summary>
+        <section className="sim-legal">
+          {legal.map((item) => (
+            <p key={item.title}>
+              <b>{item.title}</b> {item.body}
+            </p>
+          ))}
+          {runDate ? <p>{runDate}.</p> : null}
+        </section>
+      </details>
     </div>
   );
 }

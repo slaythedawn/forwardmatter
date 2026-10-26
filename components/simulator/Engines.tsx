@@ -78,9 +78,9 @@ export function EnginesPanel({
               <tr>
                 <th>Setting</th>
                 <th className="num">Median</th>
-                <th className="num">P(30%+)</th>
-                <th className="num">P(beat A-REITs)</th>
-                <th className="num">P(beat credit)</th>
+                <th className="num">Chance of 30% or more</th>
+                <th className="num">Chance of beating A-REITs</th>
+                <th className="num">Chance of beating credit</th>
                 <th className="num">1-in-10 fall</th>
               </tr>
             </thead>

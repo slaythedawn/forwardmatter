@@ -18,7 +18,7 @@ export function buildFanSvg(series: FanSeries[], bands: FanBand[], years: number
   const W = 900;
   const H = 320;
   const L = 64;
-  const R = 150;
+  const R = 16;
   const T = 14;
   const B = 30;
   const months = years * 12;
@@ -51,20 +51,32 @@ export function buildFanSvg(series: FanSeries[], bands: FanBand[], years: number
     const dn = band.lo.map((v, i) => `${X(i + 1)},${Y(v)}`).reverse();
     svg += `<polygon points="${X(0)},${Y(1)} ${up.join(" ")} ${dn.join(" ")}" fill="${band.c}"/>`;
   }
-  const labs: { y: number; t: string; c: string }[] = [];
   for (const item of series) {
     const pts = [`${X(0)},${Y(1)}`].concat(item.v.map((v, i) => `${X(i + 1)},${Y(v)}`));
     const dash = item.dash ? ` stroke-dasharray="${item.dash}"` : "";
     svg += `<polyline points="${pts.join(" ")}" fill="none" stroke="${item.c}" stroke-width="${item.w || 2}"${dash}/>`;
-    const last = item.v[item.v.length - 1];
-    labs.push({ y: Y(last), t: `${money(last * start)} ${item.short}`, c: item.c });
-  }
-  labs.sort((a, b) => a.y - b.y);
-  for (let i = 1; i < labs.length; i += 1) {
-    if (labs[i].y - labs[i - 1].y < 13) labs[i].y = labs[i - 1].y + 13;
-  }
-  for (const lab of labs) {
-    svg += `<text x="${W - R + 8}" y="${lab.y + 3.5}" style="fill:${lab.c};font-weight:500">${lab.t}</text>`;
   }
   return `${svg}</svg>`;
+}
+
+/** Shared frame for the interactive chart. Labels live in the HTML legend, not on the plot. */
+export function fanFrame(series: FanSeries[], bands: FanBand[], years: number) {
+  const W = 900;
+  const H = 320;
+  const L = 64;
+  const R = 16;
+  const T = 14;
+  const B = 30;
+  const months = years * 12;
+  const vals = [1];
+  for (const item of series) vals.push(...item.v);
+  for (const band of bands) vals.push(...band.lo, ...band.hi);
+  let lo = Math.min(...vals, 0.9);
+  let hi = Math.max(...vals);
+  const pad = (hi - lo) * 0.06;
+  lo -= pad;
+  hi += pad;
+  const X = (m: number) => L + ((W - L - R) * m) / months;
+  const Y = (v: number) => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  return { W, H, L, R, T, B, months, lo, hi, X, Y };
 }
