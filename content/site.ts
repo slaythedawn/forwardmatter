@@ -377,14 +377,14 @@ export const contactCopy = {
 
 export const simulatorPage = {
   metaTitle: "Simulator",
-  eyebrow: "Matter Engine · live simulator",
-  titleLead: "Run the fund ",
-  titleAccent: "forward and back.",
+  eyebrow: "Matter Engine · strategy simulator",
+  titleLead: "Try the modelled strategy ",
+  titleAccent: "yourself.",
   lead:
-    "Matter Engine's three portfolios and two readers, simulated forward on recorded market moves, and backtested from past starting points. See what A$10m becomes, what drives it and the gate each reader must pass. Every setting shows what the plan assumes and what the record measured.",
-  frameTitle: "Forward Matter live simulator",
+    "Choose the capital, the setting and the horizon, and see the Foundation and Lilly across 2,000 modelled markets, with the falls beside the gains. Backtests, advanced settings and every source sit one click away.",
+  frameTitle: "Forward Matter strategy simulator",
   legal:
-    "Hypothetical results from a simulation and backtests on recorded market moves. Unaudited, before tax, no capital at risk. Not financial product advice.",
+    "Modelled figures are hypothetical and unaudited, and not a forecast. There is no live track record. For wholesale clients and sophisticated investors only. Not financial product advice.",
   gate: {
     eyebrow: "Access",
     title: "Enter the access phrase to open the simulator",
