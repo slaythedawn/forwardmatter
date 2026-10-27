@@ -10,14 +10,14 @@ export const metadata: Metadata = {
     template: "%s | Forward Matter",
   },
   description:
-    "Forward Matter transforms complex market signals into systematic investment decisions. Trading and portfolio intelligence software for wealth advisers, asset managers and funds.",
+    "Forward Matter is a quantitative, automated trading platform. Systematic and rules-based, with quantitative signals and automated execution. The Matter Engine strategy runs inside a partner's fund or mandate.",
   openGraph: {
     type: "website",
     siteName: "Forward Matter",
     locale: "en_AU",
     title: "Forward Matter | Technology that predicts outcomes",
     description:
-      "Automated market intelligence. Trading and portfolio intelligence software for wealth advisers, asset managers and funds.",
+      "A quantitative, automated trading platform. Systematic and rules-based, with quantitative signals and automated execution. The Matter Engine strategy runs inside a partner's fund or mandate.",
   },
   robots: { index: true, follow: true },
   /* Without this, "Add to Home Screen" labels the icon with the whole <title>,

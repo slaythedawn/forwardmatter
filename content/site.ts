@@ -16,14 +16,14 @@ export const hero = {
   eyebrow: "Automated market intelligence",
   titleLead: "Intelligence for what ",
   titleAccent: "moves markets next.",
-  body: "Forward Matter transforms complex market signals into systematic investment decisions. Trading and portfolio intelligence software for wealth advisers, asset managers and funds.",
+  body: "Forward Matter is a quantitative, automated trading platform. Systematic and rules-based, with quantitative signals and automated execution. The Matter Engine strategy runs inside a partner's fund or mandate.",
   ctaLabel: "Get in touch",
   secondaryLabel: "See what it does",
   particleCount: 2300,
 } as const;
 
 export const credibility = {
-  label: "Built for professional investors",
+  label: "Built for a partner's mandate",
   items: ["Connected intelligence", "Portfolio level control", "Governed automation"],
 } as const;
 
@@ -203,7 +203,7 @@ export const timeline: TimelineEvent[] = [
 export const platformSection = {
   eyebrow: "The Matter family",
   title: "One platform. Specialist capabilities.",
-  body: "Research, modelling and portfolio tools designed to work across the investment process.",
+  body: "Research, modelling and execution tools for a partner's fund or mandate. Systematic and rules-based, with quantitative signals and automated execution.",
 } as const;
 
 export type PlatformGroup = { group: string; items: { name: string; body: string }[] };
@@ -246,7 +246,7 @@ export const caseStudy = {
     "Eli Lilly closing price rising from 152 dollars in 2020 to 1149 dollars in 2026, shown as four plotted points",
   asAt:
     "Figures as at 4 September 2026. The four points are period markers, not a daily price path.",
-  criteriaHead: "Why this is where we deploy",
+  criteriaHead: "Why the strategy is built for this",
   points: [
     { label: "Dec 2020", value: "$152" },
     { label: "May 2022", value: "Mounjaro" },
@@ -272,7 +272,7 @@ export const caseStudy = {
 export const closing = {
   eyebrow: "Why we exist",
   title: "More of the future is knowable than the market assumes.",
-  body: "A great deal of what will move a market is already documented, dated and discussed in public. We exist to make that readable, so a decision rests on evidence rather than instinct. Talk to us about how that could extend your firm, platform or fund.",
+  body: "A great deal of what will move a market is already documented, dated and discussed in public. We exist to make that readable, so a decision rests on evidence rather than instinct. Talk to us about running the Matter Engine strategy inside a partner's fund or mandate.",
   teamLink: "Meet the team",
 } as const;
 
@@ -308,7 +308,7 @@ export const people: Person[] = [
     name: "Adam Mazzaferro",
     role: "Corporate",
     owns: "Financial structure, commercial terms and regulatory position.",
-    body: "Commercial lawyer working across finance and regulated industry, on corporate structure, capital and transactions. Handles how the business is structured, how licences are written and where the regulatory boundaries sit.",
+    body: "Commercial lawyer working across finance and regulated industry, on corporate structure, capital and transactions. Handles how the business is structured, how terms with a partner's fund or mandate are agreed and where the regulatory boundaries sit.",
   },
 ];
 
@@ -322,7 +322,7 @@ export const aboutPage = {
     title: "Some of the future is already scheduled.",
     paragraphs: [
       "Most information arrives as a surprise. But a meaningful share of it doesn't: a regulatory decision date, a trial completion, an earnings call, a policy review. Those events are published in advance, documented in the public record, and then discussed at length by people with opinions.",
-      "Reading all of that properly is a software problem, not a headcount problem. So we built the software, and because we run it on our own book it is judged on whether it works rather than on how it demonstrates. We are a small team in Sydney, deliberately narrow, going deep in a few industries instead of wide across all of them.",
+      "Reading all of that properly is a software problem, not a headcount problem. So we built a quantitative, automated trading platform: systematic and rules-based, with quantitative signals and automated execution. The Matter Engine strategy runs inside a partner's fund or mandate, and the results we show are modelled. We are a small team in Sydney, deliberately narrow, going deep in a few industries instead of wide across all of them.",
     ],
   },
   team: {
@@ -332,7 +332,7 @@ export const aboutPage = {
   },
   cta: {
     title: "See what becomes material before the market fully responds.",
-    body: "Talk to us about how Forward Matter could extend the intelligence and execution capability of your advisory firm, platform or fund.",
+    body: "Talk to us about running the Matter Engine strategy inside a partner's fund or mandate.",
     label: "Speak to us",
   },
 } as const;
@@ -363,7 +363,7 @@ export const orgTypes = [
 
 export const contactCopy = {
   messageLabel: "Message",
-  messagePlaceholder: "What you are looking to license, and the timeframe you are working to.",
+  messagePlaceholder: "What you want the platform to run, and the timeframe you are working to.",
   submitLabel: "Speak to us",
   note: "All enquiries handled confidentially.",
   thanksTitle: "Thank you.",
@@ -376,15 +376,15 @@ export const contactCopy = {
 } as const;
 
 export const simulatorPage = {
-  metaTitle: "Simulator",
-  eyebrow: "Matter Engine · live simulator",
-  titleLead: "Run the fund ",
-  titleAccent: "forward and back.",
+  metaTitle: "Strategy simulator",
+  eyebrow: "Matter Engine",
+  titleLead: "Healthcare stocks, then the dates. ",
+  titleAccent: "The modelled result stays separate.",
   lead:
-    "Matter Engine's three portfolios and two readers, simulated forward on recorded market moves, and backtested from past starting points. See what A$10m becomes, what drives it and the gate each reader must pass. Every setting shows what the plan assumes and what the record measured.",
-  frameTitle: "Forward Matter live simulator",
+    "Forward Matter supplies the platform. The Matter Engine strategy runs inside a partner's fund or mandate. The Foundation is the core. Engine targets are hurdles, and they are not added to the modelled result. The healthcare ETF is context, not the result. Open it with the access phrase.",
+  frameTitle: "Matter Engine strategy simulator",
   legal:
-    "Hypothetical results from a simulation and backtests on recorded market moves. Unaudited, before tax, no capital at risk. Not financial product advice.",
+    "Targets and modelled results. Not a forecast, not a guarantee, and not an offer of financial products.",
   gate: {
     eyebrow: "Access",
     title: "Enter the access phrase to open the simulator",
