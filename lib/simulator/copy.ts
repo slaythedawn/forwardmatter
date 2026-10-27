@@ -25,7 +25,7 @@ export const hero = {
   ],
   stats: [
     { value: "+5–10", label: "pts a year: Foundation target over global healthcare" },
-    { value: "118", label: "Monthly trial-registry snapshots, 2017–2026" },
+    { value: "115", label: "Monthly trial-registry snapshots, January 2017 to October 2026. None for July–August 2021 or August 2022." },
   ],
   baseStatLabel: "Base target a year at A$10m, net of the 5% fee. The page opens at A$1m.",
   upsideStatLabel: "Upside ambition at A$10m, net of the 5% fee. Not a promise.",
@@ -216,7 +216,7 @@ export const gates: { name: string; tone: "live" | "built"; status: string; gate
     tone: "built",
     status: "Built · validating",
     gate: "19 pre-registered rules; the same sign in 2017–20, Holm-adjusted p<0.05 in 2021–26, and positive after costs.",
-    detail: "Built on monthly ClinicalTrials.gov registry snapshots, 2017–2026.",
+    detail: "Built on 115 monthly trial-registry snapshots, January 2017 to October 2026, none for July–August 2021 or August 2022.",
   },
   {
     name: "Catalyst: readout options and post-crash trades",
