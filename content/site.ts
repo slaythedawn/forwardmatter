@@ -393,6 +393,11 @@ export const simulatorPage = {
     label: "Access phrase",
     button: "Open the simulator",
     opening: "Opening",
+    stages: {
+      fetch: "Fetching the encrypted simulator",
+      unlock: "Unlocking it in your browser. This takes a few seconds.",
+      render: "Opening the simulator",
+    },
     wrong: "That access phrase did not open the simulator. Check it and try again.",
     unavailable: "The simulator could not be loaded. Please try again shortly.",
     note: "Access is by invitation. If you were not given an access phrase, use the contact form and we will arrange it.",

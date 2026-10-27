@@ -2,6 +2,7 @@ import { SiteLink } from "./SiteLink";
 import { ArrowIcon } from "./ArrowIcon";
 import { BrandMark } from "./BrandMark";
 import { Wordmark } from "./Wordmark";
+import { SiteNav } from "./SiteNav";
 import { href as route } from "@/lib/href";
 import { siteMeta } from "@/content/site";
 
@@ -19,7 +20,7 @@ export function SiteHeader({ page }: { page: "home" | "about" | "simulator" }) {
         <BrandMark cut="mid" className="logo-mark" />
         <Wordmark stacked />
       </SiteLink>
-      <nav className="site-nav" aria-label="Primary">
+      <SiteNav>
         <SiteLink href={href("#technology")} className="site-nav__link">
           Technology
         </SiteLink>
@@ -43,7 +44,7 @@ export function SiteHeader({ page }: { page: "home" | "about" | "simulator" }) {
         <SiteLink href={href("#contact")} className="btn btn--primary btn--compact">
           Contact
         </SiteLink>
-      </nav>
+      </SiteNav>
     </header>
   );
 }

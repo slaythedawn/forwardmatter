@@ -469,6 +469,42 @@ textarea {
   color: var(--muted);
 }
 
+/* The menu button shows only on phones (see the 720px block). */
+.site-menu-btn {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 8px 14px;
+  border: 1px solid rgba(27, 40, 56, 0.25);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.site-menu-btn__icon {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.site-menu-btn__icon span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.site-menu-btn:focus-visible {
+  outline: 3px solid #8fb4dd;
+  outline-offset: 2px;
+}
+
 .site-nav__link--current {
   color: var(--ink);
   font-weight: 600;
@@ -1583,8 +1619,36 @@ textarea {
     font-size: 11px;
   }
 
+  .site-header {
+    flex-wrap: wrap;
+  }
+
+  .site-menu-btn {
+    display: inline-flex;
+  }
+
   .site-nav {
-    gap: 16px;
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 6px 0 4px;
+  }
+
+  .site-nav--open {
+    display: flex;
+  }
+
+  .site-nav .site-nav__link {
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+    font-size: 15px;
+  }
+
+  .site-nav .btn--compact {
+    margin-top: 6px;
   }
 
   .site-nav__link {
@@ -1760,6 +1824,100 @@ textarea {
   border: 0;
   background: transparent;
   color-scheme: light;
+}
+
+/* Unlock progress: the key derivation and decryption take a few seconds, so the wait is shown. */
+.spinner {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: sim-spin 0.8s linear infinite;
+  vertical-align: -2px;
+}
+
+.sim-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sim-progress__bar {
+  position: relative;
+  height: 4px;
+  overflow: hidden;
+  background: rgba(47, 85, 128, 0.15);
+  border-radius: 2px;
+}
+
+.sim-progress__bar span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 35%;
+  background: var(--accent, #2f5580);
+  border-radius: 2px;
+  animation: sim-slide 1.2s ease-in-out infinite;
+}
+
+.sim-progress__label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.simulator__frame-wrap.is-loading .sim-progress {
+  max-width: 520px;
+  margin: 24px auto 0;
+}
+
+.simulator__frame-wrap.is-loading .simulator__frame {
+  visibility: hidden;
+  height: 1px !important;
+  min-height: 0;
+}
+
+@keyframes sim-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sim-slide {
+  0% {
+    left: -35%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner,
+  .sim-progress__bar span {
+    animation-duration: 3s;
+  }
+}
+
+/* Once unlocked, the simulator takes the page: one header (the site's), one scroll (the page's).
+   The frame runs edge to edge and the page hero and duplicate legal line give way. */
+.sim-open .simulator__hero,
+.sim-open .simulator__legal {
+  display: none;
+}
+
+.sim-open .page {
+  overflow-x: clip;
+}
+
+.sim-open .simulator {
+  padding-top: 0;
+}
+
+.sim-open .simulator__frame-wrap {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
 }
 
 .simulator__legal {
