@@ -16,7 +16,7 @@ export const hero = {
   eyebrow: "Automated market intelligence",
   titleLead: "Intelligence for what ",
   titleAccent: "moves markets next.",
-  body: "Forward Matter transforms complex market signals into systematic investment decisions. Trading and portfolio intelligence software for wealth advisers, asset managers and funds.",
+  body: "Forward Matter turns complex market signals into quantitative, rules-based investment decisions. Quantitative trading and portfolio intelligence software for wealth advisers, asset managers and funds.",
   ctaLabel: "Get in touch",
   secondaryLabel: "See what it does",
   particleCount: 2300,
