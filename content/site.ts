@@ -236,6 +236,30 @@ export const platform: PlatformGroup[] = [
   },
 ];
 
+export const engineModules = {
+  label: "Inside Matter Engine",
+  items: [
+    {
+      name: "The Foundation",
+      body: "A rules-based stock picker that screens every healthcare company before it is bought.",
+    },
+    { name: "Nowcaster", body: "Estimates a company's quarterly sales before it reports them." },
+    {
+      name: "Prescription Reader",
+      body: "Turns weekly prescription data into an early read on a medicine's sales.",
+    },
+    {
+      name: "Catalyst",
+      body: "Reads regulatory documents ahead of dated decisions, starting with the FDA Reader.",
+    },
+    { name: "Momentum", body: "Reads each share's trend against its market, and leans with it." },
+    {
+      name: "Policy Reader",
+      body: "Follows the bills, orders and rules that move drug prices, from first bill to law.",
+    },
+  ],
+} as const;
+
 export const caseStudy = {
   eyebrow: "Eli Lilly and tirzepatide",
   title: "One molecule, every catalyst dated in advance.",

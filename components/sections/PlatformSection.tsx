@@ -1,6 +1,6 @@
 import { BrandMark } from "../BrandMark";
 import { Wordmark } from "../Wordmark";
-import { platform, platformSection, siteMeta } from "@/content/site";
+import { engineModules, platform, platformSection, siteMeta } from "@/content/site";
 
 export function PlatformSection() {
   return (
@@ -36,6 +36,18 @@ export function PlatformSection() {
               ))}
             </div>
           ))}
+        </div>
+
+        <div className="platform__modules">
+          <div className="platform__group-label">{engineModules.label}</div>
+          <div className="platform__groups platform__groups--modules">
+            {engineModules.items.map((item) => (
+              <div className="platform__item" key={item.name}>
+                <h3 className="h3">{item.name}</h3>
+                <p className="body-15">{item.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
