@@ -34,7 +34,7 @@ export const intelligenceSystem = {
   engine: {
     eyebrow: "Proprietary intelligence layer",
     title: "Matter Engine",
-    body: "Relationship mapping, probability modelling and systematic decision infrastructure.",
+    body: "Relationship mapping, probability modelling and systematic decision infrastructure. New technology, now in beta.",
     chip: "Architecture and signal logic remain proprietary",
   },
 } as const;
@@ -237,7 +237,7 @@ export const platform: PlatformGroup[] = [
 ];
 
 export const engineModules = {
-  label: "Inside Matter Engine",
+  label: "Inside Matter Engine, now in beta",
   items: [
     {
       name: "The Foundation",
@@ -408,7 +408,7 @@ export const simulatorPage = {
     "Choose the capital, the setting and the horizon, and see the Foundation and Lilly across 2,000 modelled markets, with the falls beside the gains. Backtests, advanced settings and every source sit one click away.",
   frameTitle: "Forward Matter strategy simulator",
   legal:
-    "Modelled figures are hypothetical and unaudited, and not a forecast. There is no live track record. For wholesale clients and sophisticated investors only. Not financial product advice.",
+    "Matter Engine is new technology, in beta, with no live track record yet. Modelled figures are hypothetical and unaudited, and not a forecast. For wholesale clients and sophisticated investors only. Not financial product advice.",
   gate: {
     eyebrow: "Access",
     title: "Enter the access phrase to open the simulator",
@@ -425,7 +425,7 @@ export const simulatorPage = {
     wrong: "That access phrase did not open the simulator. Check it and try again.",
     unavailable: "The simulator could not be loaded. Please try again shortly.",
     terms:
-      "By opening the simulator you confirm you are a wholesale client, or a sophisticated or professional investor, and that you will read its important information. Figures are modelled and hypothetical, not a forecast, and are general information, not advice.",
+      "By opening the simulator you confirm you are a wholesale client, or a sophisticated or professional investor, and that you will read its important information. Matter Engine is new technology in beta; figures are modelled and hypothetical, not a forecast, and are general information, not advice.",
     note: "Access is by invitation. If you were not given an access phrase, use the contact form and we will arrange it.",
   },
 } as const;
