@@ -424,6 +424,8 @@ export const simulatorPage = {
     },
     wrong: "That access phrase did not open the simulator. Check it and try again.",
     unavailable: "The simulator could not be loaded. Please try again shortly.",
+    terms:
+      "By opening the simulator you confirm you are a wholesale client, or a sophisticated or professional investor, and that you will read its important information. Figures are modelled and hypothetical, not a forecast, and are general information, not advice.",
     note: "Access is by invitation. If you were not given an access phrase, use the contact form and we will arrange it.",
   },
 } as const;

@@ -189,6 +189,7 @@ export function SimulatorGate() {
           </p>
         ) : null}
       </form>
+      <p className="simulator__gate-note">{simulatorPage.gate.terms}</p>
       <p className="simulator__gate-note">{simulatorPage.gate.note}</p>
     </div>
   );
