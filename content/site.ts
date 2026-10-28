@@ -73,7 +73,7 @@ export const outputs: EngineItem[] = [
   {
     label: "Execution output",
     title: "Governed action",
-    body: "Automated or adviser approved execution with monitoring and oversight.",
+    body: "Automated execution inside the rails, with monitoring and oversight.",
   },
 ];
 
@@ -322,7 +322,7 @@ export const aboutPage = {
     title: "Some of the future is already scheduled.",
     paragraphs: [
       "Most information arrives as a surprise. But a meaningful share of it doesn't: a regulatory decision date, a trial completion, an earnings call, a policy review. Those events are published in advance, documented in the public record, and then discussed at length by people with opinions.",
-      "Reading all of that properly is a software problem, not a headcount problem. So we built the software, and because we run it on our own book it is judged on whether it works rather than on how it demonstrates. We are a small team in Sydney, deliberately narrow, going deep in a few industries instead of wide across all of them.",
+      "Reading all of that properly is a software problem, not a headcount problem. So we built the software, and because every rule is tested against a pass mark set before the result, and every result is kept, it is judged on whether it works rather than on how it demonstrates. We are a small team in Sydney, deliberately narrow, going deep in a few industries instead of wide across all of them.",
     ],
   },
   team: {
