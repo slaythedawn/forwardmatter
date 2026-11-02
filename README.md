@@ -43,24 +43,26 @@ than letting a real prospect believe it reached you.
 
 `/simulator` is for people we have given an access phrase to. The simulator source is
 kept outside this repository (place it at `simulator-src/app.html`, which git ignores)
-and is never served as is: `npm run build:simulator`
-encrypts it (AES-256-GCM, key from the passphrase by PBKDF2) into
-`public/simulator/payload.json`, which is what the page fetches. The access phrase form
-derives the key in the visitor's browser and renders the decrypted simulator in a
-sandboxed frame, so there is no server-side secret and it works on the static
-export as well.
+and is never served as is: `npm run build:simulator` encrypts it once with a random key
+(AES-256-GCM) and locks a copy of that key under each access phrase (PBKDF2, 200,000
+rounds) into `public/simulator/payload.json`, which is what the page fetches. The access
+phrase form tries the phrase in the visitor's browser against each locked copy and renders
+the decrypted simulator in a sandboxed frame, so there is no server-side secret and it
+works on the static export as well.
 
-The passphrase is never in the repository. To set or change it:
+Each person or group can have their own phrase. The phrases are never in the repository;
+set them in the environment where the build runs (not in Vercel, which only ever receives
+the encrypted file):
 
 ```bash
-SIMULATOR_PASSPHRASE='the passphrase' npm run build:simulator
-git add public/simulator/payload.json && git commit -m "Rotate the simulator passphrase"
+SIMULATOR_PASSPHRASE='first phrase' SIMULATOR_PASSPHRASE2='second phrase' npm run build:simulator
+git add public/simulator/payload.json && git commit -m "Rebuild the simulator payload"
 ```
 
-A rotation is a new file, not a revocation: anyone who saved an old
-`payload.json` can still open it with the old passphrase. The page is `noindex`,
-excluded from the sitemap and disallowed in `robots.txt`, but the URL is not a
-secret; the passphrase is.
+Every variable named `SIMULATOR_PASSPHRASE`, `SIMULATOR_PASSPHRASE2`, `SIMULATOR_PASSPHRASE3`
+and so on is used. To remove someone's access, remove their variable and rebuild. A rebuild
+is a new file, not a revocation: anyone who saved an old `payload.json` can still open it
+with the phrase that opened it then.
 
 ## Layout
 

@@ -15,28 +15,41 @@ import { simulatorPage } from "@/content/site";
  * root -> simulator/payload.json) alike. */
 const PAYLOAD_URL = "simulator/payload.json";
 
-type Payload = { v: number; iter: number; salt: string; iv: string; data: string };
+type LockedKey = { salt: string; iv: string; key: string };
+type Payload = { v: number; iter: number; iv: string; data: string; salt?: string; keys?: LockedKey[] };
 
 const fromBase64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 
-async function decrypt(payload: Payload, passphrase: string) {
-  const enc = new TextEncoder();
-  const material = await crypto.subtle.importKey("raw", enc.encode(passphrase), "PBKDF2", false, [
+async function keyFromPhrase(passphrase: string, salt: string, iter: number) {
+  const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(passphrase), "PBKDF2", false, [
     "deriveKey",
   ]);
-  const key = await crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt: fromBase64(payload.salt), iterations: payload.iter, hash: "SHA-256" },
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: fromBase64(salt), iterations: iter, hash: "SHA-256" },
     material,
     { name: "AES-GCM", length: 256 },
     false,
     ["decrypt"],
   );
-  const plain = await crypto.subtle.decrypt(
-    { name: "AES-GCM", iv: fromBase64(payload.iv) },
-    key,
-    fromBase64(payload.data),
-  );
-  return new TextDecoder().decode(plain);
+}
+
+const open = (key: CryptoKey, iv: string, data: string) =>
+  crypto.subtle.decrypt({ name: "AES-GCM", iv: fromBase64(iv) }, key, fromBase64(data));
+
+/* Version 2 holds one content key locked under each access phrase: the phrase entered is tried
+ * against every locked copy, and the one that opens gives the key to the simulator itself.
+ * Version 1 (a single phrase) is still read, so an older payload keeps working. */
+async function decrypt(payload: Payload, passphrase: string) {
+  let contentKey: CryptoKey;
+  if (payload.v >= 2 && payload.keys?.length) {
+    const raw = await Promise.any(
+      payload.keys.map(async (k) => open(await keyFromPhrase(passphrase, k.salt, payload.iter), k.iv, k.key)),
+    );
+    contentKey = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt"]);
+  } else {
+    contentKey = await keyFromPhrase(passphrase, payload.salt ?? "", payload.iter);
+  }
+  return new TextDecoder().decode(await open(contentKey, payload.iv, payload.data));
 }
 
 type Stage = "fetch" | "unlock" | "render" | null;
